@@ -1,0 +1,5 @@
+integer x = 100;
+fun mjav () {
+	if (x > 30)
+		x = 30;
+}
