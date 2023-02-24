@@ -115,8 +115,8 @@ public class Lexer {
         var symbols = new ArrayList<Symbol>();
         var trenutniNiz = new StringBuilder();
 
-        for (int i = 0; i < this.source.length(); i++) {
-            var naslednjiZnak = this.source.charAt(i);
+        for (int i = 0; i < this.source.length() + 1; i++) {
+            var naslednjiZnak = (i == this.source.length()) ? 0 : this.source.charAt(i);
             // this.konecVrstica++;
             // this.konecStolpec++;
             System.out.printf("%c %s\n", naslednjiZnak, this.stanje); // TODO: remove
@@ -127,7 +127,7 @@ public class Lexer {
                 //this.zacetekVrstica = this.konecVrstica;
                 //this.zacetekStolpec = this.konecStolpec;
                 this.stanje = dolociZacetnoStanje(naslednjiZnak);
-                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR)
+                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
                     trenutniNiz.append(naslednjiZnak);
                 continue;
             }
@@ -159,6 +159,14 @@ public class Lexer {
                     }
                     break;
                 case KONST_INT:
+                    if (Character.isDigit(naslednjiZnak))
+                        trenutniNiz.append(naslednjiZnak);
+                    else {
+                        symbols.add(new Symbol(pozicija, TokenType.C_INTEGER, trenutniNiz.toString()));
+                        trenutniNiz = new StringBuilder();
+                        this.stanje = dolociZacetnoStanje(naslednjiZnak);
+                        i--;
+                    }
                     break;
                 case KONST_STR:
                     break;
