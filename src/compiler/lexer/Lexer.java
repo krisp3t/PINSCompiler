@@ -15,11 +15,8 @@ public class Lexer {
      * Izvorna koda.
      */
     private final String source;
-    private String stanje;
-    private int zacetekVrstica = 1;
-    private int zacetekStolpec = 0;
-    private int konecVrstica = 1;
-    private int konecStolpec = 0;
+    private lexStanja stanje = lexStanja.INITIAL;
+    private Position pozicija = new Position(Position.Location.zero(), Position.Location.zero());
 
     /**
      * Preslikava iz ključnih besed v vrste simbolov.
@@ -42,13 +39,14 @@ public class Lexer {
     /**
      * Tipi možnih stanj, v katerem je leksikalni analizator.
      */
-    enum STANJA {
+    enum lexStanja {
         KONST_INT, KONST_STR, IME, OPERATOR, KOMENTAR, INITIAL
     }
 
     /**
      * Inicializiraj možne operatorje.
      */
+    static final HashSet<Character> BELO_BESEDILO = new HashSet<Character>(Arrays.asList(' ', '\t', '\n', '\r'));
     static final HashSet<Character> OPERATORJI = new HashSet<Character>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
     static final Map<String, TokenType> operatorMapping = Map.ofEntries(
             entry("+", TokenType.OP_ADD),
@@ -90,6 +88,25 @@ public class Lexer {
     }
 
     /**
+     * Določi stanje leksikalnega analizatorja iz začetnega stanja.
+     */
+    private lexStanja dolociZacetnoStanje(char naslednjiZnak) {
+        if (naslednjiZnak == '_' || Character.isLetter(naslednjiZnak)) {
+            return lexStanja.IME;
+        } else if (Character.isDigit(naslednjiZnak)) {
+            return lexStanja.KONST_INT;
+        } else if (naslednjiZnak == '\'') {
+            return lexStanja.KONST_STR;
+        } else if (naslednjiZnak == '#') {
+            return lexStanja.KOMENTAR;
+        } else if (OPERATORJI.contains(naslednjiZnak)) {
+            return lexStanja.OPERATOR;
+        } else {
+            return lexStanja.INITIAL;
+        }
+    }
+
+    /**
      * Izvedi leksikalno analizo.
      *
      * @return seznam leksikalnih simbolov.
@@ -100,29 +117,62 @@ public class Lexer {
 
         for (int i = 0; i < this.source.length(); i++) {
             var naslednjiZnak = this.source.charAt(i);
-            this.konecVrstica++;
-            this.konecStolpec++;
-            System.out.printf("%c (%d:%d)\n", naslednjiZnak, this.konecVrstica, this.konecStolpec); // TODO: remove
+            // this.konecVrstica++;
+            // this.konecStolpec++;
+            System.out.printf("%c %s\n", naslednjiZnak, this.stanje); // TODO: remove
 
 
             // Initial stanje
             if (trenutniNiz.length() == 0) {
-                this.zacetekVrstica = this.konecVrstica;
-                this.zacetekStolpec = this.konecStolpec;
-                if (naslednjiZnak == '_' || Character.isLetter(naslednjiZnak)) {
-                    this.stanje = String.valueOf(STANJA.IME);
+                //this.zacetekVrstica = this.konecVrstica;
+                //this.zacetekStolpec = this.konecStolpec;
+                this.stanje = dolociZacetnoStanje(naslednjiZnak);
+                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR)
                     trenutniNiz.append(naslednjiZnak);
-                } else if (Character.isDigit(naslednjiZnak)) {
-                    this.stanje = String.valueOf(STANJA.KONST_INT);
-                    trenutniNiz.append(naslednjiZnak);
-                } else if (naslednjiZnak == '\'') {
-                    this.stanje = String.valueOf(STANJA.KONST_STR);
-                    trenutniNiz.append(naslednjiZnak);
-                } else if (naslednjiZnak == '#') {
-                    this.stanje = String.valueOf(STANJA.KOMENTAR);
-                } else if (OPERATORJI.contains(naslednjiZnak)) {
-                    this.stanje = String.valueOf(STANJA.OPERATOR);
-                }
+                continue;
+            }
+
+            switch (this.stanje) {
+                case KOMENTAR:
+                    if (naslednjiZnak == '\n')
+                        this.stanje = lexStanja.INITIAL;
+                    break;
+                case IME:
+                    if (BELO_BESEDILO.contains(naslednjiZnak)) {
+                        if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
+                            symbols.add(new Symbol(pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+                        else
+                            symbols.add(new Symbol(pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
+                        trenutniNiz = new StringBuilder();
+                        this.stanje = lexStanja.INITIAL;
+                    } else if (OPERATORJI.contains(naslednjiZnak)) {
+                        if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase())) {
+                            symbols.add(new Symbol(pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+                        } else {
+                            symbols.add(new Symbol(pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
+                        }
+                        trenutniNiz = new StringBuilder();
+                        trenutniNiz.append(naslednjiZnak);
+                        this.stanje = lexStanja.OPERATOR;
+                    } else {
+                        trenutniNiz.append(naslednjiZnak);
+                    }
+                    break;
+                case KONST_INT:
+                    break;
+                case KONST_STR:
+                    break;
+                case OPERATOR:
+                    String kandidat = trenutniNiz.toString() + naslednjiZnak;
+                    if (operatorMapping.containsKey(kandidat)) {
+                        symbols.add(new Symbol(pozicija, operatorMapping.get(kandidat), kandidat));
+                    } else {
+                        symbols.add(new Symbol(pozicija, operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
+                    }
+                    trenutniNiz = new StringBuilder();
+                    this.stanje = dolociZacetnoStanje(naslednjiZnak);
+                    i--;
+                    break;
             }
         }
         return symbols;
