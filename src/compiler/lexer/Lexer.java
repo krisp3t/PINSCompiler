@@ -16,9 +16,11 @@ public class Lexer {
      */
     private final String source;
     private lexStanja stanje = lexStanja.INITIAL;
-    private Position pozicija = new Position(Position.Location.zero(), Position.Location.zero());
+    private Position pozicija = new Position(1, 1, 1, 1);
     private StringBuilder trenutniNiz = new StringBuilder();
     private int stNarekovajev = 0;
+    private int vrstica = 1;
+    private int stolpec = 0;
 
 
     /**
@@ -111,7 +113,12 @@ public class Lexer {
     }
 
     private void handleStanje(char naslednjiZnak, ArrayList<Symbol> symbols) {
-        if (naslednjiZnak == '#') {
+        if (naslednjiZnak == '\n') {
+            this.vrstica++;
+            this.stolpec = 0;
+        } else if (naslednjiZnak == 9) { // tabulator
+            this.stolpec += 3;
+        } else if (naslednjiZnak == '#') {
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -133,6 +140,7 @@ public class Lexer {
                     preveriIme(symbols);
                     this.trenutniNiz = new StringBuilder();
                     this.trenutniNiz.append(naslednjiZnak);
+                    this.pozicija = Position.fromLocation(new Position.Location(this.vrstica, this.stolpec));
                     this.stanje = lexStanja.OPERATOR;
                 } else {
                     this.trenutniNiz.append(naslednjiZnak);
@@ -142,7 +150,7 @@ public class Lexer {
                 if (Character.isDigit(naslednjiZnak))
                     this.trenutniNiz.append(naslednjiZnak);
                 else {
-                    symbols.add(new Symbol(pozicija, TokenType.C_INTEGER, trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_INTEGER, trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
@@ -154,7 +162,7 @@ public class Lexer {
                         this.stNarekovajev++;
                     } else { // Konec string literala
                         String leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
-                        symbols.add(new Symbol(pozicija, TokenType.C_STRING, leksem));
+                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_STRING, leksem.substring(1, leksem.length() - 1))); // leksem brez narekovajev
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
                     }
@@ -166,15 +174,16 @@ public class Lexer {
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
                 if (operatorMapping.containsKey(kandidat)) { // Če bi z naslednjim znakom dobili operator dolžine 2
-                    symbols.add(new Symbol(pozicija, operatorMapping.get(kandidat), kandidat));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), operatorMapping.get(kandidat), kandidat));
                     this.stanje = lexStanja.INITIAL;
                 } else { // npr. "+b"
-                    symbols.add(new Symbol(pozicija, operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
                 break;
             case INITIAL:
+                this.pozicija = Position.fromLocation(new Position.Location(this.vrstica, this.stolpec));
                 this.trenutniNiz = new StringBuilder();
                 this.stanje = dolociZacetnoStanje(naslednjiZnak);
                 if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
@@ -185,12 +194,20 @@ public class Lexer {
     }
 
     private void preveriIme(ArrayList<Symbol> symbols) {
+        int startVrstica = this.pozicija.start.line;
+        int startStolpec = this.pozicija.start.column;
         if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
         else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
         else
-            symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), TokenType.IDENTIFIER, trenutniNiz.toString()));
+    }
+
+    private void povecajPozicijo(int povecajStartLine, int povecajStartCol, int povecajEndLine, int povecajEndCol) {
+        int newStartCol = (povecajStartLine == 0) ? this.pozicija.start.column + povecajStartCol : 0;
+        int newEndCol = (povecajEndLine == 0) ? this.pozicija.end.column + povecajEndCol : 0;
+        this.pozicija = new Position(this.pozicija.start.line + povecajStartLine, newStartCol, this.pozicija.end.line + povecajEndLine, newEndCol);
     }
 
     /**
@@ -200,17 +217,14 @@ public class Lexer {
      */
     public List<Symbol> scan() {
         var symbols = new ArrayList<Symbol>();
-
         for (int i = 0; i < this.source.length(); i++) {
             var naslednjiZnak = this.source.charAt(i);
-            // this.konecVrstica++;
-            // this.konecStolpec++;
-
+            this.stolpec++;
             handleStanje(naslednjiZnak, symbols);
 
         }
         handleStanje(this.source.charAt(this.source.length() - 1), symbols); // Pohendlaj še zadnji char
-        symbols.add(new Symbol(this.pozicija, TokenType.EOF, ""));
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
 
         for (Symbol s : symbols) {
             System.out.println(s);
