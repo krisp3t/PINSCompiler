@@ -18,6 +18,7 @@ public class Lexer {
     private lexStanja stanje = lexStanja.INITIAL;
     private Position pozicija = new Position(Position.Location.zero(), Position.Location.zero());
     private StringBuilder trenutniNiz = new StringBuilder();
+    private int stNarekovajev = 0;
 
 
     /**
@@ -147,6 +148,8 @@ public class Lexer {
                 }
                 break;
             case KONST_STR:
+                if ((this.stNarekovajev % 2 == 1))
+                    return;
                 if ((this.trenutniNiz.charAt(this.trenutniNiz.length() - 1) == '\'') && (this.trenutniNiz.length() > 1)) {
                     if (naslednjiZnak == '\'') { // Dva narekovaja escape char, enega smo že dodali, zato ne naredimo nič
                         this.trenutniNiz.append(naslednjiZnak);
@@ -212,13 +215,19 @@ public class Lexer {
             var naslednjiZnak = this.source.charAt(i);
             // this.konecVrstica++;
             // this.konecStolpec++;
-            System.out.printf("%c %s\n", naslednjiZnak, this.stanje); // TODO: remove
 
             handleStanje(naslednjiZnak, symbols);
 
         }
         handleStanje(this.source.charAt(this.source.length() - 1), symbols); // Pohendlaj še zadnji char
         symbols.add(new Symbol(pozicija, TokenType.EOF, ""));
+
+        for (Symbol s : symbols) {
+            System.out.println(s);
+        }
+        String test = "'tu jih je pa res veliko '''''', kar trije se ponovijo'";
+
+        System.out.println(test.replaceAll("'{2}", "'"));
         return symbols;
     }
 }

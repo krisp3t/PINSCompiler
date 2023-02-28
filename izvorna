@@ -1,4 +1,2 @@
-string: niz = 'danes je lep ''dan'' back to grind';
-logical:strazar = false;
-integer x = -30;
-integer y = +60;
+'moja ''vrstica'''=70;
+'tu jih je pa res veliko '''''', kar trije se ponovijo'
