@@ -148,30 +148,20 @@ public class Lexer {
                 }
                 break;
             case KONST_STR:
-                if ((this.stNarekovajev % 2 == 1))
-                    return;
-                if ((this.trenutniNiz.charAt(this.trenutniNiz.length() - 1) == '\'') && (this.trenutniNiz.length() > 1)) {
-                    if (naslednjiZnak == '\'') { // Dva narekovaja escape char, enega smo že dodali, zato ne naredimo nič
+                if ((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1)) { // Ne gledamo na začetku niza, ko samo '
+                    if (naslednjiZnak == '\'') { // Dva narekovaja escape char
                         this.trenutniNiz.append(naslednjiZnak);
-                        return;
-                    } else { // Potencialen konec string literala
-                        if (this.trenutniNiz.length() == 2) { // Prazen string posebej obravnavamo
-                            symbols.add(new Symbol(pozicija, TokenType.C_STRING, trenutniNiz.toString()));
-                            this.stanje = lexStanja.INITIAL;
-                            handleStanje(naslednjiZnak, symbols);
-                            return;
-                        }
-                        if ((this.trenutniNiz.charAt(this.trenutniNiz.length() - 2) == '\'')) { // Imamo dva narekovaja, zato zadnjega prepišemo in ni konec stringa
-                            this.trenutniNiz.replace(this.trenutniNiz.length() - 1, this.trenutniNiz.length(), String.valueOf(naslednjiZnak));
-                        } else { // Konec stringa
-                            symbols.add(new Symbol(pozicija, TokenType.C_STRING, trenutniNiz.toString()));
-                            this.stanje = lexStanja.INITIAL;
-                            handleStanje(naslednjiZnak, symbols);
-                        }
+                        this.stNarekovajev++;
+                    } else { // Konec string literala
+                        String leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
+                        symbols.add(new Symbol(pozicija, TokenType.C_STRING, leksem));
+                        this.stanje = lexStanja.INITIAL;
+                        handleStanje(naslednjiZnak, symbols);
                     }
-                    return;
+                } else {
+                    this.trenutniNiz.append(naslednjiZnak);
+                    this.stNarekovajev = (naslednjiZnak == '\'') ? this.stNarekovajev + 1 : 0;
                 }
-                this.trenutniNiz.append(naslednjiZnak);
                 break;
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
@@ -220,14 +210,11 @@ public class Lexer {
 
         }
         handleStanje(this.source.charAt(this.source.length() - 1), symbols); // Pohendlaj še zadnji char
-        symbols.add(new Symbol(pozicija, TokenType.EOF, ""));
+        symbols.add(new Symbol(this.pozicija, TokenType.EOF, ""));
 
         for (Symbol s : symbols) {
             System.out.println(s);
         }
-        String test = "'tu jih je pa res veliko '''''', kar trije se ponovijo'";
-
-        System.out.println(test.replaceAll("'{2}", "'"));
         return symbols;
     }
 }
