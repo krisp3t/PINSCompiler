@@ -118,7 +118,7 @@ public class Lexer {
             this.stolpec = 0;
         } else if (naslednjiZnak == 9) { // tabulator
             this.stolpec += 3;
-        } else if (naslednjiZnak == '#') {
+        } else if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -162,7 +162,9 @@ public class Lexer {
                         this.stNarekovajev++;
                     } else { // Konec string literala
                         String leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
-                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_STRING, leksem.substring(1, leksem.length() - 1))); // leksem brez narekovajev
+                        if (leksem.length() > 1)
+                            leksem = leksem.substring(1, leksem.length() - 1);
+                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_STRING, leksem)); // leksem brez narekovajev
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
                     }
@@ -204,12 +206,6 @@ public class Lexer {
             symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), TokenType.IDENTIFIER, trenutniNiz.toString()));
     }
 
-    private void povecajPozicijo(int povecajStartLine, int povecajStartCol, int povecajEndLine, int povecajEndCol) {
-        int newStartCol = (povecajStartLine == 0) ? this.pozicija.start.column + povecajStartCol : 0;
-        int newEndCol = (povecajEndLine == 0) ? this.pozicija.end.column + povecajEndCol : 0;
-        this.pozicija = new Position(this.pozicija.start.line + povecajStartLine, newStartCol, this.pozicija.end.line + povecajEndLine, newEndCol);
-    }
-
     /**
      * Izvedi leksikalno analizo.
      *
@@ -223,8 +219,12 @@ public class Lexer {
             handleStanje(naslednjiZnak, symbols);
 
         }
-        handleStanje(this.source.charAt(this.source.length() - 1), symbols); // Pohendlaj še zadnji char
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
+        if (this.source.length() > 0) {
+            this.stolpec++;
+            handleStanje(' ', symbols); // Pohendlaj še zadnji char
+        }
+
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
 
         for (Symbol s : symbols) {
             System.out.println(s);
