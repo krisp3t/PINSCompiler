@@ -122,21 +122,14 @@ public class Lexer {
                     this.stanje = lexStanja.INITIAL;
                 break;
             case IME:
-                if (BELO_BESEDILO.contains(naslednjiZnak)) { // Belo besedilo - konec imena
-                    if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-                        symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
-                    else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-                        symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
-                    else
-                        symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
+                if (naslednjiZnak == '\'') { // Začetek string literala
+                    preveriIme(symbols);
+                    this.stanje = lexStanja.INITIAL;
+                } else if (BELO_BESEDILO.contains(naslednjiZnak)) { // Belo besedilo - konec imena
+                    preveriIme(symbols);
                     this.stanje = lexStanja.INITIAL;
                 } else if (OPERATORJI.contains(naslednjiZnak)) { // Operator - konec imena
-                    if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-                        symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
-                    else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-                        symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
-                    else
-                        symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
+                    preveriIme(symbols);
                     this.trenutniNiz = new StringBuilder();
                     this.trenutniNiz.append(naslednjiZnak);
                     this.stanje = lexStanja.OPERATOR;
@@ -154,6 +147,28 @@ public class Lexer {
                 }
                 break;
             case KONST_STR:
+                if ((this.trenutniNiz.charAt(this.trenutniNiz.length() - 1) == '\'') && (this.trenutniNiz.length() > 1)) {
+                    if (naslednjiZnak == '\'') { // Dva narekovaja escape char, enega smo že dodali, zato ne naredimo nič
+                        this.trenutniNiz.append(naslednjiZnak);
+                        return;
+                    } else { // Potencialen konec string literala
+                        if (this.trenutniNiz.length() == 2) { // Prazen string posebej obravnavamo
+                            symbols.add(new Symbol(pozicija, TokenType.C_STRING, trenutniNiz.toString()));
+                            this.stanje = lexStanja.INITIAL;
+                            handleStanje(naslednjiZnak, symbols);
+                            return;
+                        }
+                        if ((this.trenutniNiz.charAt(this.trenutniNiz.length() - 2) == '\'')) { // Imamo dva narekovaja, zato zadnjega prepišemo in ni konec stringa
+                            this.trenutniNiz.replace(this.trenutniNiz.length() - 1, this.trenutniNiz.length(), String.valueOf(naslednjiZnak));
+                        } else { // Konec stringa
+                            symbols.add(new Symbol(pozicija, TokenType.C_STRING, trenutniNiz.toString()));
+                            this.stanje = lexStanja.INITIAL;
+                            handleStanje(naslednjiZnak, symbols);
+                        }
+                    }
+                    return;
+                }
+                this.trenutniNiz.append(naslednjiZnak);
                 break;
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
@@ -174,6 +189,15 @@ public class Lexer {
                 break;
         }
 
+    }
+
+    private void preveriIme(ArrayList<Symbol> symbols) {
+        if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
+            symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+        else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
+            symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+        else
+            symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
     }
 
     /**
