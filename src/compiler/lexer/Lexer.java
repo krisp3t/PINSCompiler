@@ -50,6 +50,7 @@ public class Lexer {
      */
     static final HashSet<Character> BELO_BESEDILO = new HashSet<Character>(Arrays.asList(' ', '\t', '\n', '\r'));
     static final HashSet<Character> OPERATORJI = new HashSet<Character>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
+    static final HashSet<String> LOGICNI = new HashSet<String>(Arrays.asList("true", "false"));
     static final Map<String, TokenType> operatorMapping = Map.ofEntries(
             entry("+", TokenType.OP_ADD),
             entry("-", TokenType.OP_SUB),
@@ -124,15 +125,18 @@ public class Lexer {
                 if (BELO_BESEDILO.contains(naslednjiZnak)) { // Belo besedilo - konec imena
                     if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
                         symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+                    else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
+                        symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
                     else
                         symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                 } else if (OPERATORJI.contains(naslednjiZnak)) { // Operator - konec imena
-                    if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase())) {
+                    if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
                         symbols.add(new Symbol(this.pozicija, keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
-                    } else {
+                    else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
+                        symbols.add(new Symbol(this.pozicija, TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+                    else
                         symbols.add(new Symbol(this.pozicija, TokenType.IDENTIFIER, trenutniNiz.toString()));
-                    }
                     this.trenutniNiz = new StringBuilder();
                     this.trenutniNiz.append(naslednjiZnak);
                     this.stanje = lexStanja.OPERATOR;
@@ -190,7 +194,7 @@ public class Lexer {
 
         }
         handleStanje(this.source.charAt(this.source.length() - 1), symbols); // Pohendlaj še zadnji char
-
+        symbols.add(new Symbol(pozicija, TokenType.EOF, ""));
         return symbols;
     }
 }
