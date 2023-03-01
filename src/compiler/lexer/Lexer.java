@@ -5,6 +5,8 @@
 
 package compiler.lexer;
 
+import common.Report;
+
 import static common.RequireNonNull.requireNonNull;
 import static java.util.Map.entry;
 
@@ -21,6 +23,7 @@ public class Lexer {
     private int stNarekovajev = 0;
     private int vrstica = 1;
     private int stolpec = 0;
+    private boolean zakljucenNiz = true;
 
 
     /**
@@ -102,6 +105,7 @@ public class Lexer {
         } else if (Character.isDigit(naslednjiZnak)) {
             return lexStanja.KONST_INT;
         } else if (naslednjiZnak == '\'') {
+            this.zakljucenNiz = false;
             return lexStanja.KONST_STR;
         } else if (naslednjiZnak == '#') {
             return lexStanja.KOMENTAR;
@@ -165,6 +169,7 @@ public class Lexer {
                         if (leksem.length() > 1)
                             leksem = leksem.substring(1, leksem.length() - 1);
                         symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_STRING, leksem)); // leksem brez narekovajev
+                        zakljucenNiz = true;
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
                     }
@@ -222,6 +227,9 @@ public class Lexer {
         if (this.source.length() > 0) {
             this.stolpec++;
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
+        }
+        if (!this.zakljucenNiz) {
+            Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
         }
 
         symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
