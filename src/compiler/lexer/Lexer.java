@@ -54,9 +54,9 @@ public class Lexer {
     /**
      * Inicializiraj možne operatorje.
      */
-    static final HashSet<Character> BELO_BESEDILO = new HashSet<Character>(Arrays.asList(' ', '\t', '\n', '\r'));
-    static final HashSet<Character> OPERATORJI = new HashSet<Character>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
-    static final HashSet<String> LOGICNI = new HashSet<String>(Arrays.asList("true", "false"));
+    static final HashSet<Character> BELO_BESEDILO = new HashSet<>(Arrays.asList(' ', '\t', '\n', '\r'));
+    static final HashSet<Character> OPERATORJI = new HashSet<>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
+    static final HashSet<String> LOGICNI = new HashSet<>(Arrays.asList("true", "false"));
     static final Map<String, TokenType> operatorMapping = Map.ofEntries(
             entry("+", TokenType.OP_ADD),
             entry("-", TokenType.OP_SUB),
@@ -234,9 +234,6 @@ public class Lexer {
 
         symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
 
-        for (Symbol s : symbols) {
-            System.out.println(s);
-        }
         return symbols;
     }
 }
