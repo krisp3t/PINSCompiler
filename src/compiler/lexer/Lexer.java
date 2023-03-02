@@ -154,7 +154,7 @@ public class Lexer {
                 if (Character.isDigit(naslednjiZnak))
                     this.trenutniNiz.append(naslednjiZnak);
                 else {
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_INTEGER, trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_INTEGER, trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
@@ -168,7 +168,7 @@ public class Lexer {
                         String leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
                         if (leksem.length() > 1)
                             leksem = leksem.substring(1, leksem.length() - 1);
-                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), TokenType.C_STRING, leksem)); // leksem brez narekovajev
+                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
                         zakljucenNiz = true;
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
@@ -181,10 +181,10 @@ public class Lexer {
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
                 if (operatorMapping.containsKey(kandidat)) { // Če bi z naslednjim znakom dobili operator dolžine 2
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), operatorMapping.get(kandidat), kandidat));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec + 1), operatorMapping.get(kandidat), kandidat));
                     this.stanje = lexStanja.INITIAL;
                 } else { // npr. "+b"
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec - 1), operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
@@ -204,11 +204,11 @@ public class Lexer {
         int startVrstica = this.pozicija.start.line;
         int startStolpec = this.pozicija.start.column;
         if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
         else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
         else
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec - 1), TokenType.IDENTIFIER, trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.IDENTIFIER, trenutniNiz.toString()));
     }
 
     /**
