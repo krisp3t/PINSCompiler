@@ -165,8 +165,12 @@ public class Lexer {
                         this.trenutniNiz.append(naslednjiZnak);
                         this.stNarekovajev++;
                     } else { // Konec string literala
-                        String leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
-                        if (leksem.length() > 1)
+                        String leksem;
+                        if (trenutniNiz.toString().equals("''"))
+                            leksem = "";
+                        else
+                            leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
+                        if (leksem.length() > 1) // Odstrani narekovaje
                             leksem = leksem.substring(1, leksem.length() - 1);
                         symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
                         zakljucenNiz = true;
