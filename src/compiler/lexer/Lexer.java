@@ -106,6 +106,7 @@ public class Lexer {
             return lexStanja.KONST_INT;
         } else if (naslednjiZnak == '\'') {
             this.zakljucenNiz = false;
+            this.stNarekovajev++;
             return lexStanja.KONST_STR;
         } else if (naslednjiZnak == '#') {
             return lexStanja.KOMENTAR;
@@ -160,16 +161,13 @@ public class Lexer {
                 }
                 break;
             case KONST_STR:
-                if ((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1)) { // Ne gledamo na začetku niza, ko samo '
+                if (((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1)) || (this.trenutniNiz.toString().equals("''"))) { // Ne gledamo na začetku niza, ko samo '
                     if (naslednjiZnak == '\'') { // Dva narekovaja escape char
-                        this.trenutniNiz.append(naslednjiZnak);
                         this.stNarekovajev++;
                     } else { // Konec string literala
-                        String leksem;
+                        String leksem = trenutniNiz.toString();
                         if (trenutniNiz.toString().equals("''"))
                             leksem = "";
-                        else
-                            leksem = trenutniNiz.toString().replaceAll("'{2}", "'"); // '' -> '
                         if (leksem.length() > 1) // Odstrani narekovaje
                             leksem = leksem.substring(1, leksem.length() - 1);
                         symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
