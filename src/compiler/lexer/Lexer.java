@@ -234,7 +234,7 @@ public class Lexer {
             Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
         }
 
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
 
         return symbols;
     }
