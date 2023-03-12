@@ -100,6 +100,10 @@ public class Parser {
                 dump("defs2 -> .");
                 skip();
                 break;
+            case OP_RBRACE:
+                dump("defs2 -> .");
+                // skipamo v staršu in preverimo
+                break;
             default:
                 Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij!");
         }
@@ -190,7 +194,7 @@ public class Parser {
         else
             Report.error(getSymbol().position, "Manjka '=' pri definiciji funkcije!");
 
-        //parseExpr();
+        parseExpr();
     }
 
     private void parseParams() {
@@ -229,6 +233,40 @@ public class Parser {
             default:
                 Report.error(getSymbol().position, "Nepravilna definicija parametrov!");
         }
+    }
+
+    private void parseExpr() {
+        dump("expr -> logical_ior_expr expr2 .");
+        parseLogicalIorExpr();
+        parseExpr2();
+    }
+
+    private void parseExpr2() {
+        switch (check()) {
+            case OP_LBRACE:
+                dump("expr2 -> '{' WHERE defs '}' .");
+                skip();
+                if (check() == TokenType.KW_WHERE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka WHERE v expressionu!");
+
+                parseDefs();
+
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v expressionu!");
+                
+                break;
+            default:
+                dump("expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseLogicalIorExpr() {
+        skip();
     }
 
     private void parseVarDef() {

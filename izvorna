@@ -1,3 +1,1 @@
-typ mucamaca : logical ; typ mjav : arr[10] intege ;
-typ konj : string ; typ mjav : arr[10] integer ;
-fun ko (mjav : koko) : integer = expr
+fun ko (mjav : koko) : integer = expr { WHERE typ moj : integer ; typ moj2 : string ;}
