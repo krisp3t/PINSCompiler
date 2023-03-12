@@ -257,7 +257,7 @@ public class Parser {
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka '}' v expressionu!");
-                
+
                 break;
             default:
                 dump("expr2 -> .");
@@ -266,10 +266,368 @@ public class Parser {
     }
 
     private void parseLogicalIorExpr() {
-        skip();
+        dump("logical_ior_expr -> logical_and_expr logical_ior_expr2 .");
+        parseLogicalAndExpr();
+        parseLogicalIorExpr2();
     }
 
+    private void parseLogicalIorExpr2() {
+        switch (check()) {
+            case OP_OR:
+                dump("logical_ior_expr2 -> '|' logical_and_expr logical_ior_expr2 .");
+                skip();
+                parseLogicalAndExpr();
+                parseLogicalIorExpr2();
+            default:
+                dump("logical_ior_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseLogicalAndExpr() {
+        parseCompareExpr();
+        parseLogicalAndExpr2();
+    }
+
+    private void parseLogicalAndExpr2() {
+        switch (check()) {
+            case OP_AND:
+                dump("logical_and_expr2 -> '&' compare_expr logical_and_expr2 .");
+                skip();
+                parseCompareExpr();
+                parseLogicalAndExpr2();
+            default:
+                dump("logical_and_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseCompareExpr() {
+        dump("compare_expr -> add_expr compare_expr2 .");
+        parseAddExpr();
+        parseCompareExpr2();
+    }
+
+    private void parseCompareExpr2() {
+        final HashSet<TokenType> operatorji = new HashSet<>(Arrays.asList(TokenType.OP_EQ, TokenType.OP_NEQ, TokenType.OP_LEQ, TokenType.OP_GEQ, TokenType.OP_LT, TokenType.OP_GT));
+        if (operatorji.contains(check())) {
+            skip();
+            dump("compare_expr2 -> '" + getSymbol().lexeme + "' add_expr .");
+            parseAddExpr();
+        } else {
+            dump("compare_expr2 -> .");
+        }
+    }
+
+    private void parseAddExpr() {
+        dump("add_expr -> mul_expr add_expr2 .");
+        parseMulExpr();
+        parseAddExpr2();
+    }
+
+    private void parseAddExpr2() {
+        switch (check()) {
+            case OP_ADD:
+                dump("add_expr2 -> '+' mul_expr add_expr2 .");
+                skip();
+                parseMulExpr();
+                parseAddExpr2();
+                break;
+            case OP_SUB:
+                dump("add_expr2 -> '-' mul_expr add_expr2 .");
+                parseMulExpr();
+                parseAddExpr2();
+                break;
+            default:
+                dump("add_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseMulExpr() {
+        parsePreExpr();
+        parseMulExpr2();
+    }
+
+    private void parseMulExpr2() {
+        switch (check()) {
+            case OP_MUL:
+                dump("mul_expr2 -> '*' pre_expr mul_expr2 .");
+                skip();
+                parsePreExpr();
+                parseMulExpr2();
+                break;
+            case OP_DIV:
+                dump("mul_expr2 -> '/' pre_expr mul_expr2 .");
+                skip();
+                parsePreExpr();
+                parseMulExpr2();
+                break;
+            case OP_MOD:
+                dump("mul_expr2 -> '%' pre_expr mul_expr2 .");
+                skip();
+                parsePreExpr();
+                parseMulExpr2();
+                break;
+            default:
+                dump("mul_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parsePreExpr() {
+        switch (check()) {
+            case OP_ADD:
+                dump("pre_expr -> '+'pre_expr .");
+                skip();
+                parsePreExpr();
+                break;
+            case OP_DIV:
+                dump("pre_expr -> '-'pre_expr .");
+                skip();
+                parsePreExpr();
+                break;
+            case OP_NOT:
+                dump("pre_expr -> '!'pre_expr .");
+                skip();
+                parsePreExpr();
+                break;
+            default:
+                dump("pre_expr -> post_expr .");
+                parsePostExpr();
+                break;
+        }
+    }
+
+    private void parsePostExpr() {
+        dump("post_expr -> atom_expr post_expr2 .");
+        parseAtomExpr();
+        parsePostExpr2();
+    }
+
+    private void parsePostExpr2() {
+        switch (check()) {
+            case OP_LBRACKET:
+                dump("post_expr2 -> '[' expr ']' post_expr2 .");
+                skip();
+                parseExpr();
+
+                // TODO: preveri
+                if (check() == TokenType.OP_RBRACKET)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ']' v expressionu!");
+
+                parsePostExpr2();
+                break;
+            default:
+                dump("post_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseAtomExpr() {
+        switch (check()) {
+            case C_LOGICAL:
+                dump("atom_expr -> log_constant .");
+                skip();
+                break;
+            case C_INTEGER:
+                dump("atom_expr -> int_constant .");
+                skip();
+                break;
+            case C_STRING:
+                dump("atom_expr -> str_constant .");
+                skip();
+                break;
+            case IDENTIFIER:
+                dump("atom_expr -> id atom_expr2 .");
+                skip();
+                parseAtomExpr2();
+                break;
+            case OP_LPARENT:
+                dump("atom_expr -> '(' exprs ')' .");
+                parseExprs();
+                if (check() == TokenType.OP_RBRACKET)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
+                break;
+            case OP_LBRACE:
+                dump("atom_expr -> '{' atom_expr3 .");
+                parseAtomExpr3();
+                break;
+            default:
+                Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
+        }
+    }
+
+    private void parseAtomExpr2() {
+        switch (check()) {
+            case OP_LPARENT:
+                dump("atom_expr2 -> '(' exprs ')' .");
+                parseExprs();
+                if (check() == TokenType.OP_RBRACKET)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
+                break;
+            default:
+                dump("atom_expr2 -> .");
+                break;
+        }
+    }
+
+    private void parseAtomExpr3() {
+        switch (check()) {
+            case KW_IF:
+                dump("atom_expr3 -> if expr then expr atom_expr4 .");
+                skip();
+                parseExpr();
+
+                if (check() == TokenType.KW_THEN)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka 'then' v if stavku!");
+
+                parseExpr();
+                parseAtomExpr4();
+
+                break;
+            case KW_WHILE:
+                dump("atom_expr3 -> while expr ':' expr '}' .");
+                skip();
+
+                parseExpr();
+                if (check() == TokenType.OP_COLON)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ':' v while stavku!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v while stavku!");
+                break;
+            case KW_FOR:
+                dump("atom_expr3 -> for id '=' expr ',' expr ',' expr ':' expr '}' .");
+                skip();
+
+                if (check() == TokenType.IDENTIFIER)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka identifier v for stavku!");
+
+                if (check() == TokenType.OP_ASSIGN)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '=' v for stavku!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_COMMA)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ',' v for stavku!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_COMMA)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ',' v for stavku!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_COLON)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ':' v for stavku!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v for stavku!");
+
+                break;
+            default:
+                dump("atom_expr3 -> expr '=' expr '}' .");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_ASSIGN)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '=' v atom expressionu!");
+
+                parseExpr();
+
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v atom expressionu!");
+                break;
+        }
+    }
+
+    private void parseAtomExpr4() {
+        switch (check()) {
+            case OP_RBRACE:
+                dump("atom_expr4 -> '}' .");
+                skip();
+                break;
+            case KW_ELSE:
+                dump("atom_expr4 -> else expr '}' .");
+                skip();
+                parseExpr();
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v if-else stavku!");
+                break;
+            default:
+                Report.error(getSymbol().position, "Nepravilno zaključen if stavek!");
+        }
+    }
+
+    private void parseExprs() {
+        dump("exprs -> expr exprs2 .");
+        parseExpr();
+        parseExprs2();
+    }
+
+    private void parseExprs2() {
+        switch (check()) {
+            case OP_COMMA:
+                dump("exprs2 -> ',' expr exprs2 .");
+                skip();
+                parseExpr();
+                parseExprs2();
+                break;
+            default:
+                dump("exprs2 -> .");
+                break;
+        }
+    }
+
+
     private void parseVarDef() {
+        dump("var_def -> var id ':' type .");
+        if (check() == TokenType.IDENTIFIER)
+            skip();
+        else
+            Report.error(getSymbol().position, "Manjka identifier pri definiciji spremenljivke!");
+
+        if (check() == TokenType.OP_COLON)
+            skip();
+        else
+            Report.error(getSymbol().position, "Manjka ':' pri definiciji spremenljivke!");
+
+        parseType();
 
     }
 

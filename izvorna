@@ -1,1 +1,1 @@
-fun ko (mjav : koko) : integer = expr { WHERE typ moj : integer ; typ moj2 : string ;}
+fun ko (mjav : koko) : integer = a + b +
