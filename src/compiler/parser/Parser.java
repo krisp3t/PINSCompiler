@@ -285,6 +285,7 @@ public class Parser {
     }
 
     private void parseLogicalAndExpr() {
+        dump("logical_and_expr -> compare_expr logical_and_expr2 .");
         parseCompareExpr();
         parseLogicalAndExpr2();
     }
@@ -345,6 +346,7 @@ public class Parser {
     }
 
     private void parseMulExpr() {
+        dump("mul_expr -> pre_expr mul_expr2 .");
         parsePreExpr();
         parseMulExpr2();
     }
@@ -447,14 +449,16 @@ public class Parser {
                 break;
             case OP_LPARENT:
                 dump("atom_expr -> '(' exprs ')' .");
+                skip();
                 parseExprs();
-                if (check() == TokenType.OP_RBRACKET)
+                if (check() == TokenType.OP_RPARENT)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
                 break;
             case OP_LBRACE:
                 dump("atom_expr -> '{' atom_expr3 .");
+                skip();
                 parseAtomExpr3();
                 break;
             default:
@@ -466,11 +470,9 @@ public class Parser {
         switch (check()) {
             case OP_LPARENT:
                 dump("atom_expr2 -> '(' exprs ')' .");
+                skip();
                 parseExprs();
-                if (check() == TokenType.OP_RBRACKET)
-                    skip();
-                else
-                    Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
+                // RPARENT pogledamo v parseExprs
                 break;
             default:
                 dump("atom_expr2 -> .");
@@ -584,6 +586,7 @@ public class Parser {
                 dump("atom_expr4 -> else expr '}' .");
                 skip();
                 parseExpr();
+                // RBRACE preverimo v parseExpr
                 if (check() == TokenType.OP_RBRACE)
                     skip();
                 else
