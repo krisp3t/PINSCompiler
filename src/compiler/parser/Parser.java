@@ -519,6 +519,7 @@ public class Parser {
             case OP_GT:
             case OP_ADD:
             case OP_SUB:
+            case OP_MUL:
             case OP_DIV:
             case OP_MOD:
             case KW_THEN:
@@ -576,7 +577,11 @@ public class Parser {
                 dump("atom_expr2 -> '(' exprs ')' .");
                 skip();
                 parseExprs();
-                // RPARENT pogledamo v parseExprs
+                if (check() == TokenType.OP_RPARENT)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
+                // TODO: RPARENT pogledamo v parseExprs?
                 break;
             default:
                 dump("atom_expr2 -> .");
