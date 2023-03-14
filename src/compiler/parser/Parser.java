@@ -97,12 +97,9 @@ public class Parser {
                 parseDefs2();
                 break;
             case EOF:
-                dump("defs2 -> .");
-                skip();
-                break;
             case OP_RBRACE:
                 dump("defs2 -> .");
-                // skipamo v staršu in preverimo
+                skip();
                 break;
             default:
                 Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij ali '}' na koncu!");
@@ -162,13 +159,15 @@ public class Parser {
                 parseType();
                 break;
             default:
-                Report.error(getSymbol().position, "Nepravilen tip!");
+                Report.error(getSymbol().position, "Nepravilna sintaksa tipa!");
         }
     }
 
     private void parseFunDef() {
         dump("fun_def -> fun id '('params')' ':' type '=' expr .");
+
         // fun že skippano
+
         if (check() == TokenType.IDENTIFIER)
             skip();
         else
@@ -180,10 +179,7 @@ public class Parser {
 
         parseParams();
 
-        if (check() == TokenType.OP_RPARENT)
-            skip();
-        else
-            Report.error(getSymbol().position, "Manjka ')' pri definiciji funkcije za parametre!");
+        // RPARENT skippamo v params2
 
         if (check() == TokenType.OP_COLON)
             skip();
@@ -231,7 +227,7 @@ public class Parser {
                 break;
             case OP_RPARENT:
                 dump("params2 -> .");
-                // ne skipamo tu, ampak v staršu
+                skip();
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilna definicija parametrov!");
@@ -256,15 +252,22 @@ public class Parser {
 
                 parseDefs();
 
-                if (check() == TokenType.OP_RBRACE)
-                    skip();
-                else
-                    Report.error(getSymbol().position, "Manjka '}' v expressionu!");
-
+                // RBRACE skippamo v defs2 (defs -> def defs2)
                 break;
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_RBRACE:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v expressionu!");
         }
     }
 
@@ -281,9 +284,21 @@ public class Parser {
                 skip();
                 parseLogicalAndExpr();
                 parseLogicalIorExpr2();
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("logical_ior_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v logical ior expressionu!");
         }
     }
 
@@ -300,9 +315,22 @@ public class Parser {
                 skip();
                 parseCompareExpr();
                 parseLogicalAndExpr2();
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("logical_and_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v logical and expressionu!");
         }
     }
 
@@ -313,13 +341,34 @@ public class Parser {
     }
 
     private void parseCompareExpr2() {
-        final HashSet<TokenType> operatorji = new HashSet<>(Arrays.asList(TokenType.OP_EQ, TokenType.OP_NEQ, TokenType.OP_LEQ, TokenType.OP_GEQ, TokenType.OP_LT, TokenType.OP_GT));
-        if (operatorji.contains(check())) {
-            dump("compare_expr2 -> '" + getSymbol().lexeme + "' add_expr .");
-            skip();
-            parseAddExpr();
-        } else {
-            dump("compare_expr2 -> .");
+        switch (check()) {
+            case OP_EQ:
+            case OP_NEQ:
+            case OP_LEQ:
+            case OP_GEQ:
+            case OP_LT:
+            case OP_GT:
+                dump("compare_expr2 -> '" + getSymbol().lexeme + "' add_expr .");
+                skip();
+                parseAddExpr();
+                break;
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case OP_AND:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
+                dump("compare_expr2 -> .");
+                break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v compare expressionu!");
         }
     }
 
@@ -332,19 +381,35 @@ public class Parser {
     private void parseAddExpr2() {
         switch (check()) {
             case OP_ADD:
-                dump("add_expr2 -> '+' mul_expr add_expr2 .");
+            case OP_SUB:
+                dump("add_expr2 -> '" + getSymbol().lexeme + "' mul_expr add_expr2 .");
                 skip();
                 parseMulExpr();
                 parseAddExpr2();
                 break;
-            case OP_SUB:
-                dump("add_expr2 -> '-' mul_expr add_expr2 .");
-                parseMulExpr();
-                parseAddExpr2();
-                break;
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case OP_AND:
+            case OP_EQ:
+            case OP_NEQ:
+            case OP_LEQ:
+            case OP_GEQ:
+            case OP_LT:
+            case OP_GT:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("add_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v additive expressionu!");
         }
     }
 
@@ -357,50 +422,61 @@ public class Parser {
     private void parseMulExpr2() {
         switch (check()) {
             case OP_MUL:
-                dump("mul_expr2 -> '*' pre_expr mul_expr2 .");
-                skip();
-                parsePreExpr();
-                parseMulExpr2();
-                break;
             case OP_DIV:
-                dump("mul_expr2 -> '/' pre_expr mul_expr2 .");
-                skip();
-                parsePreExpr();
-                parseMulExpr2();
-                break;
             case OP_MOD:
-                dump("mul_expr2 -> '%' pre_expr mul_expr2 .");
+                dump("mul_expr2 -> '" + getSymbol().lexeme + "' pre_expr mul_expr2 .");
                 skip();
                 parsePreExpr();
                 parseMulExpr2();
                 break;
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case OP_AND:
+            case OP_EQ:
+            case OP_NEQ:
+            case OP_LEQ:
+            case OP_GEQ:
+            case OP_LT:
+            case OP_GT:
+            case OP_ADD:
+            case OP_SUB:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("mul_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v multiplicative expressionu!");
         }
     }
 
     private void parsePreExpr() {
         switch (check()) {
             case OP_ADD:
-                dump("pre_expr -> '+'pre_expr .");
-                skip();
-                parsePreExpr();
-                break;
-            case OP_DIV:
-                dump("pre_expr -> '-'pre_expr .");
-                skip();
-                parsePreExpr();
-                break;
+            case OP_SUB:
             case OP_NOT:
-                dump("pre_expr -> '!'pre_expr .");
+                dump("pre_expr -> '" + getSymbol().lexeme + "'pre_expr .");
                 skip();
                 parsePreExpr();
                 break;
-            default:
+            case IDENTIFIER:
+            case OP_LPARENT:
+            case OP_LBRACE:
+            case C_LOGICAL:
+            case C_INTEGER:
+            case C_STRING:
                 dump("pre_expr -> post_expr .");
                 parsePostExpr();
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v prefix expressionu!");
         }
     }
 
@@ -425,9 +501,34 @@ public class Parser {
 
                 parsePostExpr2();
                 break;
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case OP_AND:
+            case OP_EQ:
+            case OP_NEQ:
+            case OP_LEQ:
+            case OP_GEQ:
+            case OP_LT:
+            case OP_GT:
+            case OP_ADD:
+            case OP_SUB:
+            case OP_DIV:
+            case OP_MOD:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("post_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepričakovan znak v postfix expressionu!");
+
         }
     }
 
