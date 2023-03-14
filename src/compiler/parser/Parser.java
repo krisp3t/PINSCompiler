@@ -105,16 +105,18 @@ public class Parser {
                 // skipamo v staršu in preverimo
                 break;
             default:
-                Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij!");
+                Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij ali '}' na koncu!");
         }
     }
 
     private void parseTypeDef() {
         dump("type_def -> typ id ':' type .");
+        // typ že skipan
         if (check() == TokenType.IDENTIFIER)
             skip();
         else
             Report.error(getSymbol().position, "Manjka identifier pri definiciji tipa!");
+
         if (check() == TokenType.OP_COLON)
             skip();
         else
@@ -143,7 +145,7 @@ public class Parser {
                 break;
             case KW_ARR:
                 dump("type -> arr '['int_const']' type .");
-                skip();
+                skip(); // arr
                 if (check() == TokenType.OP_LBRACKET)
                     skip();
                 else
@@ -166,6 +168,7 @@ public class Parser {
 
     private void parseFunDef() {
         dump("fun_def -> fun id '('params')' ':' type '=' expr .");
+        // fun že skippano
         if (check() == TokenType.IDENTIFIER)
             skip();
         else
@@ -312,8 +315,8 @@ public class Parser {
     private void parseCompareExpr2() {
         final HashSet<TokenType> operatorji = new HashSet<>(Arrays.asList(TokenType.OP_EQ, TokenType.OP_NEQ, TokenType.OP_LEQ, TokenType.OP_GEQ, TokenType.OP_LT, TokenType.OP_GT));
         if (operatorji.contains(check())) {
-            skip();
             dump("compare_expr2 -> '" + getSymbol().lexeme + "' add_expr .");
+            skip();
             parseAddExpr();
         } else {
             dump("compare_expr2 -> .");
@@ -587,10 +590,6 @@ public class Parser {
                 skip();
                 parseExpr();
                 // RBRACE preverimo v parseExpr
-                if (check() == TokenType.OP_RBRACE)
-                    skip();
-                else
-                    Report.error(getSymbol().position, "Manjka '}' v if-else stavku!");
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilno zaključen if stavek!");
