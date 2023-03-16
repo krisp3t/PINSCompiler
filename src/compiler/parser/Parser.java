@@ -70,17 +70,14 @@ public class Parser {
         switch (check()) {
             case KW_TYP:
                 dump("def -> type_def .");
-                skip();
                 parseTypeDef();
                 break;
             case KW_FUN:
                 dump("def -> fun_def .");
-                skip();
                 parseFunDef();
                 break;
             case KW_VAR:
                 dump("def -> var_def .");
-                skip();
                 parseVarDef();
                 break;
             default:
@@ -108,7 +105,7 @@ public class Parser {
 
     private void parseTypeDef() {
         dump("type_def -> typ id ':' type .");
-        // typ že skipan
+        skip(); // typ
         if (check() == TokenType.IDENTIFIER)
             skip();
         else
@@ -166,7 +163,7 @@ public class Parser {
     private void parseFunDef() {
         dump("fun_def -> fun id '('params')' ':' type '=' expr .");
 
-        // fun že skippano
+        skip(); // fun
 
         if (check() == TokenType.IDENTIFIER)
             skip();
@@ -583,9 +580,35 @@ public class Parser {
                     Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
                 // TODO: RPARENT pogledamo v parseExprs?
                 break;
-            default:
+            case OP_SEMICOLON:
+            case OP_COLON:
+            case OP_LBRACKET:
+            case OP_RBRACKET:
+            case OP_RPARENT:
+            case OP_ASSIGN:
+            case OP_COMMA:
+            case OP_LBRACE:
+            case OP_RBRACE:
+            case OP_OR:
+            case OP_AND:
+            case OP_EQ:
+            case OP_NEQ:
+            case OP_LEQ:
+            case OP_GEQ:
+            case OP_LT:
+            case OP_GT:
+            case OP_ADD:
+            case OP_SUB:
+            case OP_MUL:
+            case OP_DIV:
+            case OP_MOD:
+            case KW_THEN:
+            case KW_ELSE:
+            case EOF:
                 dump("atom_expr2 -> .");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
     }
 
@@ -665,7 +688,15 @@ public class Parser {
                     Report.error(getSymbol().position, "Manjka '}' v for stavku!");
 
                 break;
-            default:
+            case IDENTIFIER:
+            case OP_LBRACKET:
+            case OP_LBRACE:
+            case OP_ADD:
+            case OP_SUB:
+            case OP_NOT:
+            case C_LOGICAL:
+            case C_INTEGER:
+            case C_STRING:
                 dump("atom_expr3 -> expr '=' expr '}' .");
 
                 parseExpr();
@@ -682,6 +713,8 @@ public class Parser {
                 else
                     Report.error(getSymbol().position, "Manjka '}' v atom expressionu!");
                 break;
+            default:
+                Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
     }
 
@@ -695,7 +728,10 @@ public class Parser {
                 dump("atom_expr4 -> else expr '}' .");
                 skip();
                 parseExpr();
-                // RBRACE preverimo v parseExpr
+                if (check() == TokenType.OP_RBRACE)
+                    skip();
+                else
+                    Report.error(getSymbol().position, "Manjka '}' v if-then-else stavku!");
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilno zaključen if stavek!");
@@ -716,8 +752,11 @@ public class Parser {
                 parseExpr();
                 parseExprs2();
                 break;
-            default:
+            case OP_RBRACE:
                 dump("exprs2 -> .");
+                break;
+            default:
+                Report.error(getSymbol().position, "Nepravilna sintaksa definicij!");
                 break;
         }
     }
@@ -725,6 +764,8 @@ public class Parser {
 
     private void parseVarDef() {
         dump("var_def -> var id ':' type .");
+        skip(); // var
+
         if (check() == TokenType.IDENTIFIER)
             skip();
         else
