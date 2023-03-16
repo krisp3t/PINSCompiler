@@ -752,7 +752,7 @@ public class Parser {
                 parseExpr();
                 parseExprs2();
                 break;
-            case OP_RBRACE:
+            case OP_RPARENT:
                 dump("exprs2 -> .");
                 break;
             default:
