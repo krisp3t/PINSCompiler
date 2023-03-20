@@ -19,6 +19,7 @@ import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
+import compiler.parser.ast.expr.Expr;
 import compiler.parser.ast.type.Atom;
 import compiler.parser.ast.type.Type;
 import compiler.parser.ast.type.TypeName;
@@ -257,37 +258,56 @@ public class Parser {
 
         var body = parseExpr();
 
+        assert body != null;
         return new FunDef(new Position(start, body.position.end), name, params, type, body);
     }
 
-    private void parseParams() {
+    private List<FunDef.Parameter> parseParams() {
+        List<FunDef.Parameter> parameters = new ArrayList<>();
         dump("params -> param params2 .");
-        parseParam();
-        parseParams2();
+
+        FunDef.Parameter param = parseParam();
+        parameters.add(param);
+
+        List<FunDef.Parameter> params2 = parseParams2();
+        parameters.addAll(params2);
+
+        return parameters;
     }
 
-    private void parseParam() {
+    private FunDef.Parameter parseParam() {
+        Position.Location start = null;
+        String name = null;
         dump("param -> id ':' type .");
-        if (check() == TokenType.IDENTIFIER)
+        if (check() == TokenType.IDENTIFIER) {
+            start = getSymbol().position.start;
+            name = getSymbol().lexeme;
             skip();
-        else
+        } else {
             Report.error(getSymbol().position, "Manjka identfier pri definiciji parametra!");
+        }
 
         if (check() == TokenType.OP_COLON)
             skip();
         else
             Report.error(getSymbol().position, "Manjka ':' pri definiciji parametra!");
 
-        parseType();
+        Type type = parseType();
+
+        assert type != null;
+        return new FunDef.Parameter(new Position(start, type.position.end), name, type);
     }
 
-    private void parseParams2() {
+    private List<FunDef.Parameter> parseParams2() {
+        List<FunDef.Parameter> parameters = new ArrayList<>();
         switch (check()) {
             case OP_COMMA:
                 dump("params2 -> ',' param params2 .");
                 skip();
-                parseParam();
-                parseParams2();
+                FunDef.Parameter param = parseParam();
+                parameters.add(param);
+                List<FunDef.Parameter> params = parseParams2();
+                parameters.addAll(params);
                 break;
             case OP_RPARENT:
                 dump("params2 -> .");
@@ -296,12 +316,16 @@ public class Parser {
             default:
                 Report.error(getSymbol().position, "Nepravilna definicija parametrov!");
         }
+        return parameters;
     }
 
-    private void parseExpr() {
+    private Expr parseExpr() {
         dump("expr -> logical_ior_expr expr2 .");
         parseLogicalIorExpr();
         parseExpr2();
+
+        // TODO
+        return null;
     }
 
     private void parseExpr2() {
@@ -854,6 +878,7 @@ public class Parser {
             Report.error(getSymbol().position, "Manjka ':' pri definiciji spremenljivke!");
 
         var type = parseType();
+        assert type != null;
         return new VarDef(new Position(start, type.position.end), name, type);
     }
 
