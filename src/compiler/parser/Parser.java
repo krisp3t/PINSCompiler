@@ -19,7 +19,9 @@ import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
+import compiler.parser.ast.expr.Block;
 import compiler.parser.ast.expr.Expr;
+import compiler.parser.ast.expr.Where;
 import compiler.parser.ast.type.Atom;
 import compiler.parser.ast.type.Type;
 import compiler.parser.ast.type.TypeName;
@@ -259,7 +261,7 @@ public class Parser {
         var body = parseExpr();
 
         assert body != null;
-        return new FunDef(new Position(start, body.position.end), name, params, type, body);
+        return new FunDef(Position.zero(), name, params, type, body);
     }
 
     private List<FunDef.Parameter> parseParams() {
@@ -319,32 +321,45 @@ public class Parser {
         return parameters;
     }
 
-    private Expr parseExpr() {
-        dump("expr -> logical_ior_expr expr2 .");
-        parseLogicalIorExpr();
-        parseExpr2();
+    private Block parseExpr() {
+        List<Expr> expressions = new ArrayList<>();
+        Position.Location start;
 
-        // TODO
-        return null;
+        dump("expr -> logical_ior_expr expr2 .");
+        var ior = parseLogicalIorExpr();
+        expressions.add(ior);
+        start = ior.position.start;
+
+        var expr2 = parseExpr2(ior);
+        assert expr2 != null;
+        expressions.addAll(expr2.expressions);
+
+        return new Block(new Position(start, expr2.position.end), expressions);
     }
 
-    private void parseExpr2() {
+    private Where parseExpr2(Expr ior) {
+        Position.Location start;
+        Position.Location end;
         switch (check()) {
             case OP_LBRACE:
                 dump("expr2 -> '{' WHERE defs '}' .");
+                start = getSymbol().position.start;
                 skip();
                 if (check() == TokenType.KW_WHERE)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka WHERE v expressionu!");
 
-                parseDefs();
+                var defs = parseDefs();
 
                 // RBRACE v defs2 (defs -> def defs2), ne skipamo v defs2, ampak tu
-                if (check() == TokenType.OP_RBRACE)
+                if (check() == TokenType.OP_RBRACE) {
                     skip();
-                else
+                    end = getSymbol().position.end;
+                    return new Where(new Position(start, end), ior, defs);
+                } else {
                     Report.error(getSymbol().position, "Manjka '}' v expressionu!");
+                }
                 break;
             case OP_SEMICOLON:
             case OP_COLON:
@@ -357,25 +372,30 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("expr2 -> .");
-                break;
+                return null;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v expressionu!");
         }
+        return null;
     }
 
-    private void parseLogicalIorExpr() {
+    private Expr parseLogicalIorExpr() {
         dump("logical_ior_expr -> logical_and_expr logical_ior_expr2 .");
-        parseLogicalAndExpr();
-        parseLogicalIorExpr2();
+        var andExpr = parseLogicalAndExpr();
+        var iorExpr2 = parseLogicalIorExpr2();
+
+        return null;
     }
 
-    private void parseLogicalIorExpr2() {
+    private Expr parseLogicalIorExpr2() {
         switch (check()) {
             case OP_OR:
                 dump("logical_ior_expr2 -> '|' logical_and_expr logical_ior_expr2 .");
                 skip();
-                parseLogicalAndExpr();
-                parseLogicalIorExpr2();
+                var andExpr = parseLogicalAndExpr();
+                var iorExpr2 = parseLogicalIorExpr2();
+                return null;
+            // return new Expr(new Position(andExpr.position.start, iorExpr2.position.end));
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -388,16 +408,19 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("logical_ior_expr2 -> .");
-                break;
+                return null;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical ior expressionu!");
         }
+        return null;
     }
 
-    private void parseLogicalAndExpr() {
+    private Expr parseLogicalAndExpr() {
         dump("logical_and_expr -> compare_expr logical_and_expr2 .");
         parseCompareExpr();
         parseLogicalAndExpr2();
+
+        return null;
     }
 
     private void parseLogicalAndExpr2() {
@@ -833,27 +856,43 @@ public class Parser {
         }
     }
 
-    private void parseExprs() {
+    private Block parseExprs() {
+        List<Expr> expressions = new ArrayList<>();
+        Position.Location start;
+
         dump("exprs -> expr exprs2 .");
-        parseExpr();
-        parseExprs2();
+        var expr = parseExpr();
+        expressions.add(expr);
+        start = expr.position.start;
+        var exprs2 = parseExprs2();
+        expressions.addAll(exprs2.expressions);
+
+        return new Block(new Position(start, exprs2.position.end), expressions);
     }
 
-    private void parseExprs2() {
+    private Block parseExprs2() {
+        List<Expr> expressions = new ArrayList<>();
+        Position.Location start;
+
         switch (check()) {
             case OP_COMMA:
                 dump("exprs2 -> ',' expr exprs2 .");
                 skip();
-                parseExpr();
-                parseExprs2();
-                break;
+                var expr = parseExpr();
+                expressions.add(expr);
+                start = expr.position.start;
+                var exprs2 = parseExprs2();
+                assert exprs2 != null;
+                expressions.addAll(exprs2.expressions);
+                return new Block(new Position(start, exprs2.position.end), expressions);
             case OP_RPARENT:
                 dump("exprs2 -> .");
-                break;
+                return new Block(getSymbol().position, expressions);
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa definicij!");
                 break;
         }
+        return null;
     }
 
 
