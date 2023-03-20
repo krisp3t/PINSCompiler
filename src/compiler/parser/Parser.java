@@ -19,7 +19,10 @@ import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
+import compiler.parser.ast.type.Atom;
 import compiler.parser.ast.type.Type;
+import compiler.parser.ast.type.TypeName;
+import compiler.parser.ast.type.Array;
 
 public class Parser {
     /**
@@ -160,44 +163,61 @@ public class Parser {
     }
 
     private Type parseType() {
+        Position pos;
         switch (check()) {
             case IDENTIFIER:
                 dump("type -> id .");
+                String name = getSymbol().lexeme;
+                pos = getSymbol().position;
                 skip();
-                break;
+                return new TypeName(pos, name);
             case AT_LOGICAL:
                 dump("type -> logical .");
+                pos = getSymbol().position;
                 skip();
-                break;
+                return Atom.LOG(pos);
             case AT_INTEGER:
                 dump("type -> integer .");
+                pos = getSymbol().position;
                 skip();
-                break;
+                return Atom.INT(pos);
             case AT_STRING:
                 dump("type -> string .");
+                pos = getSymbol().position;
                 skip();
-                break;
+                return Atom.STR(pos);
             case KW_ARR:
+                int size = 0;
                 dump("type -> arr '['int_const']' type .");
-                skip(); // arr
+
+                // arr
+                Position.Location start = getSymbol().position.start;
+                skip();
+
                 if (check() == TokenType.OP_LBRACKET)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka '[' pri definiciji arraya!");
-                if (check() == TokenType.C_INTEGER)
+                if (check() == TokenType.C_INTEGER) {
+                    size = Integer.parseInt(getSymbol().lexeme);
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka konstanta integer pri definiciji arraya!");
+                }
                 if (check() == TokenType.OP_RBRACKET)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ']' pri definiciji arraya!");
 
-                parseType();
-                break;
+                var type = parseType();
+                assert type != null;
+                Position.Location end = type.position.end;
+
+                return new Array(new Position(start, end), size, type);
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa tipa!");
         }
+        return null;
     }
 
     private FunDef parseFunDef() {
