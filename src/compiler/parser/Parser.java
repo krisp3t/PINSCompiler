@@ -570,15 +570,22 @@ public class Parser {
         }
     }
 
-    private void parsePreExpr() {
+    private Expr parsePreExpr() {
         switch (check()) {
             case OP_ADD:
             case OP_SUB:
             case OP_NOT:
                 dump("pre_expr -> '" + getSymbol().lexeme + "'pre_expr .");
+                var start = getSymbol().position.start;
+                Unary.Operator op = null;
+                switch (check()) {
+                    case OP_ADD -> op = Unary.Operator.ADD;
+                    case OP_SUB -> op = Unary.Operator.SUB;
+                    case OP_NOT -> op = Unary.Operator.NOT;
+                }
                 skip();
-                parsePreExpr();
-                break;
+                var expr = parsePreExpr();
+                return new Unary(new Position(start, expr.position.end), expr, op);
             case IDENTIFIER:
             case OP_LPARENT:
             case OP_LBRACE:
@@ -586,20 +593,25 @@ public class Parser {
             case C_INTEGER:
             case C_STRING:
                 dump("pre_expr -> post_expr .");
-                parsePostExpr();
-                break;
+                return parsePostExpr();
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v prefix expressionu!");
         }
+        return null;
     }
 
-    private void parsePostExpr() {
+    private Expr parsePostExpr() {
         dump("post_expr -> atom_expr post_expr2 .");
-        parseAtomExpr();
-        parsePostExpr2();
+        var atomExpr = parseAtomExpr();
+        var postExpr2 = parsePostExpr2();
+
+        if (postExpr2 == null) {
+            return atomExpr;
+        } else {
+        }
     }
 
-    private void parsePostExpr2() {
+    private Expr parsePostExpr2() {
         switch (check()) {
             case OP_LBRACKET:
                 dump("post_expr2 -> '[' expr ']' post_expr2 .");
@@ -639,11 +651,11 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("post_expr2 -> .");
-                break;
+                return null;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v postfix expressionu!");
-
         }
+        return null;
     }
 
     private Expr parseAtomExpr() {
