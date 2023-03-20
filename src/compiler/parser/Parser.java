@@ -19,9 +19,7 @@ import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
-import compiler.parser.ast.expr.Block;
-import compiler.parser.ast.expr.Expr;
-import compiler.parser.ast.expr.Where;
+import compiler.parser.ast.expr.*;
 import compiler.parser.ast.type.Atom;
 import compiler.parser.ast.type.Type;
 import compiler.parser.ast.type.TypeName;
@@ -648,45 +646,72 @@ public class Parser {
         }
     }
 
-    private void parseAtomExpr() {
+    private Expr parseAtomExpr() {
+        Position pos;
+        String val;
+        Atom.Type type;
+        Position.Location start, end = null;
+        Block exprs;
         switch (check()) {
             case C_LOGICAL:
                 dump("atom_expr -> log_constant .");
+                pos = getSymbol().position;
+                val = getSymbol().lexeme;
+                type = Atom.Type.LOG;
                 skip();
-                break;
+                return new Literal(pos, val, type);
             case C_INTEGER:
                 dump("atom_expr -> int_constant .");
+                pos = getSymbol().position;
+                val = getSymbol().lexeme;
+                type = Atom.Type.INT;
                 skip();
-                break;
+                return new Literal(pos, val, type);
             case C_STRING:
                 dump("atom_expr -> str_constant .");
+                pos = getSymbol().position;
+                val = getSymbol().lexeme;
+                type = Atom.Type.STR;
                 skip();
-                break;
+                return new Literal(pos, val, type);
             case IDENTIFIER:
+                List<Expr> expressions = new ArrayList<>();
                 dump("atom_expr -> id atom_expr2 .");
+                pos = getSymbol().position;
+                val = getSymbol().lexeme;
+                var id = new Name(pos, val);
+                expressions.add(id);
                 skip();
-                parseAtomExpr2();
-                break;
+
+                var atomExpr2 = parseAtomExpr2();
+                expressions.add(atomExpr2);
+
+                return new Block(new Position(id.position.start, atomExpr2.position.end), expressions);
             case OP_LPARENT:
                 dump("atom_expr -> '(' exprs ')' .");
+                start = getSymbol().position.start;
                 skip();
-                parseExprs();
-                if (check() == TokenType.OP_RPARENT)
+                exprs = parseExprs();
+                if (check() == TokenType.OP_RPARENT) {
+                    end = getSymbol().position.end;
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
-                break;
+                }
+                return new Block(new Position(start, end), exprs.expressions);
             case OP_LBRACE:
                 dump("atom_expr -> '{' atom_expr3 .");
+                start = getSymbol().position.start;
                 skip();
-                parseAtomExpr3();
-                break;
+                // TODO: passaj start
+                return parseAtomExpr3();
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
+        return null;
     }
 
-    private void parseAtomExpr2() {
+    private Expr parseAtomExpr2() {
         switch (check()) {
             case OP_LPARENT:
                 dump("atom_expr2 -> '(' exprs ')' .");
@@ -730,82 +755,102 @@ public class Parser {
         }
     }
 
-    private void parseAtomExpr3() {
+    private Expr parseAtomExpr3() {
+        Position.Location start;
+        Position.Location end = null;
+        Expr condition, thenExpression, elseExpression, body;
         switch (check()) {
             case KW_IF:
                 dump("atom_expr3 -> if expr then expr atom_expr4 .");
+                start = getSymbol().position.start;
                 skip();
-                parseExpr();
+                condition = parseExpr();
 
-                if (check() == TokenType.KW_THEN)
+                if (check() == TokenType.KW_THEN) {
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka 'then' v if stavku!");
+                }
 
-                parseExpr();
-                parseAtomExpr4();
+                thenExpression = parseExpr();
+                elseExpression = parseAtomExpr4();
 
-                break;
+                if (elseExpression != null)
+                    return new IfThenElse(new Position(start, elseExpression.position.end), condition, thenExpression, elseExpression);
+                else
+                    return new IfThenElse(new Position(start, thenExpression.position.end), condition, thenExpression);
+
             case KW_WHILE:
                 dump("atom_expr3 -> while expr ':' expr '}' .");
+                start = getSymbol().position.start;
                 skip();
 
-                parseExpr();
+                condition = parseExpr();
                 if (check() == TokenType.OP_COLON)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ':' v while stavku!");
 
-                parseExpr();
+                body = parseExpr();
 
-                if (check() == TokenType.OP_RBRACE)
+                if (check() == TokenType.OP_RBRACE) {
+                    end = getSymbol().position.end;
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka '}' v while stavku!");
-                break;
+                }
+
+                return new While(new Position(start, end), condition, body);
             case KW_FOR:
                 dump("atom_expr3 -> for id '=' expr ',' expr ',' expr ':' expr '}' .");
+                start = getSymbol().position.start;
                 skip();
 
-                if (check() == TokenType.IDENTIFIER)
+                Name counter = null;
+                if (check() == TokenType.IDENTIFIER) {
+                    counter = new Name(getSymbol().position, getSymbol().lexeme);
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka identifier v for stavku!");
+                }
 
                 if (check() == TokenType.OP_ASSIGN)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka '=' v for stavku!");
 
-                parseExpr();
+                var low = parseExpr();
 
                 if (check() == TokenType.OP_COMMA)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ',' v for stavku!");
 
-                parseExpr();
+                var high = parseExpr();
 
                 if (check() == TokenType.OP_COMMA)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ',' v for stavku!");
 
-                parseExpr();
+                var step = parseExpr();
 
                 if (check() == TokenType.OP_COLON)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ':' v for stavku!");
 
-                parseExpr();
+                body = parseExpr();
 
-                if (check() == TokenType.OP_RBRACE)
+                if (check() == TokenType.OP_RBRACE) {
+                    end = getSymbol().position.end;
                     skip();
-                else
+                } else {
                     Report.error(getSymbol().position, "Manjka '}' v for stavku!");
+                }
 
-                break;
+                return new For(new Position(start, end), counter, low, high, step, body);
+
             case IDENTIFIER:
             case OP_LBRACKET:
             case OP_LBRACE:
@@ -834,26 +879,36 @@ public class Parser {
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
+        return null;
     }
 
-    private void parseAtomExpr4() {
+    private Expr parseAtomExpr4() {
+        Position pos;
         switch (check()) {
             case OP_RBRACE:
                 dump("atom_expr4 -> '}' .");
+                pos = getSymbol().position;
                 skip();
-                break;
+                return new Block(pos, new ArrayList<>());
             case KW_ELSE:
                 dump("atom_expr4 -> else expr '}' .");
                 skip();
-                parseExpr();
-                if (check() == TokenType.OP_RBRACE)
+                var expr = parseExpr();
+                List<Expr> expressions = new ArrayList<>();
+                expressions.add(expr);
+
+                if (check() == TokenType.OP_RBRACE) {
+                    pos = getSymbol().position;
                     skip();
-                else
+                    return new Block(pos, expressions);
+                } else {
                     Report.error(getSymbol().position, "Manjka '}' v if-then-else stavku!");
+                }
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilno zaključen if stavek!");
         }
+        return null;
     }
 
     private Block parseExprs() {
