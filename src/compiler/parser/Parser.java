@@ -17,7 +17,8 @@ import compiler.lexer.Position;
 import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 import compiler.parser.ast.Ast;
-import compiler.parser.ast.def.Defs;
+import compiler.parser.ast.def.*;
+import compiler.parser.ast.type.Type;
 
 public class Parser {
     /**
@@ -67,30 +68,30 @@ public class Parser {
 
     private Defs parseDefs() {
         dump("defs -> def defs2 .");
-        parseDef();
-        parseDefs2();
+        var def = parseDef();
+        var defs = parseDefs2();
     }
 
-    private void parseDef() {
+    private Def parseDef() {
         switch (check()) {
             case KW_TYP:
                 dump("def -> type_def .");
-                parseTypeDef();
+                var def = parseTypeDef();
                 break;
             case KW_FUN:
                 dump("def -> fun_def .");
-                parseFunDef();
+                var def = parseFunDef();
                 break;
             case KW_VAR:
                 dump("def -> var_def .");
-                parseVarDef();
+                var def = parseVarDef();
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa definicije!");
         }
     }
 
-    private void parseDefs2() {
+    private Defs parseDefs2() {
         switch (check()) {
             case OP_SEMICOLON:
                 dump("defs2 -> ';' def defs2 .");
@@ -110,23 +111,31 @@ public class Parser {
         }
     }
 
-    private void parseTypeDef() {
+    private TypeDef parseTypeDef() {
+        String name = null;
         dump("type_def -> typ id ':' type .");
-        skip(); // typ
-        if (check() == TokenType.IDENTIFIER)
+
+        // typ
+        Position.Location start = getSymbol().position.start;
+        skip();
+
+        if (check() == TokenType.IDENTIFIER) {
+            name = getSymbol().lexeme;
             skip();
-        else
+        } else {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji tipa!");
+        }
 
         if (check() == TokenType.OP_COLON)
             skip();
         else
             Report.error(getSymbol().position, "Manjka ':' pri definiciji tipa!");
 
-        parseType();
+        var type = parseType();
+        return new TypeDef(new Position(start, type.position.end), name, type);
     }
 
-    private void parseType() {
+    private Type parseType() {
         switch (check()) {
             case IDENTIFIER:
                 dump("type -> id .");
@@ -167,21 +176,26 @@ public class Parser {
         }
     }
 
-    private void parseFunDef() {
+    private FunDef parseFunDef() {
+        String name = null;
         dump("fun_def -> fun id '('params')' ':' type '=' expr .");
 
-        skip(); // fun
+        // fun
+        Position.Location start = getSymbol().position.start;
+        skip();
 
-        if (check() == TokenType.IDENTIFIER)
+        if (check() == TokenType.IDENTIFIER) {
+            name = getSymbol().lexeme;
             skip();
-        else
+        } else {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji tipa!");
+        }
         if (check() == TokenType.OP_LPARENT)
             skip();
         else
             Report.error(getSymbol().position, "Manjka '(' pri definiciji funkcije za parametre!");
 
-        parseParams();
+        var params = parseParams();
 
         // RPARENT skippamo v params2
 
@@ -190,14 +204,16 @@ public class Parser {
         else
             Report.error(getSymbol().position, "Manjka ':' pri definiciji funkcije za določitev tipa!");
 
-        parseType();
+        var type = parseType();
 
         if (check() == TokenType.OP_ASSIGN)
             skip();
         else
             Report.error(getSymbol().position, "Manjka '=' pri definiciji funkcije!");
 
-        parseExpr();
+        var body = parseExpr();
+
+        return new FunDef(new Position(start, body.position.end), name, params, type, body);
     }
 
     private void parseParams() {
@@ -773,22 +789,28 @@ public class Parser {
     }
 
 
-    private void parseVarDef() {
+    private VarDef parseVarDef() {
+        String name = null;
         dump("var_def -> var id ':' type .");
-        skip(); // var
 
-        if (check() == TokenType.IDENTIFIER)
+        // var
+        Position.Location start = getSymbol().position.start;
+        skip();
+
+        if (check() == TokenType.IDENTIFIER) {
+            name = getSymbol().lexeme;
             skip();
-        else
+        } else {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji spremenljivke!");
+        }
 
         if (check() == TokenType.OP_COLON)
             skip();
         else
             Report.error(getSymbol().position, "Manjka ':' pri definiciji spremenljivke!");
 
-        parseType();
-
+        var type = parseType();
+        return new VarDef(new Position(start, type.position.end), name, type);
     }
 
     /**
