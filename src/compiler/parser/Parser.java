@@ -9,6 +9,7 @@ import static compiler.lexer.TokenType.*;
 import static common.RequireNonNull.requireNonNull;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,48 +68,71 @@ public class Parser {
     }
 
     private Defs parseDefs() {
+        List<Def> definitions = new ArrayList<Def>();
         dump("defs -> def defs2 .");
+
         var def = parseDef();
+        definitions.add(def);
+
         var defs = parseDefs2();
+        assert defs != null;
+        definitions.addAll(defs.definitions);
+
+        assert def != null;
+        return new Defs(new Position(def.position.start, defs.position.end), definitions);
     }
 
     private Def parseDef() {
         switch (check()) {
             case KW_TYP:
                 dump("def -> type_def .");
-                var def = parseTypeDef();
-                break;
+                return parseTypeDef();
             case KW_FUN:
                 dump("def -> fun_def .");
-                var def = parseFunDef();
-                break;
+                return parseFunDef();
             case KW_VAR:
                 dump("def -> var_def .");
-                var def = parseVarDef();
-                break;
+                return parseVarDef();
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa definicije!");
+                return null;
         }
     }
 
     private Defs parseDefs2() {
+        List<Def> definitions = new ArrayList<Def>();
+        Position.Location start;
+        Position.Location end;
+
         switch (check()) {
             case OP_SEMICOLON:
                 dump("defs2 -> ';' def defs2 .");
                 skip();
-                parseDef();
-                parseDefs2();
+                var def = parseDef();
+                definitions.add(def);
+                start = def.position.start;
+                var defs = parseDefs2();
+                assert defs != null;
+                definitions.addAll(defs.definitions);
+                end = defs.position.end;
                 break;
             case EOF:
                 dump("defs2 -> .");
+                start = getSymbol().position.start;
+                end = getSymbol().position.end;
                 skip();
                 break;
             case OP_RBRACE:
                 dump("defs2 -> .");
+                start = getSymbol().position.start;
+                end = getSymbol().position.end;
                 break;
             default:
                 Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij ali '}' na koncu!");
+                return null;
         }
+
+        return new Defs(new Position(start, end), definitions);
     }
 
     private TypeDef parseTypeDef() {
