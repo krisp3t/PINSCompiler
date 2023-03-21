@@ -83,7 +83,9 @@ public class Parser {
         definitions.addAll(defs.definitions);
 
         assert def != null;
-        return new Defs(new Position(def.position.start, defs.position.end), definitions);
+        Position.Location end = defs.position.end;
+        return new Defs(new Position(def.position.start, new Position.Location(end.line, end.column - 1)), definitions);
+        // popravek end.column - 1, da ne štejemo EOF
     }
 
     private Def parseDef() {
@@ -753,18 +755,13 @@ public class Parser {
                 skip();
                 return new Literal(pos, val, type);
             case IDENTIFIER:
-                List<Expr> expressions = new ArrayList<>();
                 dump("atom_expr -> id atom_expr2 .");
                 pos = getSymbol().position;
                 val = getSymbol().lexeme;
                 var id = new Name(pos, val);
-                expressions.add(id);
                 skip();
 
-                var atomExpr2 = parseAtomExpr2();
-                expressions.add(atomExpr2);
-
-                return new Block(new Position(id.position.start, atomExpr2.position.end), expressions);
+                return parseAtomExpr2(id);
             case OP_LPARENT:
                 dump("atom_expr -> '(' exprs ')' .");
                 start = getSymbol().position.start;
@@ -789,16 +786,20 @@ public class Parser {
         return null;
     }
 
-    private Expr parseAtomExpr2() {
+    private Expr parseAtomExpr2(Name id) {
+        Position.Location end = null;
         switch (check()) {
             case OP_LPARENT:
                 dump("atom_expr2 -> '(' exprs ')' .");
                 skip();
-                parseExprs();
-                if (check() == TokenType.OP_RPARENT)
+                var exprs = parseExprs();
+                if (check() == TokenType.OP_RPARENT) {
+                    end = getSymbol().position.end;
                     skip();
-                else
+                    return new Call(new Position(id.position.start, end), exprs.expressions, id.name);
+                } else {
                     Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
+                }
                 // TODO: RPARENT pogledamo v parseExprs?
                 break;
             case OP_SEMICOLON:
@@ -827,7 +828,7 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("atom_expr2 -> .");
-                break;
+                return id;
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
