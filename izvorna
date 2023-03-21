@@ -1,2 +1,1 @@
-var izraz1 : integer;
-fun main ( x : integer ) : integer = a | b | c | d
+fun funkcija ( x : logical, b : string ) : string = 'abc'

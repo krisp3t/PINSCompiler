@@ -408,27 +408,19 @@ public class Parser {
     private Expr parseLogicalAndExpr() {
         dump("logical_and_expr -> compare_expr logical_and_expr2 .");
         var compareExpr = parseCompareExpr();
-        var andExpr2 = parseLogicalAndExpr2();
-
-        if (andExpr2 == null)
-            return compareExpr;
-        else
-            return new Binary(new Position(compareExpr.position.start, andExpr2.position.end), compareExpr, Binary.Operator.AND, andExpr2);
+        return parseLogicalAndExpr2(compareExpr);
     }
 
-    private Expr parseLogicalAndExpr2() {
+    private Expr parseLogicalAndExpr2(Expr compareExprLeft) {
         switch (check()) {
             case OP_AND:
                 dump("logical_and_expr2 -> '&' compare_expr logical_and_expr2 .");
                 skip();
 
-                var compareExpr = parseCompareExpr();
-                var andExpr2 = parseLogicalAndExpr2();
-
-                if (andExpr2 == null)
-                    return compareExpr;
-                else
-                    return new Binary(new Position(compareExpr.position.start, andExpr2.position.end), compareExpr, Binary.Operator.AND, andExpr2);
+                // TODO: preveri pozicije
+                var compareExprRight = parseCompareExpr();
+                var bin = new Binary(new Position(compareExprLeft.position.start, compareExprRight.position.end), compareExprLeft, Binary.Operator.AND, compareExprRight);
+                return parseLogicalAndExpr2(bin);
 
             case OP_SEMICOLON:
             case OP_COLON:
@@ -443,7 +435,7 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("logical_and_expr2 -> .");
-                return null;
+                return compareExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical and expressionu!");
         }
@@ -477,7 +469,6 @@ public class Parser {
                 skip();
 
                 var addExprRight = parseAddExpr();
-
                 return new Binary(new Position(addExprLeft.position.start, addExprRight.position.end), addExprLeft, op, addExprRight);
 
             case OP_SEMICOLON:
@@ -519,10 +510,8 @@ public class Parser {
                 }
                 skip();
                 var mulExprRight = parseMulExpr();
-                var addExpr2 = parseAddExpr2(mulExprRight);
-
-                assert addExpr2 != null;
-                return new Binary(new Position(mulExprLeft.position.start, addExpr2.position.end), mulExprLeft, op, addExpr2);
+                var bin = new Binary(new Position(mulExprLeft.position.start, mulExprRight.position.end), mulExprLeft, op, mulExprRight);
+                return parseAddExpr2(bin);
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -553,15 +542,10 @@ public class Parser {
     private Expr parseMulExpr() {
         dump("mul_expr -> pre_expr mul_expr2 .");
         var preExpr = parsePreExpr();
-        var mulExpr2 = parseMulExpr2();
-
-        if (mulExpr2 == null)
-            return preExpr;
-        else
-            return new Binary(new Position(preExpr.position.start, mulExpr2.position.end), preExpr, mulExpr2.operator, mulExpr2);
+        return parseMulExpr2(preExpr);
     }
 
-    private Binary parseMulExpr2() {
+    private Expr parseMulExpr2(Expr preExprLeft) {
         Binary.Operator op = null;
         switch (check()) {
             case OP_MUL:
@@ -574,14 +558,9 @@ public class Parser {
                     case OP_MOD -> op = Binary.Operator.MOD;
                 }
                 skip();
-                var preExpr = parsePreExpr();
-                var mulExpr2 = parseMulExpr2();
-
-                // pogoljufamo
-                if (mulExpr2 == null)
-                    return new Binary(new Position(preExpr.position.start, preExpr.position.end), preExpr, op, preExpr);
-                else
-                    return new Binary(new Position(preExpr.position.start, mulExpr2.position.end), preExpr, op, preExpr);
+                var preExprRight = parsePreExpr();
+                var bin = new Binary(new Position(preExprLeft.position.start, preExprRight.position.end), preExprLeft, op, preExprRight);
+                return parseMulExpr2(bin);
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -604,7 +583,7 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("mul_expr2 -> .");
-                return null;
+                return preExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v multiplicative expressionu!");
         }
@@ -645,29 +624,26 @@ public class Parser {
     private Expr parsePostExpr() {
         dump("post_expr -> atom_expr post_expr2 .");
         var atomExpr = parseAtomExpr();
-        var postExpr2 = parsePostExpr2();
-
-        if (postExpr2 == null)
-            return atomExpr;
-        else
-            // TODO: pohandlaj
-            return atomExpr;
+        return parsePostExpr2(atomExpr);
     }
 
-    private Expr parsePostExpr2() {
+    private Expr parsePostExpr2(Expr atomExpr) {
+        Position.Location end = null;
         switch (check()) {
             case OP_LBRACKET:
                 dump("post_expr2 -> '[' expr ']' post_expr2 .");
                 skip();
-                parseExpr();
+                var expr = parseExpr();
 
                 // TODO: preveri
-                if (check() == TokenType.OP_RBRACKET)
+                if (check() == TokenType.OP_RBRACKET) {
+                    end = getSymbol().position.end;
                     skip();
-                else
+                    var bin = new Binary(new Position(atomExpr.position.start, end), atomExpr, Binary.Operator.ARR, expr);
+                    return parsePostExpr2(bin);
+                } else {
                     Report.error(getSymbol().position, "Manjka ']' v expressionu!");
-
-                parsePostExpr2();
+                }
                 break;
             case OP_SEMICOLON:
             case OP_COLON:
@@ -694,7 +670,7 @@ public class Parser {
             case KW_ELSE:
             case EOF:
                 dump("post_expr2 -> .");
-                return null;
+                return atomExpr;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v postfix expressionu!");
         }
