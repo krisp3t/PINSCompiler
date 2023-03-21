@@ -259,7 +259,7 @@ public class Parser {
         var body = parseExpr();
 
         assert body != null;
-        return new FunDef(Position.zero(), name, params, type, body);
+        return new FunDef(new Position(start, body.position.end), name, params, type, body);
     }
 
     private List<FunDef.Parameter> parseParams() {
