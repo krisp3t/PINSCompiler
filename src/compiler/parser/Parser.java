@@ -83,9 +83,7 @@ public class Parser {
         definitions.addAll(defs.definitions);
 
         assert def != null;
-        Position.Location end = defs.position.end;
-        return new Defs(new Position(def.position.start, new Position.Location(end.line, end.column - 1)), definitions);
-        // popravek end.column - 1, da ne štejemo EOF
+        return new Defs(new Position(def.position.start, defs.position.end), definitions);
     }
 
     private Def parseDef() {
@@ -126,6 +124,7 @@ public class Parser {
                 dump("defs2 -> .");
                 start = getSymbol().position.start;
                 end = getSymbol().position.end;
+                end = new Position.Location(end.line, end.column - 1); // ne štejemo EOF
                 skip();
                 break;
             case OP_RBRACE:
@@ -347,8 +346,8 @@ public class Parser {
 
                 // RBRACE v defs2 (defs -> def defs2), ne skipamo v defs2, ampak tu
                 if (check() == TokenType.OP_RBRACE) {
-                    skip();
                     end = getSymbol().position.end;
+                    skip();
                     return new Where(new Position(ior.position.start, end), ior, defs);
                 } else {
                     Report.error(getSymbol().position, "Manjka '}' v expressionu!");
@@ -396,8 +395,11 @@ public class Parser {
             case OP_RBRACE:
             case KW_THEN:
             case KW_ELSE:
+                dump("logical_ior_expr2 -> .");
+                return andExprLeft;
             case EOF:
                 dump("logical_ior_expr2 -> .");
+                // Position.Location end =
                 return andExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical ior expressionu!");

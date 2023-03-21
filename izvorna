@@ -1,1 +1,1 @@
-fun funkcija ( x : logical, b : string ) : string = { if x < 3 then {x = 5} }
+fun funkcija ( x : logical, b : string ) : string = ({x = 10}, x) {where var x : string}
