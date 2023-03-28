@@ -34,8 +34,8 @@ public class NameChecker implements Visitor {
      * Ustvari nov razreševalnik imen.
      */
     public NameChecker(
-        NodeDescription<Def> definitions,
-        SymbolTable symbolTable
+            NodeDescription<Def> definitions,
+            SymbolTable symbolTable
     ) {
         requireNonNull(definitions, symbolTable);
         this.definitions = definitions;
@@ -105,6 +105,14 @@ public class NameChecker implements Visitor {
     @Override
     public void visit(Defs defs) {
         // TODO Auto-generated method stub
+        for (Def def : defs.definitions) {
+            try {
+                symbolTable.insert(def);
+            } catch (DefinitionAlreadyExistsException e) {
+
+            }
+            def.accept(this);
+        }
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
