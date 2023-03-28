@@ -104,16 +104,14 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Defs defs) {
-        // TODO Auto-generated method stub
         for (Def def : defs.definitions) {
             try {
                 symbolTable.insert(def);
             } catch (DefinitionAlreadyExistsException e) {
-
+                Report.error(def.position, "Definicija " + def.name + " že obstaja");
             }
             def.accept(this);
         }
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override

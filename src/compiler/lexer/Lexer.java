@@ -22,7 +22,7 @@ public class Lexer {
     private StringBuilder trenutniNiz = new StringBuilder();
     private int stNarekovajev = 0;
     private int vrstica = 1;
-    private int stolpec = 0;
+    private int stolpec = 1;
     private boolean zakljucenNiz = true;
 
 
@@ -118,12 +118,7 @@ public class Lexer {
     }
 
     private void handleStanje(char naslednjiZnak, ArrayList<Symbol> symbols) {
-        if (naslednjiZnak == '\n') {
-            this.vrstica++;
-            this.stolpec = 0;
-        } else if (naslednjiZnak == 9) { // tabulator
-            this.stolpec += 3;
-        } else if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
+        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -199,7 +194,6 @@ public class Lexer {
                     this.trenutniNiz.append(naslednjiZnak);
                 break;
         }
-
     }
 
     private void preveriIme(ArrayList<Symbol> symbols) {
@@ -222,12 +216,22 @@ public class Lexer {
         var symbols = new ArrayList<Symbol>();
         for (int i = 0; i < this.source.length(); i++) {
             var naslednjiZnak = this.source.charAt(i);
-            this.stolpec++;
             handleStanje(naslednjiZnak, symbols);
+
+            if (naslednjiZnak == '\n') {
+                this.vrstica++;
+                this.stolpec = 1;
+            } else if (naslednjiZnak == 9) { // tabulator {
+                this.stolpec += 4;
+            } else if (naslednjiZnak == '\r') {
+                continue;
+            } else {
+                this.stolpec++;
+            }
+
 
         }
         if (this.source.length() > 0) {
-            this.stolpec++;
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
         }
         if (!this.zakljucenNiz) {
