@@ -10,6 +10,7 @@ import static common.RequireNonNull.requireNonNull;
 import common.Report;
 import compiler.common.Visitor;
 import compiler.lexer.Position;
+import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
 import compiler.parser.ast.def.FunDef.Parameter;
 import compiler.parser.ast.expr.*;
@@ -46,38 +47,57 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Call call) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        // Preveri obstoj funkcije
+        if (symbolTable.definitionFor(call.name).isEmpty())
+            Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
+        else {
+            Def forNode = symbolTable.definitionFor(call.name).get();
+            definitions.store(forNode, call);
+        }
+
+        // Preveri argumente
+        for (Expr argument : call.arguments)
+            argument.accept(this);
     }
 
     @Override
     public void visit(Binary binary) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        binary.left.accept(this);
+        binary.right.accept(this);
     }
 
     @Override
     public void visit(Block block) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        for (Expr expr : block.expressions) {
+            expr.accept(this);
+        }
     }
 
     @Override
     public void visit(For forLoop) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        forLoop.counter.accept(this);
+        forLoop.low.accept(this);
+        forLoop.high.accept(this);
+        forLoop.step.accept(this);
+        forLoop.body.accept(this);
     }
 
     @Override
     public void visit(Name name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        // Preveri obstoj imena
+        if (symbolTable.definitionFor(name.name).isEmpty())
+            Report.error(name.position, "Identifier " + name.name + " ni definiran!");
+        else {
+            Def forNode = symbolTable.definitionFor(name.name).get();
+            definitions.store(forNode, name);
+        }
     }
 
     @Override
     public void visit(IfThenElse ifThenElse) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        ifThenElse.condition.accept(this);
+        ifThenElse.thenExpression.accept(this);
+        ifThenElse.elseExpression.ifPresent(expr -> expr.accept(this));
     }
 
     @Override
@@ -87,20 +107,21 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Unary unary) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        unary.expr.accept(this);
     }
 
     @Override
     public void visit(While whileLoop) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        whileLoop.condition.accept(this);
+        whileLoop.body.accept(this);
     }
 
     @Override
     public void visit(Where where) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        symbolTable.pushScope();
+        where.defs.accept(this); // 2 obhoda v Defs
+        where.expr.accept(this);
+        symbolTable.popScope();
     }
 
     @Override
@@ -143,27 +164,27 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(TypeDef typeDef) {
-        if (typeDef.type instanceof TypeName) {
-            typeDef.type.accept(this);
-        }
-        System.out.println(typeDef.type);
+        typeDef.type.accept(this);
     }
 
     @Override
     public void visit(VarDef varDef) {
-
+        varDef.type.accept(this);
     }
 
     @Override
     public void visit(Parameter parameter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        parameter.type.accept(this);
+        try {
+            symbolTable.insert(parameter);
+        } catch (DefinitionAlreadyExistsException e) {
+            Report.error(parameter.position, "Definicija " + parameter.name + " že obstaja!");
+        }
     }
 
     @Override
     public void visit(Array array) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        array.type.accept(this);
     }
 
     @Override
@@ -173,7 +194,11 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(TypeName name) {
-        if (symbolTable.definitionFor(name.identifier).equals(Optional.empty()))
+        if (symbolTable.definitionFor(name.identifier).isEmpty())
             Report.error(name.position, "Tip " + name.identifier + " ni definiran!");
+        else {
+            Def forNode = symbolTable.definitionFor(name.identifier).get();
+            definitions.store(forNode, name);
+        }
     }
 }
