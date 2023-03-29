@@ -880,7 +880,7 @@ public class Parser {
                 return new For(new Position(start, end), counter, low, high, step, body);
 
             case IDENTIFIER:
-            case OP_LBRACKET:
+            case OP_LPARENT:
             case OP_LBRACE:
             case OP_ADD:
             case OP_SUB:
