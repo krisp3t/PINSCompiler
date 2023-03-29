@@ -396,11 +396,8 @@ public class Parser {
             case OP_RBRACE:
             case KW_THEN:
             case KW_ELSE:
-                dump("logical_ior_expr2 -> .");
-                return andExprLeft;
             case EOF:
                 dump("logical_ior_expr2 -> .");
-                // Position.Location end =
                 return andExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical ior expressionu!");
