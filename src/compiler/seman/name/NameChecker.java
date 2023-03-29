@@ -65,17 +65,16 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Binary binary) {
-        if (binary.operator == Binary.Operator.ARR) {
-            if (!(binary.left instanceof Name)) {
-                Report.error(binary.position, "Levo od [] mora biti ime!");
-            } else {
-                Name forNode = (Name) binary.left;
-                if (symbolTable.definitionFor(forNode.name).get() instanceof FunDef)
-                    Report.error(binary.position, "Uporaba funkcije " + forNode.name + " kot array!");
-            }
-        }
+
+
         binary.left.accept(this);
         binary.right.accept(this);
+
+        // Prepreči funkcija[]
+        if (binary.left instanceof Name left && symbolTable.definitionFor(left.name).isPresent()) {
+            if (symbolTable.definitionFor(left.name).get() instanceof FunDef)
+                Report.error(binary.position, "Uporaba funkcije " + left.name + " kot array!");
+        }
     }
 
     @Override
