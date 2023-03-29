@@ -1,4 +1,4 @@
-var izraz1 : integer;
-fun main ( x : integer ) : integer = (
-    {izraz1 =  (1 + 2 + 3) / (4 + 5 + 6)}
+typ int : integer;
+fun f(x : integer) : integer = (
+	x + y {where var x : int; var y : int; typ int : integer }
 )

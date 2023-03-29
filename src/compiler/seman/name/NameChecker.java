@@ -52,7 +52,10 @@ public class NameChecker implements Visitor {
             Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
         else {
             Def forNode = symbolTable.definitionFor(call.name).get();
-            definitions.store(forNode, call);
+            if (!(forNode instanceof FunDef))
+                Report.error(call.position, call.name + " ni funkcija!");
+            else
+                definitions.store(forNode, call);
         }
 
         // Preveri argumente
@@ -62,6 +65,15 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Binary binary) {
+        if (binary.operator == Binary.Operator.ARR) {
+            if (!(binary.left instanceof Name)) {
+                Report.error(binary.position, "Levo od [] mora biti ime!");
+            } else {
+                Name forNode = (Name) binary.left;
+                if (symbolTable.definitionFor(forNode.name).get() instanceof FunDef)
+                    Report.error(binary.position, "Uporaba funkcije " + forNode.name + " kot array!");
+            }
+        }
         binary.left.accept(this);
         binary.right.accept(this);
     }
@@ -174,7 +186,6 @@ public class NameChecker implements Visitor {
 
     @Override
     public void visit(Parameter parameter) {
-        parameter.type.accept(this);
         try {
             symbolTable.insert(parameter);
         } catch (DefinitionAlreadyExistsException e) {
@@ -198,7 +209,10 @@ public class NameChecker implements Visitor {
             Report.error(name.position, "Tip " + name.identifier + " ni definiran!");
         else {
             Def forNode = symbolTable.definitionFor(name.identifier).get();
-            definitions.store(forNode, name);
+            if (!(forNode instanceof TypeDef))
+                Report.error(name.position, "Identifier " + name.identifier + " ni tip!");
+            else
+                definitions.store(forNode, name);
         }
     }
 }
