@@ -102,7 +102,9 @@ public class NameChecker implements Visitor {
             Def forNode = symbolTable.definitionFor(name.name).get();
             // Prepreči imenovanje funkcije (funkcija mora biti vedno klicana)
             if (forNode instanceof FunDef)
-                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivka!");
+                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivke!");
+            else if (forNode instanceof TypeDef)
+                Report.error(name.position, "Nedovoljena uporaba tipa " + name.name + " kot spremenljivke!");
             else
                 definitions.store(forNode, name);
         }
