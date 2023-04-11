@@ -1,0 +1,3 @@
+typ x: integer;
+var b: string;
+fun f(a: integer): integer = x
