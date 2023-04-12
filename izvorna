@@ -1,2 +1,3 @@
-var x : integer;
-fun f ( y : integer ) : integer = x + y
+typ t2 : t3;
+typ t3 : logical
+

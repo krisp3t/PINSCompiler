@@ -63,7 +63,7 @@ public class TypeChecker implements Visitor {
             Report.error(binary.position, "Tipov v binary expressionu ni bilo mogoče določiti");
 
         // { expr1 = expr2 }
-        if (binary.operator.equals(Binary.Operator.EQ)) {
+        if (binary.operator.equals(Binary.Operator.ASSIGN)) {
             Type t1 = types.valueFor(binary.left).get();
             Type t2 = types.valueFor(binary.right).get();
             if (!t1.equals(t2))
@@ -166,7 +166,6 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Name name) {
-        // TODO Auto-generated method stub
         if (definitions.valueFor(name).isEmpty())
             Report.error(name.position, "Ime " + name.name + " ni bilo definirano!");
 
@@ -263,7 +262,6 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Where where) {
-        // TODO Auto-generated method stub
         where.defs.accept(this); // 2 obhoda v Defs
         where.expr.accept(this);
         // return type expr
@@ -275,6 +273,12 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Defs defs) {
+        // Prvi obhod
+        for (Def def : defs.definitions) {
+            def.accept(this);
+        }
+
+        // Drugi obhod
         for (Def def : defs.definitions) {
             def.accept(this);
         }
@@ -381,6 +385,16 @@ public class TypeChecker implements Visitor {
     @Override
     public void visit(TypeName name) {
         // TODO Auto-generated method stub
-        System.out.println("TYPENAME: " + name.identifier);
+        if (definitions.valueFor(name).isEmpty())
+            Report.error(name.position, "TypeName ne obstaja!");
+
+        Def d = definitions.valueFor(name).get();
+        if (d instanceof TypeDef) {
+            if (types.valueFor(((TypeDef) d).type).isEmpty())
+                return;
+            types.store(types.valueFor(((TypeDef) d).type).get(), name);
+        } else {
+            Report.error(name.position, "TypeName ni tip!");
+        }
     }
 }
