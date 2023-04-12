@@ -164,6 +164,26 @@ public class TypeChecker implements Visitor {
     @Override
     public void visit(Name name) {
         // TODO Auto-generated method stub
+        if (definitions.valueFor(name).isEmpty())
+            Report.error(name.position, "Ime " + name.name + " ni bilo definirano!");
+
+        Def def = definitions.valueFor(name).get();
+        if (def instanceof VarDef d) {
+            if (types.valueFor(d.type).isPresent()) {
+                Type t = types.valueFor(d.type).get();
+                types.store(t, name);
+            } else {
+                Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
+            }
+            // TODO: Add typename
+        } else if (def instanceof Parameter d) {
+            if (types.valueFor(d.type).isPresent()) {
+                Type t = types.valueFor(d.type).get();
+                types.store(t, name);
+            } else {
+                Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
+            }
+        }
     }
 
     @Override

@@ -1,3 +1,2 @@
-var izraz1 : integer;
-typ a : arr [10] integer;
-fun x (a: integer) : integer = x(7)
+var x : integer;
+fun f ( y : integer ) : integer = x + y
