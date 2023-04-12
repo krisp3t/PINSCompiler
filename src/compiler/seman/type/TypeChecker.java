@@ -16,6 +16,9 @@ import compiler.parser.ast.type.*;
 import compiler.seman.common.NodeDescription;
 import compiler.seman.type.type.Type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TypeChecker implements Visitor {
     /**
      * Opis vozlišč in njihovih definicij.
@@ -279,7 +282,6 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(FunDef funDef) {
-        // TODO Auto-generated method stub
         // return type
         funDef.type.accept(this);
         // type parametrov
@@ -291,13 +293,30 @@ public class TypeChecker implements Visitor {
             parameter.accept(this);
         }
 
-        if (types.valueFor(funDef.type).isPresent())
-            types.store(types.valueFor(funDef.type).get(), funDef);
-        else
+        if (types.valueFor(funDef.type).isEmpty())
             Report.error(funDef.position, "Return tipa funkcije ni bilo mogoče določiti");
+        types.store(types.valueFor(funDef.type).get(), funDef.type);
 
         // expression
         funDef.body.accept(this);
+
+        if (types.valueFor(funDef.body).isEmpty())
+            Report.error(funDef.position, "Tipa telesa funkcije ni bilo mogoče določiti");
+        Type body = types.valueFor(funDef.body).get();
+        Type ret = types.valueFor(funDef.type).get();
+
+        if (!body.equals(ret))
+            Report.error(funDef.position, "Tipa telesa funkcije in return se ne ujemata");
+
+        List<Type> params = new ArrayList<>();
+        for (Parameter parameter : funDef.parameters) {
+            if (types.valueFor(parameter.type).isEmpty())
+                Report.error(parameter.position, "Tipa parametra funkcije ni bilo mogoče določiti");
+            params.add(types.valueFor(parameter.type).get());
+        }
+
+        types.store(new Type.Function(params, ret), funDef);
+
     }
 
     @Override

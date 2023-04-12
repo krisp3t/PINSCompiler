@@ -21,7 +21,7 @@ public abstract class Type {
 
     /**
      * Vrne velikost tipa, če je le-ta uporabljen kot parameter/argument.
-     * 
+     * <p>
      * V primeru prenosa po referenci, je velikost tipa enaka
      * velikosti kazalca.
      */
@@ -133,16 +133,23 @@ public abstract class Type {
 
         @Override
         public boolean equals(Type t) {
-            throw new RuntimeException("Implementiraj ...");
+            if (!(t instanceof Atom)) {
+                return false;
+            }
+            return kind == ((Atom) t).kind;
         }
 
         @Override
         public String toString() {
             return switch (kind) {
-                case INT: yield "int";
-                case STR: yield "str";
-                case LOG: yield "log";
-                case VOID: yield "void";
+                case INT:
+                    yield "int";
+                case STR:
+                    yield "str";
+                case LOG:
+                    yield "log";
+                case VOID:
+                    yield "void";
             };
         }
 
@@ -193,12 +200,15 @@ public abstract class Type {
 
         @Override
         public boolean equals(Type t) {
-            throw new RuntimeException("Implementiraj ...");
+            if (!(t instanceof Array)) {
+                return false;
+            }
+            return size == ((Array) t).size && type.equals(((Array) t).type);
         }
 
         @Override
         public String toString() {
-            return "ARR("+size+","+type.toString()+")";
+            return "ARR(" + size + "," + type.toString() + ")";
         }
     }
 
@@ -210,7 +220,7 @@ public abstract class Type {
          * Tipi parametrov.
          */
         public final List<Type> parameters;
-        
+
         /**
          * Tip, ki ga funkcija vrača.
          */
@@ -235,15 +245,27 @@ public abstract class Type {
 
         @Override
         public boolean equals(Type t) {
-            throw new RuntimeException("Implementiraj ...");
+            if (!(t instanceof Function)) {
+                return false;
+            }
+            var other = (Function) t;
+            if (parameters.size() != other.parameters.size()) {
+                return false;
+            }
+            for (int i = 0; i < parameters.size(); i++) {
+                if (!parameters.get(i).equals(other.parameters.get(i))) {
+                    return false;
+                }
+            }
+            return returnType.equals(other.returnType);
         }
 
         @Override
         public String toString() {
             var params = parameters.stream()
-                .map(t -> t.toString())
-                .collect(Collectors.joining(", "));
-            return "(" +  params + ") -> " + returnType.toString();
+                    .map(t -> t.toString())
+                    .collect(Collectors.joining(", "));
+            return "(" + params + ") -> " + returnType.toString();
         }
     }
 }
