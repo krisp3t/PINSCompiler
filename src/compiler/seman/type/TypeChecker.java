@@ -277,11 +277,6 @@ public class TypeChecker implements Visitor {
         for (Def def : defs.definitions) {
             def.accept(this);
         }
-
-        // Drugi obhod
-        for (Def def : defs.definitions) {
-            def.accept(this);
-        }
     }
 
     @Override
@@ -332,7 +327,8 @@ public class TypeChecker implements Visitor {
             Report.error(typeDef.position, "Tip " + typeDef.type + "ne obstaja!");
 
         Type t = types.valueFor(typeDef.type).get();
-        types.store(t, typeDef);
+        if (types.valueFor(typeDef).isEmpty())
+            types.store(t, typeDef);
     }
 
     @Override
@@ -391,7 +387,7 @@ public class TypeChecker implements Visitor {
         Def d = definitions.valueFor(name).get();
         if (d instanceof TypeDef) {
             if (types.valueFor(((TypeDef) d).type).isEmpty())
-                return;
+                d.accept(this);
             types.store(types.valueFor(((TypeDef) d).type).get(), name);
         } else {
             Report.error(name.position, "TypeName ni tip!");
