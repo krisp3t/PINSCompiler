@@ -17,6 +17,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.type.type.Type;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class TypeChecker implements Visitor {
@@ -29,6 +30,11 @@ public class TypeChecker implements Visitor {
      * Opis vozlišč, ki jim priredimo podatkovne tipe.
      */
     private NodeDescription<Type> types;
+
+    /**
+     * Seznam obiskanih definicij (da se ne zaciklamo).
+     */
+    private HashSet<Def> visited = new HashSet<>();
 
     public TypeChecker(NodeDescription<Def> definitions, NodeDescription<Type> types) {
         requireNonNull(definitions, types);
@@ -386,8 +392,12 @@ public class TypeChecker implements Visitor {
 
         Def d = definitions.valueFor(name).get();
         if (d instanceof TypeDef) {
-            if (types.valueFor(((TypeDef) d).type).isEmpty())
+            if (types.valueFor(((TypeDef) d).type).isEmpty()) {
+                if (visited.contains(d))
+                    Report.error(name.position, "Najden cikel v tipih!");
+                visited.add(d);
                 d.accept(this);
+            }
             types.store(types.valueFor(((TypeDef) d).type).get(), name);
         } else {
             Report.error(name.position, "TypeName ni tip!");
