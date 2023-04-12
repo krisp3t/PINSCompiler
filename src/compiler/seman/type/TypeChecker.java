@@ -50,14 +50,37 @@ public class TypeChecker implements Visitor {
 
         if (definitions.valueFor(call).isEmpty())
             Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
-        Def funDef = definitions.valueFor(call).get();
-
-        if (types.valueFor(funDef).isEmpty())
-            Report.error(call.position, "Tip funkcije " + call.name + " ni bil določen!");
 
 
-        Type t = types.valueFor(definitions.valueFor(call).get()).get();
-        types.store(t, call);
+        Def def = definitions.valueFor(call).get();
+        if (!(def instanceof FunDef))
+            Report.error(call.position, call.name + " ni funkcija!");
+        FunDef funDef = (FunDef) def;
+
+
+        if (types.valueFor(funDef).isEmpty()) // gre skozi v drugem obhodu
+            return;
+
+        if (call.arguments.toArray().length != funDef.parameters.toArray().length)
+            Report.error(call.position, "Število argumentov se ne ujema s številom parametrov funkcije");
+
+        for (int i = 0; i < call.arguments.toArray().length; i++) {
+            Expr argument = call.arguments.get(i);
+            Parameter parameter = funDef.parameters.get(i);
+            if (types.valueFor(argument).isPresent() && types.valueFor(parameter).isPresent()) {
+                Type argType = types.valueFor(argument).get();
+                Type paramType = types.valueFor(parameter).get();
+                if (!argType.equals(paramType))
+                    Report.error(argument.position, "Tip argumenta se ne ujema s tipom parametra");
+            } else {
+                Report.error(argument.position, "Tipa argumenta ni bilo mogoče določiti");
+            }
+        }
+
+        if (types.valueFor(funDef.type).isPresent())
+            types.store(types.valueFor(funDef.type).get(), call);
+        else
+            Report.error(call.position, "Tipa funkcije ni bilo mogoče določiti");
     }
 
     @Override
@@ -283,6 +306,11 @@ public class TypeChecker implements Visitor {
         for (Def def : defs.definitions) {
             def.accept(this);
         }
+
+        // Drugi obhod
+        for (Def def : defs.definitions) {
+            def.accept(this);
+        }
     }
 
     @Override
@@ -386,7 +414,6 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(TypeName name) {
-        // TODO Auto-generated method stub
         if (definitions.valueFor(name).isEmpty())
             Report.error(name.position, "TypeName ne obstaja!");
 
