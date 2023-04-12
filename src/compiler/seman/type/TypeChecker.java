@@ -44,12 +44,11 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Call call) {
-        // TODO: preveri ujemanje s parametri funkcije
         for (Expr argument : call.arguments)
             argument.accept(this);
 
         if (definitions.valueFor(call).isEmpty())
-            Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
+            return;
 
 
         Def def = definitions.valueFor(call).get();
@@ -73,14 +72,14 @@ public class TypeChecker implements Visitor {
                 if (!argType.equals(paramType))
                     Report.error(argument.position, "Tip argumenta se ne ujema s tipom parametra");
             } else {
-                Report.error(argument.position, "Tipa argumenta ni bilo mogoče določiti");
+                return;
             }
         }
 
         if (types.valueFor(funDef.type).isPresent())
             types.store(types.valueFor(funDef.type).get(), call);
         else
-            Report.error(call.position, "Tipa funkcije ni bilo mogoče določiti");
+            return;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class TypeChecker implements Visitor {
         binary.right.accept(this);
 
         if (!(types.valueFor(binary.left).isPresent() && types.valueFor(binary.right).isPresent()))
-            Report.error(binary.position, "Tipov v binary expressionu ni bilo mogoče določiti");
+            return;
 
         // { expr1 = expr2 }
         if (binary.operator.equals(Binary.Operator.ASSIGN)) {
@@ -165,8 +164,6 @@ public class TypeChecker implements Visitor {
             // return type zadnji expr
             Type t = types.valueFor(block.expressions.get(block.expressions.toArray().length - 1)).get();
             types.store(t, block);
-        } else {
-            Report.error(block.position, "Tipa bloka ni bilo mogoče določiti");
         }
     }
 
@@ -185,7 +182,7 @@ public class TypeChecker implements Visitor {
                 if (!t.isInt())
                     Report.error(node.position, "Pričakovan tip v for loopu je INTEGER!");
             } else {
-                Report.error(node.position, "Tipa v for loopu ni bilo mogoče določiti");
+                return;
             }
         }
 
@@ -206,13 +203,10 @@ public class TypeChecker implements Visitor {
             } else {
                 Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
             }
-            // TODO: Add typename
         } else if (def instanceof Parameter d) {
             if (types.valueFor(d.type).isPresent()) {
                 Type t = types.valueFor(d.type).get();
                 types.store(t, name);
-            } else {
-                Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
             }
         }
     }
@@ -228,7 +222,7 @@ public class TypeChecker implements Visitor {
             if (!t.isLog())
                 Report.error(ifThenElse.condition.position, "Pričakovan tip v if stavku je LOGICAL!");
         } else {
-            Report.error(ifThenElse.condition.position, "Tipa v if stavku ni bilo mogoče določiti");
+            return;
         }
 
         // return type VOID
@@ -250,7 +244,7 @@ public class TypeChecker implements Visitor {
         unary.expr.accept(this);
 
         if (types.valueFor(unary.expr).isEmpty())
-            Report.error(unary.position, "Tipa v unary expressionu ni bilo mogoče določiti");
+            return;
 
         // !
         if (unary.operator.equals(Unary.Operator.NOT)) {
@@ -282,7 +276,7 @@ public class TypeChecker implements Visitor {
             if (!t.isLog())
                 Report.error(whileLoop.condition.position, "Pričakovan tip v while stavku je LOGICAL!");
         } else {
-            Report.error(whileLoop.condition.position, "Tipa v while stavku ni bilo mogoče določiti");
+            return;
         }
 
         // return type VOID
@@ -296,8 +290,7 @@ public class TypeChecker implements Visitor {
         // return type expr
         if (types.valueFor(where.expr).isPresent())
             types.store(types.valueFor(where.expr).get(), where);
-        else
-            Report.error(where.position, "Tipa v WHERE stavku ni bilo mogoče določiti");
+
     }
 
     @Override
@@ -327,14 +320,14 @@ public class TypeChecker implements Visitor {
         }
 
         if (types.valueFor(funDef.type).isEmpty())
-            Report.error(funDef.position, "Return tipa funkcije ni bilo mogoče določiti");
+            return;
         types.store(types.valueFor(funDef.type).get(), funDef.type);
 
         // expression
         funDef.body.accept(this);
 
         if (types.valueFor(funDef.body).isEmpty())
-            Report.error(funDef.position, "Tipa telesa funkcije ni bilo mogoče določiti");
+            return;
         Type body = types.valueFor(funDef.body).get();
         Type ret = types.valueFor(funDef.type).get();
 
