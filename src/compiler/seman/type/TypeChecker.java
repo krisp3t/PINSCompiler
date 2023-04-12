@@ -35,9 +35,20 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Call call) {
-        // TODO Auto-generated method stub
+        // TODO: preveri ujemanje s parametri funkcije
         for (Expr argument : call.arguments)
             argument.accept(this);
+
+        if (definitions.valueFor(call).isEmpty())
+            Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
+        Def funDef = definitions.valueFor(call).get();
+
+        if (types.valueFor(funDef).isEmpty())
+            Report.error(call.position, "Tip funkcije " + call.name + " ni bil določen!");
+
+
+        Type t = types.valueFor(definitions.valueFor(call).get()).get();
+        types.store(t, call);
     }
 
     @Override
@@ -68,6 +79,7 @@ public class TypeChecker implements Visitor {
 
             // return type LOGICAL
             types.store(new Type.Atom(Type.Atom.Kind.LOG), binary);
+            return;
         }
 
         // +, -, *, /, %
@@ -80,6 +92,7 @@ public class TypeChecker implements Visitor {
             }
             // return type INTEGER
             types.store(new Type.Atom(Type.Atom.Kind.INT), binary);
+            return;
         }
 
         // ==, !=, <=, >=, <, >
@@ -93,6 +106,21 @@ public class TypeChecker implements Visitor {
 
             // return type LOGICAL
             types.store(new Type.Atom(Type.Atom.Kind.LOG), binary);
+        }
+
+        // ARR
+        // TODO: check size
+        if (binary.operator.equals(Binary.Operator.ARR)) {
+            Type t1 = types.valueFor(binary.left).get();
+            Type t2 = types.valueFor(binary.right).get();
+            if (!t1.isArray())
+                Report.error(binary.position, "Pričakovan tip v array izrazu je ARRAY!");
+            if (!t2.isInt())
+                Report.error(binary.position, "Pričakovan tip v array izrazu je INTEGER!");
+            if (t1 instanceof Type.Array t) {
+                // return type t
+                types.store(t.type, binary);
+            }
         }
     }
 
@@ -168,8 +196,29 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Unary unary) {
-        // TODO Auto-generated method stub
-        
+        unary.expr.accept(this);
+
+        if (types.valueFor(unary.expr).isEmpty())
+            Report.error(unary.position, "Tipa v unary expressionu ni bilo mogoče določiti");
+
+        // !
+        if (unary.operator.equals(Unary.Operator.NOT)) {
+            Type t = types.valueFor(unary.expr).get();
+            if (!t.isLog())
+                Report.error(unary.position, "Pričakovan tip v NOT izrazu je LOGICAL!");
+            // return type LOGICAL
+            types.store(new Type.Atom(Type.Atom.Kind.LOG), unary);
+            return;
+        }
+
+        // +, -
+        if (unary.operator.equals(Unary.Operator.ADD) || unary.operator.equals(Unary.Operator.SUB)) {
+            Type t = types.valueFor(unary.expr).get();
+            if (!t.isInt())
+                Report.error(unary.position, "Pričakovan tip v unary ADD/SUB izrazu je INTEGER!");
+            // return type INTEGER
+            types.store(new Type.Atom(Type.Atom.Kind.INT), unary);
+        }
     }
 
     @Override
@@ -194,6 +243,11 @@ public class TypeChecker implements Visitor {
         // TODO Auto-generated method stub
         where.defs.accept(this); // 2 obhoda v Defs
         where.expr.accept(this);
+        // return type expr
+        if (types.valueFor(where.expr).isPresent())
+            types.store(types.valueFor(where.expr).get(), where);
+        else
+            Report.error(where.position, "Tipa v WHERE stavku ni bilo mogoče določiti");
     }
 
     @Override
@@ -206,7 +260,6 @@ public class TypeChecker implements Visitor {
     @Override
     public void visit(FunDef funDef) {
         // TODO Auto-generated method stub
-        // 1. obhod
         // return type
         funDef.type.accept(this);
         // type parametrov
@@ -217,6 +270,12 @@ public class TypeChecker implements Visitor {
         for (Parameter parameter : funDef.parameters) {
             parameter.accept(this);
         }
+
+        if (types.valueFor(funDef.type).isPresent())
+            types.store(types.valueFor(funDef.type).get(), funDef);
+        else
+            Report.error(funDef.position, "Return tipa funkcije ni bilo mogoče določiti");
+
         // expression
         funDef.body.accept(this);
     }
@@ -267,7 +326,7 @@ public class TypeChecker implements Visitor {
             Report.error(array.position, "Tip " + array.type + "ne obstaja!");
 
         Type t = types.valueFor(array.type).get();
-        types.store(t, array);
+        types.store(new Type.Array(array.size, t), array);
     }
 
     @Override
@@ -283,6 +342,6 @@ public class TypeChecker implements Visitor {
     @Override
     public void visit(TypeName name) {
         // TODO Auto-generated method stub
-        System.out.println("");
+        System.out.println("TYPENAME: " + name.identifier);
     }
 }

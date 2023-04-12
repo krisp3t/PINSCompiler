@@ -1,3 +1,3 @@
 var izraz1 : integer;
 typ a : arr [10] integer;
-fun x (a: integer) : integer = { a = 3 }
+fun x (a: integer) : integer = x(7)
