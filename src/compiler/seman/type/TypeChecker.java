@@ -58,7 +58,9 @@ public class TypeChecker implements Visitor {
 
 
         if (types.valueFor(funDef).isEmpty()) // gre skozi v drugem obhodu
-            return;
+            // če rekurzivna funkcija, posebej obravnavamo
+            if (!call.name.equals(funDef.name))
+                return;
 
         if (call.arguments.toArray().length != funDef.parameters.toArray().length)
             Report.error(call.position, "Število argumentov se ne ujema s številom parametrov funkcije");
