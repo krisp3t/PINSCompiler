@@ -21,6 +21,7 @@ import compiler.seman.type.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class FrameEvaluator implements Visitor {
     /**
@@ -43,8 +44,8 @@ public class FrameEvaluator implements Visitor {
      */
     private final NodeDescription<Type> types;
 
-    private int staticLevel = 1;
-    private int offset = 0;
+    private int staticLevel = 0;
+    private final Stack <Frame.Builder> builderStack = new Stack<>();
 
 
     public FrameEvaluator(
@@ -325,6 +326,7 @@ public class FrameEvaluator implements Visitor {
     public void visit(Where where) {
         where.defs.accept(this);
 
+        /*
         for (Def def : where.defs.definitions) {
             if (def instanceof VarDef vd) {
                 if (types.valueFor(vd.type).isPresent()) {
@@ -335,6 +337,7 @@ public class FrameEvaluator implements Visitor {
                 }
             }
         }
+         */
 
         where.expr.accept(this);
 
@@ -353,49 +356,34 @@ public class FrameEvaluator implements Visitor {
 
     @Override
     public void visit(FunDef funDef) {
+        this.staticLevel++;
+
         Frame.Label funLabel;
-        if (this.staticLevel == 1)
-            funLabel = Frame.Label.named(funDef.name);
-        else
+        if (this.staticLevel > 1)
             funLabel = Frame.Label.nextAnonymous();
+        else
+            funLabel = Frame.Label.named(funDef.name);
 
 
+        // Klicni zapis
         Frame.Builder klicniZapis = new Frame.Builder(funLabel, this.staticLevel);
 
         // Static Link
         klicniZapis.addParameter(Constants.WordSize);
+        builderStack.push(klicniZapis);
 
         // Parametri
         for (Parameter parameter : funDef.parameters) {
             parameter.accept(this);
-            if (accesses.valueFor(parameter).isPresent()) {
-                Access a = accesses.valueFor(parameter).get();
-                klicniZapis.addParameter(a.size);
-            }
         }
 
-        this.offset = 0;
 
         // Lokalne spremenljivke
         funDef.body.accept(this);
-        if (funDef.body instanceof Where w) {
-            for (Def d: w.defs.definitions) {
-                if (d instanceof VarDef vd) {
-                    if (accesses.valueFor(vd).isPresent()) {
-                        Access a = accesses.valueFor(vd).get();
-                        klicniZapis.addLocalVariable(a.size);
-                        // TODO: nested where
-                    }
-                }
-            }
-        }
 
         Frame f = klicniZapis.build();
         frames.store(f, funDef);
-
-        // Ponastavi offset
-        this.offset = 0;
-
+        this.staticLevel--;
     }
 
 
@@ -408,17 +396,20 @@ public class FrameEvaluator implements Visitor {
 
     @Override
     public void visit(VarDef varDef) {
-        // TODO Auto-generated method stub
         varDef.type.accept(this);
 
-        // TODO: globalne spremenljivke
-        /*
+        Access acc;
         if (types.valueFor(varDef.type).isPresent()) {
             Type t = types.valueFor(varDef.type).get();
-            Access.Global g = new Access.Global(t.sizeInBytes(), Frame.Label.named(varDef.name));
-            accesses.store(g, varDef);
+            if (this.staticLevel > 0) {
+                var builder = builderStack.pop();
+                acc = new Access.Local(t.sizeInBytes(), builder.addLocalVariable(t.sizeInBytes()), this.staticLevel);
+                builderStack.push(builder);
+            } else {
+                acc = new Access.Global(t.sizeInBytes(), Frame.Label.named(varDef.name));
+            }
+            accesses.store(acc, varDef);
         }
-         */
     }
 
 
@@ -429,10 +420,10 @@ public class FrameEvaluator implements Visitor {
 
         if (types.valueFor(parameter.type).isPresent()) {
             Type t = types.valueFor(parameter.type).get();
-            // TODO: staticLevel
-            this.offset = this.offset + t.sizeInBytesAsParam();
-            Access.Parameter p = new Access.Parameter(t.sizeInBytesAsParam(), this.offset, this.staticLevel);
+            var builder = builderStack.pop();
+            Access.Parameter p = new Access.Parameter(t.sizeInBytesAsParam(), builder.addParameter(t.sizeInBytesAsParam()), this.staticLevel);
             accesses.store(p, parameter);
+            builderStack.push(builder);
         }
     }
 
