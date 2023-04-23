@@ -7,6 +7,7 @@ package compiler.frm;
 
 import static common.RequireNonNull.requireNonNull;
 
+import common.Constants;
 import common.Report;
 import compiler.common.Visitor;
 import compiler.parser.ast.def.*;
@@ -362,7 +363,7 @@ public class FrameEvaluator implements Visitor {
         Frame.Builder klicniZapis = new Frame.Builder(funLabel, this.staticLevel);
 
         // Static Link
-        klicniZapis.addParameter(4);
+        klicniZapis.addParameter(Constants.WordSize);
 
         // Parametri
         for (Parameter parameter : funDef.parameters) {

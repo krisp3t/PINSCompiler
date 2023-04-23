@@ -128,7 +128,7 @@ public abstract class Type {
 
         @Override
         public int sizeInBytesAsParam() {
-            return 4;
+            return Constants.WordSize;
         }
 
         @Override
@@ -191,7 +191,7 @@ public abstract class Type {
 
         @Override
         public int sizeInBytesAsParam() {
-            return 4;
+            return Constants.WordSize;
         }
 
         public int elementSizeInBytes() {
@@ -235,12 +235,12 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
-            return 4;
+            return Constants.WordSize;
         }
 
         @Override
         public int sizeInBytesAsParam() {
-            return 4;
+            return Constants.WordSize;
         }
 
         @Override
