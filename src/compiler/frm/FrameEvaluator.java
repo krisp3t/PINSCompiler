@@ -322,10 +322,7 @@ public class FrameEvaluator implements Visitor {
 
     @Override
     public void visit(Where where) {
-        // TODO Auto-generated method stub
-
-        where.defs.accept(this); // 2 obhoda v Defs
-        where.expr.accept(this);
+        where.defs.accept(this);
 
         for (Def def : where.defs.definitions) {
             if (def instanceof VarDef vd) {
@@ -338,9 +335,8 @@ public class FrameEvaluator implements Visitor {
             }
         }
 
-        // return type expr
-        if (types.valueFor(where.expr).isPresent())
-            types.store(types.valueFor(where.expr).get(), where);
+        where.expr.accept(this);
+
     }
 
 
@@ -368,7 +364,7 @@ public class FrameEvaluator implements Visitor {
         // Static Link
         klicniZapis.addParameter(4);
 
-        // parametri
+        // Parametri
         for (Parameter parameter : funDef.parameters) {
             parameter.accept(this);
             if (accesses.valueFor(parameter).isPresent()) {
@@ -379,14 +375,15 @@ public class FrameEvaluator implements Visitor {
 
         this.offset = 0;
 
+        // Lokalne spremenljivke
         funDef.body.accept(this);
-
         if (funDef.body instanceof Where w) {
             for (Def d: w.defs.definitions) {
                 if (d instanceof VarDef vd) {
                     if (accesses.valueFor(vd).isPresent()) {
                         Access a = accesses.valueFor(vd).get();
                         klicniZapis.addLocalVariable(a.size);
+                        // TODO: nested where
                     }
                 }
             }
@@ -394,6 +391,10 @@ public class FrameEvaluator implements Visitor {
 
         Frame f = klicniZapis.build();
         frames.store(f, funDef);
+
+        // Ponastavi offset
+        this.offset = 0;
+
     }
 
 
@@ -409,11 +410,14 @@ public class FrameEvaluator implements Visitor {
         // TODO Auto-generated method stub
         varDef.type.accept(this);
 
+        // TODO: globalne spremenljivke
+        /*
         if (types.valueFor(varDef.type).isPresent()) {
             Type t = types.valueFor(varDef.type).get();
             Access.Global g = new Access.Global(t.sizeInBytes(), Frame.Label.named(varDef.name));
             accesses.store(g, varDef);
         }
+         */
     }
 
 
