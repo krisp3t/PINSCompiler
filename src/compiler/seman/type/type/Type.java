@@ -123,12 +123,12 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
-            throw new RuntimeException("Implementiraj ...");
+            return this.kind.size;
         }
 
         @Override
         public int sizeInBytesAsParam() {
-            throw new RuntimeException("Implementiraj ...");
+            return 4;
         }
 
         @Override
@@ -191,11 +191,11 @@ public abstract class Type {
 
         @Override
         public int sizeInBytesAsParam() {
-            throw new RuntimeException("Implementiraj ...");
+            return 4;
         }
 
         public int elementSizeInBytes() {
-            return type.sizeInBytes();
+            return this.size * this.type.sizeInBytes();
         }
 
         @Override
@@ -235,12 +235,12 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
-            throw new RuntimeException("Implementiraj ...");
+            return 4;
         }
 
         @Override
         public int sizeInBytesAsParam() {
-            throw new RuntimeException("Implementiraj ...");
+            return 4;
         }
 
         @Override

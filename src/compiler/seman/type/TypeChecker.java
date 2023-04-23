@@ -351,7 +351,6 @@ public class TypeChecker implements Visitor {
     public void visit(TypeDef typeDef) {
         typeDef.type.accept(this);
 
-        // TODO: preveri, če typ obstaja
         if (types.valueFor(typeDef.type).isEmpty())
             Report.error(typeDef.position, "Tip " + typeDef.type + "ne obstaja!");
 
@@ -364,7 +363,6 @@ public class TypeChecker implements Visitor {
     public void visit(VarDef varDef) {
         varDef.type.accept(this);
 
-        // TODO: preveri, če typ obstaja
         if (types.valueFor(varDef.type).isEmpty())
             Report.error(varDef.position, "Tip " + varDef.type + "ne obstaja!");
 
@@ -377,7 +375,6 @@ public class TypeChecker implements Visitor {
     public void visit(Parameter parameter) {
         parameter.type.accept(this);
 
-        // TODO: preveri, če typ obstaja
         if (types.valueFor(parameter.type).isEmpty())
             Report.error(parameter.position, "Tip " + parameter.type + "ne obstaja!");
 
@@ -389,7 +386,6 @@ public class TypeChecker implements Visitor {
     public void visit(Array array) {
         array.type.accept(this);
 
-        // TODO: preveri, če typ obstaja
         if (types.valueFor(array.type).isEmpty())
             Report.error(array.position, "Tip " + array.type + "ne obstaja!");
 
