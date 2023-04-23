@@ -186,7 +186,7 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
-            throw new RuntimeException("Implementiraj ...");
+            return this.elementSizeInBytes() * this.size;
         }
 
         @Override
@@ -195,7 +195,7 @@ public abstract class Type {
         }
 
         public int elementSizeInBytes() {
-            return this.size * this.type.sizeInBytes();
+            return this.type.sizeInBytes();
         }
 
         @Override

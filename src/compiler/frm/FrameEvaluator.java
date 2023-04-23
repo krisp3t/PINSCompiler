@@ -139,8 +139,8 @@ public class FrameEvaluator implements Visitor {
 
     @Override
     public void visit(Where where) {
-        where.defs.accept(this);
         where.expr.accept(this);
+        where.defs.accept(this);
     }
 
 
