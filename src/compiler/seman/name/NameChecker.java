@@ -19,7 +19,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.name.env.SymbolTable;
 import compiler.seman.name.env.SymbolTable.DefinitionAlreadyExistsException;
 
-import java.util.Optional;
+import java.util.*;
 
 public class NameChecker implements Visitor {
     /**
@@ -45,8 +45,64 @@ public class NameChecker implements Visitor {
         this.symbolTable = symbolTable;
     }
 
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList("print_int", "print_str", "print_log", "rand_int", "seed"));
+    static final FunDef PRINT_INT_DEF = new FunDef(
+            Position.zero(),
+            "print_int",
+            new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.INT(Position.zero())))),
+            Atom.INT(Position.zero()),
+            new Literal(Position.zero(), "0", Atom.Type.INT));
+    static final FunDef PRINT_STR_DEF = new FunDef(
+            Position.zero(),
+            "print_str",
+            new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.STR(Position.zero())))),
+            Atom.STR(Position.zero()),
+            new Literal(Position.zero(), "", Atom.Type.STR));
+    static final FunDef PRINT_LOG_DEF = new FunDef(
+            Position.zero(),
+            "print_log",
+            new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.LOG(Position.zero())))),
+            Atom.LOG(Position.zero()),
+            new Literal(Position.zero(), "false", Atom.Type.LOG));
+    static final FunDef RAND_INT_DEF = new FunDef(
+            Position.zero(),
+            "rand_int",
+            new ArrayList<>(List.of(
+                    new Parameter(Position.zero(), "_", Atom.INT(Position.zero())),
+                    new Parameter(Position.zero(), "__", Atom.INT(Position.zero())))),
+            Atom.INT(Position.zero()),
+            new Literal(Position.zero(), "0", Atom.Type.INT));
+    static final FunDef SEED_DEF = new FunDef(
+            Position.zero(),
+            "seed",
+            new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.INT(Position.zero())))),
+            Atom.INT(Position.zero()),
+            new Literal(Position.zero(), "0", Atom.Type.INT));
+
+
     @Override
     public void visit(Call call) {
+        // Preskoči, če del standardne knjižnice. Preverimo v typecheckerju
+        if (STD_KNJIZNICA.contains(call.name)) {
+            switch (call.name) {
+                case "print_int":
+                    definitions.store(PRINT_INT_DEF, call);
+                    return;
+                case "print_str":
+                    definitions.store(PRINT_STR_DEF, call);
+                    return;
+                case "print_log":
+                    definitions.store(PRINT_LOG_DEF, call);
+                    return;
+                case "rand_int":
+                    definitions.store(RAND_INT_DEF, call);
+                    return;
+                case "seed":
+                    definitions.store(SEED_DEF, call);
+                    return;
+            }
+        }
+
         // Preveri obstoj funkcije
         if (symbolTable.definitionFor(call.name).isEmpty())
             Report.error(call.position, "Funkcija " + call.name + " ni definirana!");

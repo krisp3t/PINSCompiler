@@ -1,1 +1,1 @@
-fun main(a:integer):integer = (a; )
+fun main(a:integer):integer = (a, print_int('a'), print_str('a'), print_log(true), rand_int(10,20), seed(9))
