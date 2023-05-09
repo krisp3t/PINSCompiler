@@ -87,20 +87,23 @@ public class NameChecker implements Visitor {
             switch (call.name) {
                 case "print_int":
                     definitions.store(PRINT_INT_DEF, call);
-                    return;
+                    break;
                 case "print_str":
                     definitions.store(PRINT_STR_DEF, call);
-                    return;
+                    break;
                 case "print_log":
                     definitions.store(PRINT_LOG_DEF, call);
-                    return;
+                    break;
                 case "rand_int":
                     definitions.store(RAND_INT_DEF, call);
-                    return;
+                    break;
                 case "seed":
                     definitions.store(SEED_DEF, call);
-                    return;
+                    break;
             }
+            for (Expr argument : call.arguments)
+                argument.accept(this);
+            return;
         }
 
         // Preveri obstoj funkcije

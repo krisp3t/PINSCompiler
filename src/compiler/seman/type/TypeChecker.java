@@ -17,6 +17,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.type.type.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class TypeChecker implements Visitor {
      * Seznam obiskanih definicij (da se ne zaciklamo).
      */
     private HashSet<Def> visited = new HashSet<>();
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList("print_int", "print_str", "print_log", "rand_int", "seed"));
 
     public TypeChecker(NodeDescription<Def> definitions, NodeDescription<Type> types) {
         requireNonNull(definitions, types);
@@ -44,6 +46,55 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Call call) {
+        if (STD_KNJIZNICA.contains(call.name)) {
+            for (Expr argument : call.arguments)
+                argument.accept(this);
+
+            Expr argument = call.arguments.get(0);
+            Type argType = types.valueFor(argument).get();
+            Def def = definitions.valueFor(call).get();
+            if (!(def instanceof FunDef))
+                Report.error(call.position, call.name + " ni funkcija!");
+            FunDef funDef = (FunDef) def;
+
+            switch (call.name) {
+                case "print_int":
+                    if (call.arguments.size() != 1)
+                        Report.error(argument.position, "print_int sprejme samo 1 argument");
+                    if (!argType.isInt())
+                        Report.error(argument.position, "print_int sprejme samo int argument");
+                    break;
+                case "print_str":
+                    if (call.arguments.size() != 1)
+                        Report.error(argument.position, "print_str sprejme samo 1 argument");
+                    if (!argType.isStr())
+                        Report.error(argument.position, "print_str sprejme samo str argument");
+                    break;
+                case "print_log":
+                    if (call.arguments.size() != 1)
+                        Report.error(argument.position, "print_log sprejme samo 1 argument");
+                    if (!argType.isLog())
+                        Report.error(argument.position, "print_log sprejme samo str argument");
+                    break;
+                case "rand_int":
+                    if (call.arguments.size() != 2)
+                        Report.error(argument.position, "rand_int sprejme točno 2 argumenta");
+                    Expr argument2 = call.arguments.get(1);
+                    Type argType2 = types.valueFor(argument2).get();
+                    if (!argType.isInt() || !argType2.isInt())
+                        Report.error(argument.position, "rand_int sprejme samo int argumenta");
+                    break;
+                case "seed":
+                    if (call.arguments.size() != 1)
+                        Report.error(argument.position, "seed sprejme samo 1 argument");
+                    if (!argType.isInt())
+                        Report.error(argument.position, "seed sprejme samo int argument");
+                    break;
+            }
+            types.store(argType, call);
+        }
+
+
         for (Expr argument : call.arguments)
             argument.accept(this);
 
