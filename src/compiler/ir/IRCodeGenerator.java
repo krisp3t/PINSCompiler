@@ -150,18 +150,20 @@ public class IRCodeGenerator implements Visitor {
                 stmts.add(stmt);
             }
         }
-        SeqStmt s = new SeqStmt(stmts);
 
         // EseqExpr
         if (imcCode.valueFor(block.expressions.get(block.expressions.size() - 1)).isEmpty())
             Report.error(block.position, "Manjka IMC za block.expressions.get(block.expressions.size() - 1)!");
         IRNode node = imcCode.valueFor(block.expressions.get(block.expressions.size() - 1)).get();
-        EseqExpr e;
+
         if (node instanceof IRExpr expr) {
-            e = new EseqExpr(s, expr);
+            SeqStmt s = new SeqStmt(stmts);
+            EseqExpr e = new EseqExpr(s, expr);
             imcCode.store(e, block);
         } else {
-            Report.error(block.expressions.get(block.expressions.size() - 1).position, "Funkcija mora vračati expression!");
+            stmts.add((IRStmt) node);
+            SeqStmt s = new SeqStmt(stmts);
+            imcCode.store(s, block);
         }
     }
 
