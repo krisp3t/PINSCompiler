@@ -76,7 +76,6 @@ public class IRCodeGenerator implements Visitor {
         this.definitions = definitions;
     }
 
-    private Frame currentFrame = null;
 
     @Override
     public void visit(Call call) {
@@ -124,6 +123,33 @@ public class IRCodeGenerator implements Visitor {
 
 
         } else if (binary.operator.equals(Binary.Operator.ARR)) {
+            if (lhs instanceof MemExpr mem) {
+                if (definitions.valueFor(binary.left).isEmpty())
+                    Report.error(binary.position, "Manjka definicija za binary.left!");
+
+                Def def = definitions.valueFor(binary.left).get();
+
+                if (types.valueFor(def).isEmpty())
+                    Report.error(binary.position, "Manjka definicija za binary.left!");
+                Type t = types.valueFor(def).get();
+                Type.Array arr = null;
+                if (t instanceof Type.Array)
+                    arr = (Type.Array) t;
+                else
+                    Report.error(binary.position, "Pričakovan tip Array!");
+
+                // Dereferenciramo, ker rabimo naslov!
+                IRExpr firstAddress = mem.expr;
+                assert arr != null;
+                int odmikBajti = arr.elementSizeInBytes();
+                BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
+                // TODO: preveri, da ni čez velikost arraya
+                BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
+                MemExpr memExpr = new MemExpr(address);
+                imcCode.store(memExpr, binary);
+            } else {
+                Report.error(binary.position, "Pričakovan MemExpr na levi strani assignmenta!");
+            }
             // TODO
         } else {
             switch (binary.operator) {
@@ -461,7 +487,6 @@ public class IRCodeGenerator implements Visitor {
             Report.error(funDef.position, "IMC koda za FunDef body ni najdena!");
 
         Frame frame = this.frames.valueFor(funDef).get();
-        this.currentFrame = frame;
 
         NameExpr n = new NameExpr(frame.label);
         this.imcCode.store(n, funDef);
