@@ -359,8 +359,8 @@ public class IRCodeGenerator implements Visitor {
             Report.error(where.position, "IMC za where.expr ni najden!");
 
         // generiranje fragmenta
-        IRExpr e = (IRExpr) this.imcCode.valueFor(where.expr).get();
-        this.imcCode.store(e, where);
+        IRNode node = this.imcCode.valueFor(where.expr).get();
+        this.imcCode.store(node, where);
     }
 
     @Override

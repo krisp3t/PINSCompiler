@@ -1,9 +1,14 @@
-fun najmanjsi(test:integer):integer = (
-    {for i = 0, 10, 1:
-        {min = i}
-    },
-    min
-) {where
-    var min:integer;
-    var i:integer
-}
+fun main(args:arr[10]int):int = (
+    # program, ki vrne sestevek fibonaccijevih stevil na mestih v args tabeli
+    { sum = 0 },
+    { for i = 0, 10, 1 :
+        { sum = sum }
+    } { where var i:int },
+    sum
+) { where
+    var sum:int
+};
+
+typ int:integer;
+typ str:string;
+typ bool:logical
