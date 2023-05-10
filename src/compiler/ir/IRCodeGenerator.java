@@ -94,25 +94,39 @@ public class IRCodeGenerator implements Visitor {
         IRExpr lhs = (IRExpr) imcCode.valueFor(binary.left).get();
         IRExpr rhs = (IRExpr) imcCode.valueFor(binary.right).get();
         BinopExpr.Operator op = null;
-        switch (binary.operator) {
-            case ADD -> op = BinopExpr.Operator.ADD;
-            case SUB -> op = BinopExpr.Operator.SUB;
-            case MUL -> op = BinopExpr.Operator.MUL;
-            case DIV -> op = BinopExpr.Operator.DIV;
-            case MOD -> op = BinopExpr.Operator.MOD;
-            case AND -> op = BinopExpr.Operator.AND;
-            case OR -> op = BinopExpr.Operator.OR;
-            case EQ -> op = BinopExpr.Operator.EQ;
-            case NEQ -> op = BinopExpr.Operator.NEQ;
-            case LT -> op = BinopExpr.Operator.LT;
-            case GT -> op = BinopExpr.Operator.GT;
-            case LEQ -> op = BinopExpr.Operator.LEQ;
-            case GEQ -> op = BinopExpr.Operator.GEQ;
-            default -> Report.error(binary.position, "Neznani operator!");
+
+        if (binary.operator.equals(Binary.Operator.ASSIGN)) {
+            if (lhs instanceof MemExpr mem) {
+                MoveStmt mov = new MoveStmt(mem, rhs);
+                imcCode.store(mov, binary);
+            } else {
+                Report.error(binary.position, "Pričakovan MemExpr na levi strani assignmenta!");
+            }
+
+
+        } else if (binary.operator.equals(Binary.Operator.ARR)) {
+            // TODO
+        } else {
+            switch (binary.operator) {
+                case ADD -> op = BinopExpr.Operator.ADD;
+                case SUB -> op = BinopExpr.Operator.SUB;
+                case MUL -> op = BinopExpr.Operator.MUL;
+                case DIV -> op = BinopExpr.Operator.DIV;
+                case MOD -> op = BinopExpr.Operator.MOD;
+                case AND -> op = BinopExpr.Operator.AND;
+                case OR -> op = BinopExpr.Operator.OR;
+                case EQ -> op = BinopExpr.Operator.EQ;
+                case NEQ -> op = BinopExpr.Operator.NEQ;
+                case LT -> op = BinopExpr.Operator.LT;
+                case GT -> op = BinopExpr.Operator.GT;
+                case LEQ -> op = BinopExpr.Operator.LEQ;
+                case GEQ -> op = BinopExpr.Operator.GEQ;
+                default -> Report.error(binary.position, "Neznani operator!");
+            }
+            BinopExpr b = new BinopExpr(lhs, rhs, op);
+            imcCode.store(b, binary);
         }
 
-        BinopExpr b = new BinopExpr(lhs, rhs, op);
-        imcCode.store(b, binary);
     }
 
     @Override
@@ -146,7 +160,7 @@ public class IRCodeGenerator implements Visitor {
             e = new EseqExpr(s, expr);
             imcCode.store(e, block);
         } else {
-            Report.error(block.expressions.get(block.expressions.size() - 1).position, "V SeqStmt sodijo samo statements!");
+            Report.error(block.expressions.get(block.expressions.size() - 1).position, "Funkcija mora vračati expression!");
         }
     }
 
