@@ -8,6 +8,7 @@ package compiler.ir;
 import static common.RequireNonNull.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import common.Constants;
@@ -260,6 +261,40 @@ public class IRCodeGenerator implements Visitor {
     public void visit(While whileLoop) {
         whileLoop.condition.accept(this);
         whileLoop.body.accept(this);
+
+        if (imcCode.valueFor(whileLoop.condition).isEmpty())
+            Report.error(whileLoop.position, "Manjka IMC za whileLoop.condition!");
+        if (imcCode.valueFor(whileLoop.body).isEmpty())
+            Report.error(whileLoop.position, "Manjka IMC za whileLoop.body!");
+
+        IRExpr cond = null;
+        IRStmt body;
+
+        LabelStmt condLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        IRNode condNode = imcCode.valueFor(whileLoop.condition).get();
+        if (condNode instanceof IRExpr) {
+            cond = (IRExpr) condNode;
+        } else {
+            Report.error(whileLoop.condition.position, "Condition while loopa mora biti expression!");
+        }
+
+
+        LabelStmt thenLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        IRNode bodyNode = imcCode.valueFor(whileLoop.body).get();
+        if (bodyNode instanceof IRStmt) {
+            body = (IRStmt) bodyNode;
+        } else {
+            body = new ExpStmt((IRExpr) bodyNode);
+        }
+        JumpStmt endLabel = new JumpStmt(condLabel.label);
+        LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
+
+        // Add condLabel, cond, thenLabel, body, endLabel to stmts in one line
+        CJumpStmt c = new CJumpStmt(cond, thenLabel.label, elseLabel.label);
+        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(condLabel, c, thenLabel, body, endLabel, elseLabel));
+        SeqStmt seq = new SeqStmt(stmts);
+
+        imcCode.store(seq, whileLoop);
     }
 
     @Override

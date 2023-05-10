@@ -1,4 +1,4 @@
-var max:integer;
-fun test(test2:integer):integer = (
-    {max = 3}, 77
-)
+var x: integer;
+var y: string;
+fun f(x: integer, y: integer): integer = x + y;
+fun g(x: integer, y: integer): integer = ({while x < y: 1+1}, x * y)
