@@ -120,6 +120,34 @@ public class IRCodeGenerator implements Visitor {
         for (Expr expr : block.expressions) {
             expr.accept(this);
         }
+
+        // SeqStmt
+        List<IRStmt> stmts = new ArrayList<>();
+        for (int i = 0; i < block.expressions.size() - 1; i++) {
+            if (imcCode.valueFor(block.expressions.get(i)).isEmpty())
+                Report.error(block.position, "Manjka IMC za block.expressions(i)!");
+
+            IRNode node = imcCode.valueFor(block.expressions.get(i)).get();
+            if (node instanceof IRStmt stmt) {
+                stmts.add(stmt);
+            } else {
+                ExpStmt stmt = new ExpStmt((IRExpr) node);
+                stmts.add(stmt);
+            }
+        }
+        SeqStmt s = new SeqStmt(stmts);
+
+        // EseqExpr
+        if (imcCode.valueFor(block.expressions.get(block.expressions.size() - 1)).isEmpty())
+            Report.error(block.position, "Manjka IMC za block.expressions.get(block.expressions.size() - 1)!");
+        IRNode node = imcCode.valueFor(block.expressions.get(block.expressions.size() - 1)).get();
+        EseqExpr e;
+        if (node instanceof IRExpr expr) {
+            e = new EseqExpr(s, expr);
+            imcCode.store(e, block);
+        } else {
+            Report.error(block.expressions.get(block.expressions.size() - 1).position, "V SeqStmt sodijo samo statements!");
+        }
     }
 
     @Override
@@ -133,9 +161,8 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(Name name) {
-
         if (definitions.valueFor(name).isEmpty())
-            Report.error(name.position, "Manjka access za name!");
+            Report.error(name.position, "Manjka definicija za name!");
 
         Def v = definitions.valueFor(name).get();
 
@@ -145,6 +172,8 @@ public class IRCodeGenerator implements Visitor {
         Access a = accesses.valueFor(v).get();
 
         if (a instanceof Access.Global g) {
+            MemExpr mem = new MemExpr(new NameExpr(g.label));
+            imcCode.store(mem, name);
             // TODO
         } else if (a instanceof Access.Local l) {
             BinopExpr add = new BinopExpr(
@@ -193,6 +222,24 @@ public class IRCodeGenerator implements Visitor {
     @Override
     public void visit(Unary unary) {
         unary.expr.accept(this);
+
+        IRExpr e;
+        if (unary.operator.equals(Unary.Operator.NOT)) {
+            e = new BinopExpr(
+                    new ConstantExpr(1),
+                    (IRExpr) imcCode.valueFor(unary.expr).get(),
+                    BinopExpr.Operator.SUB
+            );
+            // 1 - 1 = 0
+            // 1 - 0 = 1
+        } else {
+            e = new BinopExpr(
+                    new ConstantExpr(0),
+                    (IRExpr) imcCode.valueFor(unary.expr).get(),
+                    unary.operator.equals(Unary.Operator.ADD) ? BinopExpr.Operator.ADD : BinopExpr.Operator.SUB
+            );
+        }
+        imcCode.store(e, unary);
     }
 
     @Override
