@@ -253,8 +253,6 @@ public class TypeChecker implements Visitor {
             if (types.valueFor(d.type).isPresent()) {
                 Type t = types.valueFor(d.type).get();
                 types.store(t, name);
-            } else {
-                Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
             }
         } else if (def instanceof Parameter d) {
             if (types.valueFor(d.type).isPresent()) {
