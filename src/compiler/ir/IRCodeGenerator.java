@@ -272,6 +272,54 @@ public class IRCodeGenerator implements Visitor {
         ifThenElse.condition.accept(this);
         ifThenElse.thenExpression.accept(this);
         ifThenElse.elseExpression.ifPresent(expr -> expr.accept(this));
+
+        if (imcCode.valueFor(ifThenElse.condition).isEmpty())
+            Report.error(ifThenElse.condition.position, "Manjka IMC za forLoop.counter!");
+        if (imcCode.valueFor(ifThenElse.thenExpression).isEmpty())
+            Report.error(ifThenElse.thenExpression.position, "Manjka IMC za forLoop.low!");
+        if (ifThenElse.elseExpression.isPresent() && imcCode.valueFor(ifThenElse.elseExpression.get()).isEmpty())
+            Report.error(ifThenElse.elseExpression.get().position, "Manjka IMC za forLoop.high!");
+
+        IRExpr cond = null;
+        IRNode condNode = imcCode.valueFor(ifThenElse.condition).get();
+        if (condNode instanceof IRExpr) {
+            cond = (IRExpr) condNode;
+        } else {
+            Report.error(ifThenElse.condition.position, "Condition if stavka mora biti expression!");
+        }
+        LabelStmt thenLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        LabelStmt endLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        JumpStmt jump = new JumpStmt(endLabel.label);
+
+        IRNode thenNode = imcCode.valueFor(ifThenElse.thenExpression).get();
+        IRStmt thenBody;
+        IRStmt elseBody;
+
+        if (thenNode instanceof IRStmt) {
+            thenBody = (IRStmt) thenNode;
+        } else {
+            thenBody = new ExpStmt((IRExpr) thenNode);
+        }
+
+
+        List<IRStmt> stmts;
+        CJumpStmt c;
+        if (ifThenElse.elseExpression.isPresent()) {
+            IRNode elseNode = imcCode.valueFor(ifThenElse.elseExpression.get()).get();
+            if (elseNode instanceof IRStmt) {
+                elseBody = (IRStmt) elseNode;
+            } else {
+                elseBody = new ExpStmt((IRExpr) elseNode);
+            }
+            c = new CJumpStmt(cond, thenLabel.label, elseLabel.label);
+            stmts = new ArrayList<>(Arrays.asList(c, thenLabel, thenBody, jump, elseLabel, elseBody, endLabel));
+        } else {
+            c = new CJumpStmt(cond, thenLabel.label, endLabel.label);
+            stmts = new ArrayList<>(Arrays.asList(c, thenLabel, thenBody, endLabel));
+        }
+        SeqStmt seq = new SeqStmt(stmts);
+        imcCode.store(seq, ifThenElse);
     }
 
     @Override
