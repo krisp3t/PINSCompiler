@@ -1,5 +1,1 @@
-fun main(args:integer):integer =
-    10 + 20 {where
-    var x: integer;
-    var y: integer
-}
+fun f(x: integer, y: integer): integer = x + y + a {where var a: integer}

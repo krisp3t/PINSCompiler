@@ -75,6 +75,8 @@ public class IRCodeGenerator implements Visitor {
         this.definitions = definitions;
     }
 
+    private Frame currentFrame = null;
+
     @Override
     public void visit(Call call) {
         for (Expr argument : call.arguments)
@@ -131,6 +133,40 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(Name name) {
+
+        if (definitions.valueFor(name).isEmpty())
+            Report.error(name.position, "Manjka access za name!");
+
+        Def v = definitions.valueFor(name).get();
+
+        if (accesses.valueFor(v).isEmpty())
+            Report.error(name.position, "Manjka access za name!");
+
+        Access a = accesses.valueFor(v).get();
+
+        if (a instanceof Access.Global g) {
+            // TODO
+        } else if (a instanceof Access.Local l) {
+            BinopExpr add = new BinopExpr(
+                    NameExpr.FP(),
+                    new ConstantExpr(l.offset),
+                    BinopExpr.Operator.ADD
+            );
+            MemExpr mem = new MemExpr(add);
+            imcCode.store(mem, name);
+        } else if (a instanceof Access.Parameter p) {
+            BinopExpr add = new BinopExpr(
+                    NameExpr.FP(),
+                    new ConstantExpr(p.offset),
+                    BinopExpr.Operator.ADD
+            );
+            MemExpr mem = new MemExpr(add);
+            imcCode.store(mem, name);
+        }
+
+        // TODO: drug SL
+
+
     }
 
     @Override
@@ -200,6 +236,7 @@ public class IRCodeGenerator implements Visitor {
         // expression
         funDef.body.accept(this);
 
+
         // generiranje fragmenta
         if (this.frames.valueFor(funDef).isEmpty())
             Report.error(funDef.position, "Frame za FunDef ni najden!");
@@ -207,10 +244,14 @@ public class IRCodeGenerator implements Visitor {
             Report.error(funDef.position, "IMC koda za FunDef body ni najdena!");
 
         Frame frame = this.frames.valueFor(funDef).get();
+        this.currentFrame = frame;
+
+        NameExpr n = new NameExpr(frame.label);
+        this.imcCode.store(n, funDef);
 
         // Pričakujemo expression
-        IRNode n = this.imcCode.valueFor(funDef.body).get();
-        IRExpr e = (IRExpr) n;
+        IRNode node = this.imcCode.valueFor(funDef.body).get();
+        IRExpr e = (IRExpr) node;
         ExpStmt imc = new ExpStmt(e);
 
         Chunk f = new Chunk.CodeChunk(frame, imc);
