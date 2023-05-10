@@ -4,13 +4,14 @@ fun fib(n:int):int = (
     { if n == 1 | n == 2 then
         {return = 1}
     else (
-        { return = 2 }
+        { return = fib(n-1) + fib(n-2) }
     )
     },
     return
 ) { where
     var return:int
 };
+
 typ int:integer;
 typ str:string;
 typ bool:logical

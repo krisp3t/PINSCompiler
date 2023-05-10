@@ -82,6 +82,24 @@ public class IRCodeGenerator implements Visitor {
     public void visit(Call call) {
         for (Expr argument : call.arguments)
             argument.accept(this);
+
+        List<IRExpr> args = new ArrayList<>();
+        for (Expr argument : call.arguments) {
+            if (imcCode.valueFor(argument).isEmpty())
+                Report.error(argument.position, "Manjka IMC za argument!");
+            IRNode arg = imcCode.valueFor(argument).get();
+            args.add((IRExpr) arg);
+        }
+
+        if (definitions.valueFor(call).isEmpty())
+            Report.error(call.position, "Manjka definicija za klic!");
+        FunDef def = (FunDef) definitions.valueFor(call).get();
+        if (frames.valueFor(def).isEmpty())
+            Report.error(call.position, "Manjka klicni zapis za definicijo!");
+        Frame f = frames.valueFor(def).get();
+
+        CallExpr c = new CallExpr(f.label, args);
+        this.imcCode.store(c, call);
     }
 
     @Override
