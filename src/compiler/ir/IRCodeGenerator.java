@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Constants;
+import common.Report;
 import compiler.common.Visitor;
 import compiler.frm.Access;
 import compiler.frm.Frame;
@@ -84,6 +85,32 @@ public class IRCodeGenerator implements Visitor {
     public void visit(Binary binary) {
         binary.left.accept(this);
         binary.right.accept(this);
+
+        if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
+            Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");
+
+        IRExpr lhs = (IRExpr) imcCode.valueFor(binary.left).get();
+        IRExpr rhs = (IRExpr) imcCode.valueFor(binary.right).get();
+        BinopExpr.Operator op = null;
+        switch (binary.operator) {
+            case ADD -> op = BinopExpr.Operator.ADD;
+            case SUB -> op = BinopExpr.Operator.SUB;
+            case MUL -> op = BinopExpr.Operator.MUL;
+            case DIV -> op = BinopExpr.Operator.DIV;
+            case MOD -> op = BinopExpr.Operator.MOD;
+            case AND -> op = BinopExpr.Operator.AND;
+            case OR -> op = BinopExpr.Operator.OR;
+            case EQ -> op = BinopExpr.Operator.EQ;
+            case NEQ -> op = BinopExpr.Operator.NEQ;
+            case LT -> op = BinopExpr.Operator.LT;
+            case GT -> op = BinopExpr.Operator.GT;
+            case LEQ -> op = BinopExpr.Operator.LEQ;
+            case GEQ -> op = BinopExpr.Operator.GEQ;
+            default -> Report.error(binary.position, "Neznani operator!");
+        }
+
+        BinopExpr b = new BinopExpr(lhs, rhs, op);
+        imcCode.store(b, binary);
     }
 
     @Override
@@ -115,6 +142,16 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(Literal literal) {
+        int constant;
+        if (literal.type.equals(Atom.Type.LOG))
+            constant = literal.value.equalsIgnoreCase("true") ? 1 : 0;
+        else if (literal.type.equals(Atom.Type.INT))
+            constant = Integer.parseInt(literal.value);
+        else
+            return;
+
+        ConstantExpr c = new ConstantExpr(constant);
+        imcCode.store(c, literal);
     }
 
     @Override
@@ -130,8 +167,15 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(Where where) {
-        where.defs.accept(this); // 2 obhoda v Defs
+        where.defs.accept(this);
         where.expr.accept(this);
+
+        if (this.imcCode.valueFor(where.expr).isEmpty())
+            Report.error(where.position, "IMC za where.expr ni najden!");
+
+        // generiranje fragmenta
+        IRExpr e = (IRExpr) this.imcCode.valueFor(where.expr).get();
+        this.imcCode.store(e, where);
     }
 
     @Override
@@ -155,6 +199,22 @@ public class IRCodeGenerator implements Visitor {
         }
         // expression
         funDef.body.accept(this);
+
+        // generiranje fragmenta
+        if (this.frames.valueFor(funDef).isEmpty())
+            Report.error(funDef.position, "Frame za FunDef ni najden!");
+        if (this.imcCode.valueFor(funDef.body).isEmpty())
+            Report.error(funDef.position, "IMC koda za FunDef body ni najdena!");
+
+        Frame frame = this.frames.valueFor(funDef).get();
+
+        // Pričakujemo expression
+        IRNode n = this.imcCode.valueFor(funDef.body).get();
+        IRExpr e = (IRExpr) n;
+        ExpStmt imc = new ExpStmt(e);
+
+        Chunk f = new Chunk.CodeChunk(frame, imc);
+        this.chunks.add(f);
     }
 
     @Override
@@ -165,7 +225,7 @@ public class IRCodeGenerator implements Visitor {
     @Override
     public void visit(VarDef varDef) {
         if (this.accesses.valueFor(varDef).isEmpty() || this.types.valueFor(varDef).isEmpty())
-            return;
+            Report.error(varDef.position, "Access ali tip za VarDef ni najden!");
 
         Access a = this.accesses.valueFor(varDef).get();
         Type t = this.types.valueFor(varDef).get();
