@@ -4,12 +4,17 @@ fun main(args:arr[10]int):int = (
     {for i = 0, 10, 1:
         {sum = sum + args[i]}
     },
+    main(args),
     sum
 ) {where
     var sum:int;
-    var i:int
+    var i:int;
+    var blabla: string
 };
 
+var y: integer;
 typ int:integer;
 typ str:string;
-typ bool:logical
+typ bool:logical;
+
+var x: string

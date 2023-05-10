@@ -164,6 +164,29 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(VarDef varDef) {
+        if (this.accesses.valueFor(varDef).isEmpty() || this.types.valueFor(varDef).isEmpty())
+            return;
+
+        Access a = this.accesses.valueFor(varDef).get();
+        Type t = this.types.valueFor(varDef).get();
+        Chunk g;
+
+        // Globalne
+        if (a instanceof Access.Global globalAccess) {
+            if (t.isStr())
+                g = new Chunk.DataChunk(globalAccess, "");
+            else
+                g = new Chunk.GlobalChunk(globalAccess);
+            this.chunks.add(g);
+        } else {
+            // Lokalni stringi
+            if (t.isStr()) {
+                Access.Global globalAccess = new Access.Global(Constants.WordSize, Label.nextAnonymous());
+                g = new Chunk.DataChunk(globalAccess, "");
+                this.chunks.add(g);
+            }
+        }
+
         varDef.type.accept(this);
     }
 
