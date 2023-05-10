@@ -1,4 +1,9 @@
-var x: integer;
-var y: string;
-fun f(x: integer, y: integer): integer = x + y;
-fun g(x: integer, y: integer): integer = ({while x < y: 1+1}, x * y)
+fun najmanjsi(test:integer):integer = (
+    {for i = 0, 10, 1:
+        {min = i}
+    },
+    min
+) {where
+    var min:integer;
+    var i:integer
+}

@@ -172,7 +172,61 @@ public class IRCodeGenerator implements Visitor {
         forLoop.high.accept(this);
         forLoop.step.accept(this);
         forLoop.body.accept(this);
+
+        if (imcCode.valueFor(forLoop.counter).isEmpty())
+            Report.error(forLoop.counter.position, "Manjka IMC za forLoop.counter!");
+        if (imcCode.valueFor(forLoop.low).isEmpty())
+            Report.error(forLoop.counter.position, "Manjka IMC za forLoop.low!");
+        if (imcCode.valueFor(forLoop.high).isEmpty())
+            Report.error(forLoop.counter.position, "Manjka IMC za forLoop.high!");
+        if (imcCode.valueFor(forLoop.step).isEmpty())
+            Report.error(forLoop.counter.position, "Manjka IMC za forLoop.step!");
+        if (imcCode.valueFor(forLoop.body).isEmpty())
+            Report.error(forLoop.counter.position, "Manjka IMC za forLoop.body!");
+
+        IRExpr cond = null;
+        IRStmt body;
+
+
+        MoveStmt init = new MoveStmt(
+                (IRExpr) imcCode.valueFor(forLoop.counter).get(),
+                (IRExpr) imcCode.valueFor(forLoop.low).get()
+        );
+
+        LabelStmt condLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        IRNode condNode = imcCode.valueFor(forLoop.high).get();
+        if (condNode instanceof IRExpr) {
+            cond = (IRExpr) condNode;
+        } else {
+            Report.error(forLoop.high.position, "Condition while loopa mora biti expression!");
+        }
+        BinopExpr lt = new BinopExpr(
+                (IRExpr) imcCode.valueFor(forLoop.counter).get(),
+                cond,
+                BinopExpr.Operator.LT);
+
+        LabelStmt thenLabel = new LabelStmt(Frame.Label.nextAnonymous());
+        IRNode bodyNode = imcCode.valueFor(forLoop.body).get();
+        if (bodyNode instanceof IRStmt) {
+            body = (IRStmt) bodyNode;
+        } else {
+            body = new ExpStmt((IRExpr) bodyNode);
+        }
+        ExpStmt step = new ExpStmt(new BinopExpr(
+                (IRExpr) imcCode.valueFor(forLoop.counter).get(),
+                (IRExpr) imcCode.valueFor(forLoop.step).get(),
+                BinopExpr.Operator.ADD
+        ));
+        JumpStmt jump = new JumpStmt(condLabel.label);
+        LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
+
+        CJumpStmt c = new CJumpStmt(lt, thenLabel.label, elseLabel.label);
+        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(init, condLabel, c, thenLabel, body, step, jump, elseLabel));
+        SeqStmt seq = new SeqStmt(stmts);
+
+        imcCode.store(seq, forLoop);
     }
+
 
     @Override
     public void visit(Name name) {
@@ -289,7 +343,6 @@ public class IRCodeGenerator implements Visitor {
         JumpStmt endLabel = new JumpStmt(condLabel.label);
         LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
 
-        // Add condLabel, cond, thenLabel, body, endLabel to stmts in one line
         CJumpStmt c = new CJumpStmt(cond, thenLabel.label, elseLabel.label);
         List<IRStmt> stmts = new ArrayList<>(Arrays.asList(condLabel, c, thenLabel, body, endLabel, elseLabel));
         SeqStmt seq = new SeqStmt(stmts);
