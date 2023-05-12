@@ -9,6 +9,7 @@ import static common.RequireNonNull.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import common.Constants;
@@ -77,6 +78,7 @@ public class IRCodeGenerator implements Visitor {
     }
 
     private Frame currentFrame = null;
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
 
 
     @Override
@@ -84,13 +86,24 @@ public class IRCodeGenerator implements Visitor {
         for (Expr argument : call.arguments)
             argument.accept(this);
 
+        int currentSL = this.currentFrame.staticLevel;
+
         List<IRExpr> args = new ArrayList<>();
         args.add(NameExpr.SP()); // Static Link
+
         for (Expr argument : call.arguments) {
             if (imcCode.valueFor(argument).isEmpty())
                 Report.error(argument.position, "Manjka IMC za argument!");
             IRNode arg = imcCode.valueFor(argument).get();
             args.add((IRExpr) arg);
+        }
+
+        // Preveri standardno knjižnico
+        if (STD_KNJIZNICA.contains(call.name)) {
+            Label label = Frame.Label.named(call.name);
+            CallExpr c = new CallExpr(label, args);
+            this.imcCode.store(c, call);
+            return;
         }
 
         if (definitions.valueFor(call).isEmpty())
@@ -480,7 +493,7 @@ public class IRCodeGenerator implements Visitor {
     @Override
     public void visit(FunDef funDef) {
         Frame frame = this.frames.valueFor(funDef).get();
-        currentFrame = frame;
+        this.currentFrame = frame;
 
         // return type
         funDef.type.accept(this);

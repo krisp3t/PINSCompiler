@@ -7,6 +7,7 @@ package compiler.seman.name;
 
 import static common.RequireNonNull.requireNonNull;
 
+import common.Constants;
 import common.Report;
 import compiler.common.Visitor;
 import compiler.lexer.Position;
@@ -45,28 +46,28 @@ public class NameChecker implements Visitor {
         this.symbolTable = symbolTable;
     }
 
-    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList("print_int", "print_str", "print_log", "rand_int", "seed"));
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
     static final FunDef PRINT_INT_DEF = new FunDef(
             Position.zero(),
-            "print_int",
+            Constants.printIntLabel,
             new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.INT(Position.zero())))),
             Atom.INT(Position.zero()),
             new Literal(Position.zero(), "0", Atom.Type.INT));
     static final FunDef PRINT_STR_DEF = new FunDef(
             Position.zero(),
-            "print_str",
+            Constants.printStringLabel,
             new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.STR(Position.zero())))),
             Atom.STR(Position.zero()),
             new Literal(Position.zero(), "", Atom.Type.STR));
     static final FunDef PRINT_LOG_DEF = new FunDef(
             Position.zero(),
-            "print_log",
+            Constants.printLogLabel,
             new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.LOG(Position.zero())))),
             Atom.LOG(Position.zero()),
             new Literal(Position.zero(), "false", Atom.Type.LOG));
     static final FunDef RAND_INT_DEF = new FunDef(
             Position.zero(),
-            "rand_int",
+            Constants.randIntLabel,
             new ArrayList<>(List.of(
                     new Parameter(Position.zero(), "_", Atom.INT(Position.zero())),
                     new Parameter(Position.zero(), "__", Atom.INT(Position.zero())))),
@@ -74,7 +75,7 @@ public class NameChecker implements Visitor {
             new Literal(Position.zero(), "0", Atom.Type.INT));
     static final FunDef SEED_DEF = new FunDef(
             Position.zero(),
-            "seed",
+            Constants.seedLabel,
             new ArrayList<>(List.of(new Parameter(Position.zero(), "_", Atom.INT(Position.zero())))),
             Atom.INT(Position.zero()),
             new Literal(Position.zero(), "0", Atom.Type.INT));
@@ -85,19 +86,19 @@ public class NameChecker implements Visitor {
         // Preskoči, če del standardne knjižnice. Preverimo v typecheckerju
         if (STD_KNJIZNICA.contains(call.name)) {
             switch (call.name) {
-                case "print_int":
+                case Constants.printIntLabel:
                     definitions.store(PRINT_INT_DEF, call);
                     break;
-                case "print_str":
+                case Constants.printStringLabel:
                     definitions.store(PRINT_STR_DEF, call);
                     break;
-                case "print_log":
+                case Constants.printLogLabel:
                     definitions.store(PRINT_LOG_DEF, call);
                     break;
-                case "rand_int":
+                case Constants.randIntLabel:
                     definitions.store(RAND_INT_DEF, call);
                     break;
-                case "seed":
+                case Constants.seedLabel:
                     definitions.store(SEED_DEF, call);
                     break;
             }

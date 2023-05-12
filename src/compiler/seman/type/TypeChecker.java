@@ -7,6 +7,7 @@ package compiler.seman.type;
 
 import static common.RequireNonNull.requireNonNull;
 
+import common.Constants;
 import common.Report;
 import compiler.common.Visitor;
 import compiler.parser.ast.def.*;
@@ -36,7 +37,7 @@ public class TypeChecker implements Visitor {
      * Seznam obiskanih definicij (da se ne zaciklamo).
      */
     private HashSet<Def> visited = new HashSet<>();
-    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList("print_int", "print_str", "print_log", "rand_int", "seed"));
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
 
     public TypeChecker(NodeDescription<Def> definitions, NodeDescription<Type> types) {
         requireNonNull(definitions, types);
@@ -58,25 +59,25 @@ public class TypeChecker implements Visitor {
             FunDef funDef = (FunDef) def;
 
             switch (call.name) {
-                case "print_int":
+                case Constants.printIntLabel:
                     if (call.arguments.size() != 1)
                         Report.error(argument.position, "print_int sprejme samo 1 argument");
                     if (!argType.isInt())
                         Report.error(argument.position, "print_int sprejme samo int argument");
                     break;
-                case "print_str":
+                case Constants.printStringLabel:
                     if (call.arguments.size() != 1)
                         Report.error(argument.position, "print_str sprejme samo 1 argument");
                     if (!argType.isStr())
                         Report.error(argument.position, "print_str sprejme samo str argument");
                     break;
-                case "print_log":
+                case Constants.printLogLabel:
                     if (call.arguments.size() != 1)
                         Report.error(argument.position, "print_log sprejme samo 1 argument");
                     if (!argType.isLog())
                         Report.error(argument.position, "print_log sprejme samo str argument");
                     break;
-                case "rand_int":
+                case Constants.randIntLabel:
                     if (call.arguments.size() != 2)
                         Report.error(argument.position, "rand_int sprejme točno 2 argumenta");
                     Expr argument2 = call.arguments.get(1);
@@ -84,7 +85,7 @@ public class TypeChecker implements Visitor {
                     if (!argType.isInt() || !argType2.isInt())
                         Report.error(argument.position, "rand_int sprejme samo int argumenta");
                     break;
-                case "seed":
+                case Constants.seedLabel:
                     if (call.arguments.size() != 1)
                         Report.error(argument.position, "seed sprejme samo 1 argument");
                     if (!argType.isInt())
