@@ -89,17 +89,11 @@ public class IRCodeGenerator implements Visitor {
         int currentSL = this.currentFrame.staticLevel;
 
         List<IRExpr> args = new ArrayList<>();
-        args.add(NameExpr.SP()); // Static Link
 
-        for (Expr argument : call.arguments) {
-            if (imcCode.valueFor(argument).isEmpty())
-                Report.error(argument.position, "Manjka IMC za argument!");
-            IRNode arg = imcCode.valueFor(argument).get();
-            args.add((IRExpr) arg);
-        }
 
         // Preveri standardno knjižnico
         if (STD_KNJIZNICA.contains(call.name)) {
+            args.add(NameExpr.FP());
             Label label = Frame.Label.named(call.name);
             CallExpr c = new CallExpr(label, args);
             this.imcCode.store(c, call);
@@ -113,8 +107,21 @@ public class IRCodeGenerator implements Visitor {
             Report.error(call.position, "Manjka klicni zapis za definicijo!");
         Frame f = frames.valueFor(def).get();
 
+        if (!call.name.equals(this.currentFrame.label.name))
+            args.add(NameExpr.FP());
+        else
+            args.add(new MemExpr(NameExpr.FP())); // TODO: za rekurzivne funkcije
+
+        for (Expr argument : call.arguments) {
+            if (imcCode.valueFor(argument).isEmpty())
+                Report.error(argument.position, "Manjka IMC za argument!");
+            IRNode arg = imcCode.valueFor(argument).get();
+            args.add((IRExpr) arg);
+        }
+
         CallExpr c = new CallExpr(f.label, args);
 
+        // SP - oldFP = FP
         int odmikOldFP = currentFrame.oldFPOffset();
         BinopExpr b = new BinopExpr(NameExpr.SP(), new ConstantExpr(odmikOldFP), BinopExpr.Operator.SUB);
         MoveStmt m = new MoveStmt(new MemExpr(b), NameExpr.FP());
@@ -315,16 +322,37 @@ public class IRCodeGenerator implements Visitor {
             imcCode.store(mem, name);
             // TODO
         } else if (a instanceof Access.Local l) {
+            IRExpr fp = null;
+            if (l.staticLevel == this.currentFrame.staticLevel) {
+                fp = NameExpr.FP();
+            } else {
+                fp = NameExpr.FP();
+                for (int i = 0; i <= this.currentFrame.staticLevel - l.staticLevel; i++) {
+                    fp = new MemExpr(fp);
+                }
+            }
+
             BinopExpr add = new BinopExpr(
-                    NameExpr.FP(),
+                    fp,
                     new ConstantExpr(l.offset),
                     BinopExpr.Operator.ADD
             );
             MemExpr mem = new MemExpr(add);
             imcCode.store(mem, name);
         } else if (a instanceof Access.Parameter p) {
+            IRExpr fp = null;
+
+            if (p.staticLevel == this.currentFrame.staticLevel) {
+                fp = NameExpr.FP();
+            } else {
+                fp = NameExpr.FP();
+                for (int i = 0; i <= this.currentFrame.staticLevel - p.staticLevel; i++) {
+                    fp = new MemExpr(fp);
+                }
+            }
+
             BinopExpr add = new BinopExpr(
-                    NameExpr.FP(),
+                    fp,
                     new ConstantExpr(p.offset),
                     BinopExpr.Operator.ADD
             );
@@ -401,6 +429,7 @@ public class IRCodeGenerator implements Visitor {
             constant = Integer.parseInt(literal.value);
         else {
             Chunk data = new Chunk.DataChunk(new Access.Global(Constants.WordSize, Label.nextAnonymous()), literal.value);
+            chunks.add(data);
             return;
         }
 
@@ -472,8 +501,8 @@ public class IRCodeGenerator implements Visitor {
 
     @Override
     public void visit(Where where) {
-        where.defs.accept(this);
         where.expr.accept(this);
+        where.defs.accept(this);
 
         if (this.imcCode.valueFor(where.expr).isEmpty())
             Report.error(where.position, "IMC za where.expr ni najden!");
@@ -493,6 +522,7 @@ public class IRCodeGenerator implements Visitor {
     @Override
     public void visit(FunDef funDef) {
         Frame frame = this.frames.valueFor(funDef).get();
+
         this.currentFrame = frame;
 
         // return type
@@ -517,15 +547,18 @@ public class IRCodeGenerator implements Visitor {
 
 
         NameExpr n = new NameExpr(frame.label);
-        this.imcCode.store(n, funDef);
+
 
         // Pričakujemo expression
         IRNode node = this.imcCode.valueFor(funDef.body).get();
-        IRStmt code;
-        code = (node instanceof IRExpr e) ? new ExpStmt(e) : (IRStmt) node;
 
-        Chunk f = new Chunk.CodeChunk(frame, code);
-        this.chunks.add(f);
+        Chunk chunk;
+        if (node instanceof IRExpr e) {
+            chunk = new Chunk.CodeChunk(frame, new MoveStmt(new MemExpr(NameExpr.FP()), e));
+        } else {
+            chunk = new Chunk.CodeChunk(frame, (IRStmt) node);
+        }
+        this.chunks.add(chunk);
     }
 
     @Override
