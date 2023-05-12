@@ -1,0 +1,10 @@
+fun brbr(a: integer, b: integer): integer = (
+    g(a, b)
+) {where
+    fun g(x: integer, y: integer):integer = (
+        a * b * c * d * x * y
+    ) {where
+        var c:integer;
+        var d:integer
+    }
+}

@@ -140,36 +140,23 @@ public class IRCodeGenerator implements Visitor {
             IRExpr lhs = (IRExpr) imcCode.valueFor(binary.left).get();
             IRExpr rhs = (IRExpr) imcCode.valueFor(binary.right).get();
 
-            if (lhs instanceof MemExpr mem) {
-                if (definitions.valueFor(binary.left).isEmpty()) {
-                    Report.error(binary.position, "Manjka definicija za binary.left!");
-                    // TODO: arr[20][10]
-                }
-
-                Def def = definitions.valueFor(binary.left).get();
-
-                if (types.valueFor(def).isEmpty())
-                    Report.error(binary.position, "Manjka definicija za binary.left!");
-                Type t = types.valueFor(def).get();
-                Type.Array arr = null;
-                if (t instanceof Type.Array)
-                    arr = (Type.Array) t;
-                else
-                    Report.error(binary.position, "Pričakovan tip Array!");
-
-                // Dereferenciramo, ker rabimo naslov!
-                IRExpr firstAddress = mem.expr;
-                assert arr != null;
-                int odmikBajti = arr.elementSizeInBytes();
-                BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
-                // TODO: preveri, da ni čez velikost arraya
-                BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
-                MemExpr memExpr = new MemExpr(address);
-                imcCode.store(memExpr, binary);
-            } else {
+            if (!(lhs instanceof MemExpr))
                 Report.error(binary.position, "Pričakovan MemExpr na levi strani assignmenta!");
-            }
-            // TODO
+
+            assert lhs instanceof MemExpr;
+            MemExpr mem = (MemExpr) lhs;
+
+            if (types.valueFor(binary).isEmpty())
+                Report.error(binary.position, "Manjka definicija za binary!");
+
+            int odmikBajti = types.valueFor(binary).get().sizeInBytes();
+            IRExpr firstAddress = mem.expr; // Dereferenciramo, ker rabimo naslov!
+            BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
+            BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
+            MemExpr memExpr = new MemExpr(address);
+            imcCode.store(memExpr, binary);
+
+            // TODO: preveri, da ni čez velikost arraya
         } else {
             if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
                 Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");
@@ -521,10 +508,10 @@ public class IRCodeGenerator implements Visitor {
 
         // Pričakujemo expression
         IRNode node = this.imcCode.valueFor(funDef.body).get();
-        IRExpr e = (IRExpr) node;
-        ExpStmt imc = new ExpStmt(e);
+        IRStmt code;
+        code = (node instanceof IRExpr e) ? new ExpStmt(e) : (IRStmt) node;
 
-        Chunk f = new Chunk.CodeChunk(frame, imc);
+        Chunk f = new Chunk.CodeChunk(frame, code);
         this.chunks.add(f);
     }
 
