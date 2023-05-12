@@ -1,14 +1,10 @@
-
-
-fun main(x: int):int = (
-    x + b[2]
-) { where
-    var sum : arr[10] int
-};
-
-var b : c;
-typ int:integer;
-typ str:string;
-typ bool:logical;
-typ c: arr [10] integer
-
+fun main(a: integer, b: integer): integer = (
+    g(a, b)
+) {where
+    fun g(x: integer, y: integer):integer = (
+        a + b + c + d
+    ) {where
+        var c:integer;
+        var d:integer
+    }
+}
