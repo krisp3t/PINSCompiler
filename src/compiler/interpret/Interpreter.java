@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import common.Constants;
+import common.Report;
 import compiler.frm.Frame;
 import compiler.gen.Memory;
 import compiler.ir.chunk.Chunk.CodeChunk;
@@ -157,7 +158,38 @@ public class Interpreter {
     }
 
     private Object execute(BinopExpr binop, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        var lhs = execute(binop.lhs, temps);
+        var rhs = execute(binop.rhs, temps);
+        BinopExpr.Operator op = binop.op;
+        switch (op) {
+            case ADD:
+                return toInt(lhs) + toInt(rhs);
+            case SUB:
+                return toInt(lhs) - toInt(rhs);
+            case MUL:
+                return toInt(lhs) * toInt(rhs);
+            case DIV:
+                return toInt(lhs) / toInt(rhs);
+            case AND:
+                return toInt(lhs) & toInt(rhs);
+            case OR:
+                return toInt(lhs) | toInt(rhs);
+            case EQ:
+                return toInt(lhs) == toInt(rhs) ? 1 : 0;
+            case NEQ:
+                return toInt(lhs) != toInt(rhs) ? 1 : 0;
+            case LT:
+                return toInt(lhs) < toInt(rhs) ? 1 : 0;
+            case GT:
+                return toInt(lhs) > toInt(rhs) ? 1 : 0;
+            case LEQ:
+                return toInt(lhs) <= toInt(rhs) ? 1 : 0;
+            case GEQ:
+                return toInt(lhs) >= toInt(rhs) ? 1 : 0;
+            default:
+                Report.error("Neznan operator!");
+                return null;
+        }
     }
 
     private Object execute(CallExpr call, Map<Frame.Temp, Object> temps) {
@@ -203,7 +235,8 @@ public class Interpreter {
     }
 
     private Object execute(MemExpr mem, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        var address = execute(mem.expr, temps);
+        return memory.ldM(toInt(address));
     }
 
     private Object execute(NameExpr name) {
@@ -214,7 +247,6 @@ public class Interpreter {
         else {
             return memory.address(name.label);
         }
-        // TODO: lokalne?
     }
 
     private Object execute(TempExpr temp, Map<Frame.Temp, Object> temps) {
