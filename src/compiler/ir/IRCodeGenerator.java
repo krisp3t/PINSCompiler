@@ -94,6 +94,12 @@ public class IRCodeGenerator implements Visitor {
         // Preveri standardno knjižnico
         if (STD_KNJIZNICA.contains(call.name)) {
             args.add(NameExpr.FP());
+            for (Expr argument : call.arguments) {
+                if (imcCode.valueFor(argument).isEmpty())
+                    Report.error(argument.position, "Manjka IMC za argument!");
+                IRNode arg = imcCode.valueFor(argument).get();
+                args.add((IRExpr) arg);
+            }
             Label label = Frame.Label.named(call.name);
             CallExpr c = new CallExpr(label, args);
             this.imcCode.store(c, call);
