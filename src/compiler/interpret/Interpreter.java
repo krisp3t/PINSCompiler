@@ -10,11 +10,7 @@ import static common.RequireNonNull.requireNonNull;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import common.Constants;
 import compiler.frm.Frame;
@@ -72,6 +68,8 @@ public class Interpreter {
 
     private void internalInterpret(CodeChunk chunk, Map<Frame.Temp, Object> temps) {
         // @TODO: Nastavi FP in SP na nove vrednosti!
+
+        this.stackPointer -= chunk.frame.size();
  
         Object result = null;
         if (chunk.code instanceof SeqStmt seq) {
@@ -115,7 +113,7 @@ public class Interpreter {
     }
 
     private Object execute(ExpStmt exp, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return execute(exp.expr, temps);
     }
 
     private Object execute(JumpStmt jump, Map<Frame.Temp, Object> temps) {
@@ -123,11 +121,17 @@ public class Interpreter {
     }
 
     private Object execute(MoveStmt move, Map<Frame.Temp, Object> temps) {
+        // Mem levi otrok od Move - pomeni STORE, drugje pomeni READ
         var dst = move.dst;
         var src = move.src;
 
         if (dst instanceof TempExpr tempExpr) {
             temps.put(tempExpr.temp, execute(src, temps));
+            // memory.stT(tempExpr.temp, execute(src, temps));
+        } else if (dst instanceof MemExpr memExpr) {
+            var address = execute(memExpr.expr, temps);
+            var value = execute(src, temps);
+            memory.stM((int) address, value);
         }
         return src;
     }
@@ -203,13 +207,14 @@ public class Interpreter {
     }
 
     private Object execute(NameExpr name) {
-        if (name.equals(NameExpr.FP()))
+        if (Objects.equals(name.label, Frame.Label.named(Constants.framePointer)))
             return this.framePointer;
-        else if (name.equals(NameExpr.SP()))
+        else if (Objects.equals(name.label, Frame.Label.named(Constants.stackPointer)))
             return this.stackPointer;
-
-        // TODO
-        return null;
+        else {
+            return memory.address(name.label);
+        }
+        // TODO: lokalne?
     }
 
     private Object execute(TempExpr temp, Map<Frame.Temp, Object> temps) {

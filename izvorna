@@ -1,1 +1,1 @@
-fun main(x: integer) : integer = (seed(30), print_int(rand_int(10, 50)))
+fun main(x: string): string = print_str('bkokokkk')
