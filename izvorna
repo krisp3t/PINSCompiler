@@ -1,6 +1,14 @@
 fun main(x: integer): integer = (
-    { for x = 1, 130, x * 2: (
-        print_int(x)
+    { i = 0 },
+    { while i < 15: (
+        print_int(i),
+        { i = increment(i) }
     )},
-    0
-)
+    i
+) { where
+    var i: integer;
+    fun increment(x: integer): integer = (
+        { x = x + 1 },
+        x
+    )
+}

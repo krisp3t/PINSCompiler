@@ -70,6 +70,9 @@ public class Interpreter {
     private void internalInterpret(CodeChunk chunk, Map<Frame.Temp, Object> temps) {
         // @TODO: Nastavi FP in SP na nove vrednosti!
 
+        if (!(chunk.frame.label.name.equals("main"))) {
+            this.framePointer = this.stackPointer;
+        }
         this.stackPointer -= chunk.frame.size();
  
         Object result = null;
@@ -91,6 +94,9 @@ public class Interpreter {
         }
       
         // @TODO: Ponastavi FP in SP na stare vrednosti!
+
+        this.stackPointer = this.framePointer;
+        this.framePointer = this.framePointer + chunk.frame.oldFPOffset();
     }
 
     private Object execute(IRStmt stmt, Map<Frame.Temp, Object> temps) {
@@ -225,7 +231,8 @@ public class Interpreter {
             // internalInterpret(chunk, new HashMap<>())
             //                          ~~~~~~~~~~~~~ 'lokalni registri'
             // ...
-            throw new UnsupportedOperationException("Unimplemented method 'execute'");
+            internalInterpret(chunk, new HashMap<>());
+            return null;
         } else {
             throw new RuntimeException("Only functions can be called!");
         }
