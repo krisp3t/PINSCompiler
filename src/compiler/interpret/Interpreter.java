@@ -110,7 +110,8 @@ public class Interpreter {
     }
 
     private Object execute(CJumpStmt cjump, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        var condition = execute(cjump.condition, temps);
+        return (toInt(condition) == 1) ? cjump.thenLabel : cjump.elseLabel;
     }
 
     private Object execute(ExpStmt exp, Map<Frame.Temp, Object> temps) {
@@ -118,7 +119,7 @@ public class Interpreter {
     }
 
     private Object execute(JumpStmt jump, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return jump.label;
     }
 
     private Object execute(MoveStmt move, Map<Frame.Temp, Object> temps) {
