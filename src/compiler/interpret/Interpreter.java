@@ -59,6 +59,7 @@ public class Interpreter {
         this.outputStream = outputStream;
         this.stackPointer = memory.size - Constants.WordSize;
         this.framePointer = memory.size - Constants.WordSize;
+        this.random = new Random();
     }
 
     // --------- izvajanje navideznega stroja ----------
@@ -122,7 +123,13 @@ public class Interpreter {
     }
 
     private Object execute(MoveStmt move, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        var dst = move.dst;
+        var src = move.src;
+
+        if (dst instanceof TempExpr tempExpr) {
+            temps.put(tempExpr.temp, execute(src, temps));
+        }
+        return src;
     }
 
     private Object execute(IRExpr expr, Map<Frame.Temp, Object> temps) {
@@ -188,7 +195,7 @@ public class Interpreter {
     }
 
     private Object execute(ConstantExpr constant) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return constant.constant;
     }
 
     private Object execute(MemExpr mem, Map<Frame.Temp, Object> temps) {
@@ -196,11 +203,17 @@ public class Interpreter {
     }
 
     private Object execute(NameExpr name) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        if (name.equals(NameExpr.FP()))
+            return this.framePointer;
+        else if (name.equals(NameExpr.SP()))
+            return this.stackPointer;
+
+        // TODO
+        return null;
     }
 
     private Object execute(TempExpr temp, Map<Frame.Temp, Object> temps) {
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        return temps.get(temp.temp);
     }
 
     // ----------- pomožne funkcije -----------
