@@ -51,7 +51,12 @@ public class TypeChecker implements Visitor {
             for (Expr argument : call.arguments)
                 argument.accept(this);
 
+            if (definitions.valueFor(call).isEmpty())
+                return;
             Expr argument = call.arguments.get(0);
+
+            if (types.valueFor(argument).isEmpty())
+                return;
             Type argType = types.valueFor(argument).get();
             Def def = definitions.valueFor(call).get();
             if (!(def instanceof FunDef))

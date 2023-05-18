@@ -1,14 +1,12 @@
 fun main(x: integer): integer = (
-    { i = 0 },
-    { while i < 15: (
-        print_int(i),
-        { i = increment(i) }
-    )},
-    i
+  { x = 1 },
+  g(2)
 ) { where
-    var i: integer;
-    fun increment(x: integer): integer = (
-        { x = x + 1 },
-        x
+  fun g(y: integer): integer = (
+    f(3)
+  ) { where
+    fun f(z: integer): integer = (
+      print_int(x)
     )
+  }
 }
