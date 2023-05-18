@@ -50,6 +50,8 @@ public class Interpreter {
      */
     private int framePointer;
 
+    private CodeChunk currentChunk;
+
     public Interpreter(Memory memory, Optional<PrintStream> outputStream) {
         requireNonNull(memory, outputStream);
         this.memory = memory;
@@ -70,6 +72,7 @@ public class Interpreter {
     private void internalInterpret(CodeChunk chunk, Map<Frame.Temp, Object> temps) {
         // @TODO: Nastavi FP in SP na nove vrednosti!
 
+        this.currentChunk = chunk;
         if (!(chunk.frame.label.name.equals("main"))) {
             this.framePointer = this.stackPointer;
         }
@@ -96,7 +99,8 @@ public class Interpreter {
         // @TODO: Ponastavi FP in SP na stare vrednosti!
 
         this.stackPointer = this.framePointer;
-        this.framePointer = this.framePointer + chunk.frame.oldFPOffset();
+        int oldFP = (int) memory.ldM(this.stackPointer - chunk.frame.oldFPOffset());
+        this.framePointer = oldFP;
     }
 
     private Object execute(IRStmt stmt, Map<Frame.Temp, Object> temps) {
@@ -231,8 +235,19 @@ public class Interpreter {
             // internalInterpret(chunk, new HashMap<>())
             //                          ~~~~~~~~~~~~~ 'lokalni registri'
             // ...
+
+            // Zapiši argumente v pomnilnik
+            for (int i = 0; i < call.args.size(); i++) {
+                var arg = call.args.get(i);
+                var argValue = execute(arg, temps);
+                memory.stM(this.stackPointer + (i * Constants.WordSize), argValue);
+            }
+
+            // Nastavi old FP
+            memory.stM(stackPointer - chunk.frame.oldFPOffset(), framePointer);
+
             internalInterpret(chunk, new HashMap<>());
-            return null;
+            return memory.ldM(this.stackPointer);
         } else {
             throw new RuntimeException("Only functions can be called!");
         }

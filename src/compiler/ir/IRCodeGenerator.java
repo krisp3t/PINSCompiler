@@ -133,7 +133,7 @@ public class IRCodeGenerator implements Visitor {
         MoveStmt m = new MoveStmt(new MemExpr(b), NameExpr.FP());
         EseqExpr e = new EseqExpr(m, c);
 
-        this.imcCode.store(e, call);
+        this.imcCode.store(c, call);
     }
 
     @Override
