@@ -1,5 +1,5 @@
 fun main(x: integer): integer = (
-  { x = 1 },
+  { x = 84818 },
   g(2)
 ) { where
   fun g(y: integer): integer = (

@@ -66,6 +66,8 @@ public class Interpreter {
     public void interpret(CodeChunk chunk) {
         memory.stM(framePointer + Constants.WordSize, 999); // argument v funkcijo main
         memory.stM(framePointer - chunk.frame.oldFPOffset(), framePointer); // oldFP
+        memory.stM(framePointer, framePointer); // trenuten FP naj kaže sam nase, da lahko dostopamo do argumentov višje
+
         internalInterpret(chunk, new HashMap<>());
     }
 
