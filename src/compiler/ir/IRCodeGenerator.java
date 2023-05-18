@@ -303,7 +303,7 @@ public class IRCodeGenerator implements Visitor {
         LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
 
         CJumpStmt c = new CJumpStmt(lt, thenLabel.label, elseLabel.label);
-        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(init, condLabel, c, thenLabel, body, step, jump, elseLabel));
+        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(init, condLabel, c, thenLabel, step, body, jump, elseLabel));
         SeqStmt seq = new SeqStmt(stmts);
 
         imcCode.store(seq, forLoop);

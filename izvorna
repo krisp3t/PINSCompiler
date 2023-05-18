@@ -1,12 +1,15 @@
+typ list: arr[10] integer;
+var array: list;
+
 fun main(x: integer): integer = (
-  { x = 84818 },
-  g(2)
+  fill_array2(array)
+);
+
+fun fill_array2(a: list): integer = (
+  ({ for i = 0, 5, i + 1:
+      {a[i] = i + 1 }
+  },
+  print_int(a[i]))
 ) { where
-  fun g(y: integer): integer = (
-    f(3)
-  ) { where
-    fun f(z: integer): integer = (
-      print_int(x)
-    )
-  }
+  var i: integer
 }
