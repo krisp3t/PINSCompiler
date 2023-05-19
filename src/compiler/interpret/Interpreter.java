@@ -261,13 +261,12 @@ public class Interpreter {
     }
 
     private Object execute(MemExpr mem, Map<Frame.Temp, Object> temps) {
-        var address = execute(mem.expr, temps);
-        try {
+        if (mem.expr instanceof NameExpr) {
+            return execute(mem.expr, temps);
+        } else {
+            var address = execute(mem.expr, temps);
             return memory.ldM(toInt(address));
-        } catch (Exception e) {
-            return address;
         }
-
     }
 
     private Object execute(NameExpr name) {
