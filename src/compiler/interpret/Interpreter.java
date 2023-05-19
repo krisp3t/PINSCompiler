@@ -261,16 +261,11 @@ public class Interpreter {
     }
 
     private Object execute(MemExpr mem, Map<Frame.Temp, Object> temps) {
-        if (mem.expr instanceof NameExpr) {
+        if (mem.expr instanceof NameExpr name && (!(name.label.name.equals(Constants.stackPointer) || name.label.name.equals(Constants.framePointer)))) {
             return execute(mem.expr, temps);
         } else {
             var address = execute(mem.expr, temps);
-            try {
-                return memory.ldM(toInt(address));
-            } catch (Exception e) {
-                return address;
-            }
-
+            return memory.ldM(toInt(address));
         }
     }
 

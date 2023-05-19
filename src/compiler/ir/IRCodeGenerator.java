@@ -371,7 +371,7 @@ public class IRCodeGenerator implements Visitor {
                 fp = NameExpr.FP();
             } else {
                 fp = NameExpr.FP();
-                for (int i = 0; i <= this.currentFrame.staticLevel - p.staticLevel; i++) {
+                for (int i = 0; i < this.currentFrame.staticLevel - p.staticLevel; i++) {
                     fp = new MemExpr(fp);
                 }
             }

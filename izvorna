@@ -1,27 +1,35 @@
-typ list: arr[10] integer;
-var l: integer;
-
 fun main(x: integer): integer = (
-  fill_array(10, 0),
-  print_array(a, 10),
+  { x = 1 },
+  { w = 4 },
+  g(2),
+  print_str(str_test('aaaaa')),
   0
 ) { where
-  var a: list;
-  fun fill_array(l: integer, x: integer): integer = (
-    { for i = x, l, 1:
-        { a[i] = i * 2 }
-    },
+  var w: integer;
+  fun g(y: integer): integer = (
+    { ww = 5 },
+    f(3),
     0
   ) { where
-    var i: integer
+    var ww: integer;
+    fun f(z: integer): integer = (
+      print_int(x),
+      print_int(y),
+      print_int(z),
+      print_int(w),
+      print_int(ww),
+      0
+    )
   }
 };
 
-fun print_array(a: list, l:integer): integer = (
-  { for i = 0, l, 1:
-      print_int(a[i])
-  },
-  0
+
+fun str_test(x: string): string = (
+  { s = 'lolmao' },
+  print_str(s),
+  print_str(x),
+  print_str('hello'),
+  'bruh'
 ) { where
-  var i: integer
+  var s: string
 }
