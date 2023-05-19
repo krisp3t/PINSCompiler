@@ -100,6 +100,7 @@ public class Interpreter {
       
         // @TODO: Ponastavi FP in SP na stare vrednosti!
 
+        this.currentChunk = chunk;
         this.stackPointer = this.framePointer;
         int oldFP = (int) memory.ldM(this.stackPointer - chunk.frame.oldFPOffset());
         this.framePointer = oldFP;

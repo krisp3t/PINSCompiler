@@ -300,9 +300,13 @@ public class IRCodeGenerator implements Visitor {
         } else {
             body = new ExpStmt((IRExpr) bodyNode);
         }
+        IRExpr stepPlus = new BinopExpr(
+                (IRExpr) imcCode.valueFor(forLoop.counter).get(),
+                (IRExpr) imcCode.valueFor(forLoop.step).get(),
+                BinopExpr.Operator.ADD);
         MoveStmt step = new MoveStmt(
                 (IRExpr) imcCode.valueFor(forLoop.counter).get(),
-                (IRExpr) imcCode.valueFor(forLoop.step).get()
+                stepPlus
         );
         JumpStmt jump = new JumpStmt(condLabel.label);
         LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
