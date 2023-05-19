@@ -333,6 +333,11 @@ public class IRCodeGenerator implements Visitor {
 
         if (a instanceof Access.Global g) {
             MemExpr mem = new MemExpr(new NameExpr(g.label));
+            if (v instanceof VarDef varDef) {
+                Type type = types.valueFor(varDef).get();
+                if (type.isAtom())
+                    mem = new MemExpr(mem);
+            }
             imcCode.store(mem, name);
             // TODO
         } else if (a instanceof Access.Local l) {
