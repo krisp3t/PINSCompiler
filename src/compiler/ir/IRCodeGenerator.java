@@ -342,6 +342,9 @@ public class IRCodeGenerator implements Visitor {
             // TODO
         } else if (a instanceof Access.Local l) {
             IRExpr fp = null;
+            Type t = types.valueFor(v).get();
+
+            // Potuj po static linkih navzgor
             if (l.staticLevel == this.currentFrame.staticLevel) {
                 fp = NameExpr.FP();
             } else {
@@ -357,7 +360,10 @@ public class IRCodeGenerator implements Visitor {
                     BinopExpr.Operator.ADD
             );
             MemExpr mem = new MemExpr(add);
-            imcCode.store(mem, name);
+            if (t.isArray()) // Lokalni array
+                imcCode.store(add, name);
+            else
+                imcCode.store(mem, name);
         } else if (a instanceof Access.Parameter p) {
             IRExpr fp = null;
 
