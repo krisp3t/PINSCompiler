@@ -1,35 +1,35 @@
+typ arr2dim: arr[2] arr[10] integer;
+var a: arr2dim;
+
 fun main(x: integer): integer = (
-  { x = 1 },
-  { w = 4 },
-  g(2),
-  print_str(str_test('aaaaa')),
-  0
-) { where
-  var w: integer;
-  fun g(y: integer): integer = (
-    { ww = 5 },
-    f(3),
+    fill_array(a[0], 0),
+    fill_array(a[1], 10),
+    print_arr(a),
     0
-  ) { where
-    var ww: integer;
-    fun f(z: integer): integer = (
-      print_int(x),
-      print_int(y),
-      print_int(z),
-      print_int(w),
-      print_int(ww),
-      0
-    )
-  }
+);
+
+fun fill_array(a: arr[10] integer, x: integer): integer = (
+    { for i = 0, 10, 1:
+        { a[i] = x + i }
+    },
+    0
+) { where
+    var i: integer
 };
 
-
-fun str_test(x: string): string = (
-  { s = 'lolmao' },
-  print_str(s),
-  print_str(x),
-  print_str('hello'),
-  'bruh'
+fun print_arr(a: arr2dim): integer = (
+    { for i = 0, 2, 1:
+        print_array(a[i])
+    },
+    0
 ) { where
-  var s: string
+    var i: integer;
+    fun print_array(a: arr[10] integer): integer = (
+        { for i = 0, 10, 1:
+            print_int(a[i])
+        },
+        0
+    ) { where
+        var i: integer
+    }
 }

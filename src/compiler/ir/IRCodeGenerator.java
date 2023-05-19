@@ -161,33 +161,32 @@ public class IRCodeGenerator implements Visitor {
 
 
         } else if (binary.operator.equals(Binary.Operator.ARR)) {
-            if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
-                Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");
+            if (types.valueFor(binary).isEmpty())
+                Report.error(binary.position, "Manjka tip za ARR!");
 
+            Type type = types.valueFor(binary).get();
             IRExpr lhs = (IRExpr) imcCode.valueFor(binary.left).get();
             IRExpr rhs = (IRExpr) imcCode.valueFor(binary.right).get();
 
-            if (!(lhs instanceof MemExpr))
-                Report.error(binary.position, "Pričakovan MemExpr na levi strani assignmenta!");
 
-            assert lhs instanceof MemExpr;
+            /*
+            if (!(lhs instanceof MemExpr))
+                lhs = new MemExpr(lhs);
+
             MemExpr mem = (MemExpr) lhs;
 
-            if (types.valueFor(binary).isEmpty())
-                Report.error(binary.position, "Manjka definicija za binary!");
+             */
 
             int odmikBajti = types.valueFor(binary).get().sizeInBytes();
-            IRExpr firstAddress = mem.expr; // Dereferenciramo, ker rabimo naslov!
-
-            if (!(mem.expr instanceof NameExpr)) // če ne dostopamo do globalnega arraya, potem se array nahaja na naslovu, kjer argument
-                firstAddress = new MemExpr(mem.expr);
 
             BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
-            BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
-            MemExpr memExpr = new MemExpr(address);
-            imcCode.store(memExpr, binary);
+            BinopExpr address = new BinopExpr(lhs, odmik, BinopExpr.Operator.ADD);
 
-            // TODO: preveri, da ni čez velikost arraya
+            if (type.isArray())
+                imcCode.store(address, binary);
+            else
+                imcCode.store(new MemExpr(address), binary);
+
         } else {
             if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
                 Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");

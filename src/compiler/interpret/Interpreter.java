@@ -265,7 +265,11 @@ public class Interpreter {
             return execute(mem.expr, temps);
         } else {
             var address = execute(mem.expr, temps);
-            return memory.ldM(toInt(address));
+            try {
+                return memory.ldM(toInt(address));
+            } catch (Exception e) {
+                return address;
+            }
         }
     }
 
