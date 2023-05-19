@@ -91,7 +91,7 @@ public class IRCodeGenerator implements Visitor {
         List<IRExpr> args = new ArrayList<>();
 
 
-        // Preveri standardno knjižnico
+        // Klic standardne knjižnice
         if (STD_KNJIZNICA.contains(call.name)) {
             args.add(NameExpr.FP());
             for (Expr argument : call.arguments) {
@@ -106,6 +106,7 @@ public class IRCodeGenerator implements Visitor {
             return;
         }
 
+        // Če ni klic standardne knjižnice
         if (definitions.valueFor(call).isEmpty())
             Report.error(call.position, "Manjka definicija za klic!");
         FunDef def = (FunDef) definitions.valueFor(call).get();
@@ -177,6 +178,10 @@ public class IRCodeGenerator implements Visitor {
 
             int odmikBajti = types.valueFor(binary).get().sizeInBytes();
             IRExpr firstAddress = mem.expr; // Dereferenciramo, ker rabimo naslov!
+
+            if (!(mem.expr instanceof NameExpr)) // če ne dostopamo do globalnega arraya, potem se array nahaja na naslovu, kjer argument
+                firstAddress = new MemExpr(mem.expr);
+
             BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
             BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
             MemExpr memExpr = new MemExpr(address);
@@ -303,7 +308,7 @@ public class IRCodeGenerator implements Visitor {
         LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
 
         CJumpStmt c = new CJumpStmt(lt, thenLabel.label, elseLabel.label);
-        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(init, condLabel, c, thenLabel, step, body, jump, elseLabel));
+        List<IRStmt> stmts = new ArrayList<>(Arrays.asList(init, condLabel, c, thenLabel, body, step, jump, elseLabel));
         SeqStmt seq = new SeqStmt(stmts);
 
         imcCode.store(seq, forLoop);
