@@ -48,6 +48,9 @@ public enum TokenType {
      * Operatorji:
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo2/main
     OP_ADD,       // +
     OP_SUB,       // -
     OP_MUL,       // *
@@ -77,6 +80,7 @@ public enum TokenType {
     OP_DOT,       // .
     OP_COMMA,     // ,
     OP_ASSIGN     // =
+<<<<<<< HEAD
 =======
     OP_ADD,       // + (43)
     OP_SUB,       // - (45)
@@ -108,4 +112,6 @@ public enum TokenType {
     OP_COMMA,     // , (44)
     OP_ASSIGN     // = (61)
 >>>>>>> repo1/main
+=======
+>>>>>>> repo2/main
 }

@@ -5,6 +5,9 @@
 
 import java.io.IOException;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo2/main
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,6 +15,7 @@ import java.util.Optional;
 
 import cli.PINS;
 import cli.PINS.Phase;
+<<<<<<< HEAD
 import compiler.common.PrettyPrintVisitor4;
 import compiler.frm.Access;
 import compiler.frm.Frame;
@@ -38,6 +42,10 @@ import cli.PINS;
 import cli.PINS.Phase;
 import compiler.lexer.Lexer;
 >>>>>>> repo1/main
+=======
+import compiler.lexer.Lexer;
+import compiler.parser.Parser;
+>>>>>>> repo2/main
 
 public class Main {
     /**
@@ -73,6 +81,9 @@ public class Main {
             return;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo2/main
         /**
          * Izvedi sintaksno analizo.
          */
@@ -80,6 +91,7 @@ public class Main {
                 ? Optional.of(System.out)
                 : Optional.empty();
         var parser = new Parser(symbols, out);
+<<<<<<< HEAD
         var ast = parser.parse();
         if (cli.execPhase == Phase.SYN) {
             return;
@@ -168,5 +180,11 @@ public class Main {
         }
 =======
 >>>>>>> repo1/main
+=======
+        parser.parse();
+        if (cli.execPhase == Phase.SYN) {
+            return;
+        }
+>>>>>>> repo2/main
     }
 }
