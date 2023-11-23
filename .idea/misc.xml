@@ -6,7 +6,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" languageLevel="JDK_19" project-jdk-name="17" project-jdk-type="JavaSDK">
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="17" project-jdk-type="JavaSDK">
+>>>>>>> repo7/main
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SaveActionSettings">
@@ -18,6 +22,7 @@
     </option>
     <option name="configurationPath" value="" />
   </component>
+<<<<<<< HEAD
 =======
   <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
@@ -48,4 +53,6 @@
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
 </project>

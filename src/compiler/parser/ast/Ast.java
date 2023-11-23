@@ -16,6 +16,9 @@ public abstract class Ast {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo7/main
 	public final Position position;
 
 	/**
@@ -26,6 +29,7 @@ public abstract class Ast {
 	public Ast(Position position) {
 		this.position = position;
 	}
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> repo4/main
@@ -53,10 +57,13 @@ public abstract class Ast {
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
 
     /**
      * 'Sprejmi' obiskovalca.
      */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -74,4 +81,7 @@ public abstract class Ast {
 =======
     public abstract void accept(Visitor visitor);
 >>>>>>> repo6/main
+=======
+	public abstract void accept(Visitor visitor);
+>>>>>>> repo7/main
 }

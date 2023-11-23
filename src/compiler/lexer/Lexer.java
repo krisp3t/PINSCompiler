@@ -28,6 +28,7 @@ public class Lexer {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     private int stolpec = 1;
 =======
     private int stolpec = 0;
@@ -47,6 +48,9 @@ public class Lexer {
 =======
     private int stolpec = 1;
 >>>>>>> repo6/main
+=======
+    private int stolpec = 1;
+>>>>>>> repo7/main
     private boolean zakljucenNiz = true;
 
 
@@ -148,6 +152,7 @@ public class Lexer {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
 =======
 =======
@@ -176,6 +181,9 @@ public class Lexer {
 =======
         if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
 >>>>>>> repo6/main
+=======
+        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
+>>>>>>> repo7/main
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -257,6 +265,7 @@ public class Lexer {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> repo1/main
@@ -272,6 +281,8 @@ public class Lexer {
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
     }
 
     private void preveriIme(ArrayList<Symbol> symbols) {
@@ -300,12 +311,15 @@ public class Lexer {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
             handleStanje(naslednjiZnak, symbols);
 
             if (naslednjiZnak == '\n') {
@@ -322,6 +336,7 @@ public class Lexer {
 
         }
         if (this.source.length() > 0) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -349,12 +364,15 @@ public class Lexer {
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
         }
         if (!this.zakljucenNiz) {
             Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
         }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -380,6 +398,9 @@ public class Lexer {
 =======
         symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
 >>>>>>> repo6/main
+=======
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
+>>>>>>> repo7/main
 
         return symbols;
     }

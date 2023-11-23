@@ -9,11 +9,15 @@ import static common.RequireNonNull.requireNonNull;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import common.Constants;
 =======
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+import common.Constants;
+>>>>>>> repo7/main
 import common.Report;
 import compiler.common.Visitor;
 import compiler.parser.ast.def.*;
@@ -26,11 +30,15 @@ import compiler.seman.type.type.Type;
 import java.util.ArrayList;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Arrays;
 =======
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+import java.util.Arrays;
+>>>>>>> repo7/main
 import java.util.HashSet;
 import java.util.List;
 
@@ -51,11 +59,15 @@ public class TypeChecker implements Visitor {
     private HashSet<Def> visited = new HashSet<>();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
 =======
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+    static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
+>>>>>>> repo7/main
 
     public TypeChecker(NodeDescription<Def> definitions, NodeDescription<Type> types) {
         requireNonNull(definitions, types);
@@ -67,16 +79,23 @@ public class TypeChecker implements Visitor {
     public void visit(Call call) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo7/main
         if (STD_KNJIZNICA.contains(call.name)) {
             for (Expr argument : call.arguments)
                 argument.accept(this);
 
+<<<<<<< HEAD
             if (definitions.valueFor(call).isEmpty())
                 return;
             Expr argument = call.arguments.get(0);
 
             if (types.valueFor(argument).isEmpty())
                 return;
+=======
+            Expr argument = call.arguments.get(0);
+>>>>>>> repo7/main
             Type argType = types.valueFor(argument).get();
             Def def = definitions.valueFor(call).get();
             if (!(def instanceof FunDef))
@@ -121,10 +140,13 @@ public class TypeChecker implements Visitor {
         }
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         for (Expr argument : call.arguments)
             argument.accept(this);
 
@@ -141,6 +163,7 @@ public class TypeChecker implements Visitor {
         if (types.valueFor(funDef).isEmpty()) // gre skozi v drugem obhodu
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             // če rekurzivna funkcija, posebej obravnavamo
             if (!call.name.equals(funDef.name))
                 return;
@@ -152,6 +175,11 @@ public class TypeChecker implements Visitor {
             if (!call.name.equals(funDef.name))
                 return;
 >>>>>>> repo6/main
+=======
+            // če rekurzivna funkcija, posebej obravnavamo
+            if (!call.name.equals(funDef.name))
+                return;
+>>>>>>> repo7/main
 
         if (call.arguments.toArray().length != funDef.parameters.toArray().length)
             Report.error(call.position, "Število argumentov se ne ujema s številom parametrov funkcije");
@@ -270,6 +298,7 @@ public class TypeChecker implements Visitor {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         Expr[] nodes = {forLoop.counter, forLoop.low, forLoop.high, forLoop.step};
 =======
         Expr[] nodes = {forLoop.low, forLoop.high, forLoop.step};
@@ -277,6 +306,9 @@ public class TypeChecker implements Visitor {
 =======
         Expr[] nodes = {forLoop.counter, forLoop.low, forLoop.high, forLoop.step};
 >>>>>>> repo6/main
+=======
+        Expr[] nodes = {forLoop.counter, forLoop.low, forLoop.high, forLoop.step};
+>>>>>>> repo7/main
         for (Expr node : nodes) {
             if (types.valueFor(node).isPresent()) {
                 Type t = types.valueFor(node).get();
@@ -303,6 +335,7 @@ public class TypeChecker implements Visitor {
                 types.store(t, name);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             } else {
                 Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
@@ -311,6 +344,8 @@ public class TypeChecker implements Visitor {
             } else {
                 Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
             }
         } else if (def instanceof Parameter d) {
             if (types.valueFor(d.type).isPresent()) {
@@ -460,11 +495,14 @@ public class TypeChecker implements Visitor {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         // TODO: preveri, če typ obstaja
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         if (types.valueFor(typeDef.type).isEmpty())
             Report.error(typeDef.position, "Tip " + typeDef.type + "ne obstaja!");
 
@@ -479,11 +517,14 @@ public class TypeChecker implements Visitor {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         // TODO: preveri, če typ obstaja
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         if (types.valueFor(varDef.type).isEmpty())
             Report.error(varDef.position, "Tip " + varDef.type + "ne obstaja!");
 
@@ -498,11 +539,14 @@ public class TypeChecker implements Visitor {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         // TODO: preveri, če typ obstaja
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         if (types.valueFor(parameter.type).isEmpty())
             Report.error(parameter.position, "Tip " + parameter.type + "ne obstaja!");
 
@@ -516,11 +560,14 @@ public class TypeChecker implements Visitor {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         // TODO: preveri, če typ obstaja
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         if (types.valueFor(array.type).isEmpty())
             Report.error(array.position, "Tip " + array.type + "ne obstaja!");
 

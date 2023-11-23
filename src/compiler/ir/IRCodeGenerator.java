@@ -91,6 +91,7 @@ public class IRCodeGenerator implements Visitor {
         List<IRExpr> args = new ArrayList<>();
 
 
+<<<<<<< HEAD
         // Klic standardne knjižnice
         if (STD_KNJIZNICA.contains(call.name)) {
             args.add(NameExpr.FP());
@@ -100,13 +101,21 @@ public class IRCodeGenerator implements Visitor {
                 IRNode arg = imcCode.valueFor(argument).get();
                 args.add((IRExpr) arg);
             }
+=======
+        // Preveri standardno knjižnico
+        if (STD_KNJIZNICA.contains(call.name)) {
+            args.add(NameExpr.FP());
+>>>>>>> repo7/main
             Label label = Frame.Label.named(call.name);
             CallExpr c = new CallExpr(label, args);
             this.imcCode.store(c, call);
             return;
         }
 
+<<<<<<< HEAD
         // Če ni klic standardne knjižnice
+=======
+>>>>>>> repo7/main
         if (definitions.valueFor(call).isEmpty())
             Report.error(call.position, "Manjka definicija za klic!");
         FunDef def = (FunDef) definitions.valueFor(call).get();
@@ -134,7 +143,11 @@ public class IRCodeGenerator implements Visitor {
         MoveStmt m = new MoveStmt(new MemExpr(b), NameExpr.FP());
         EseqExpr e = new EseqExpr(m, c);
 
+<<<<<<< HEAD
         this.imcCode.store(c, call);
+=======
+        this.imcCode.store(e, call);
+>>>>>>> repo7/main
     }
 
     @Override
@@ -161,6 +174,7 @@ public class IRCodeGenerator implements Visitor {
 
 
         } else if (binary.operator.equals(Binary.Operator.ARR)) {
+<<<<<<< HEAD
             if (types.valueFor(binary).isEmpty())
                 Report.error(binary.position, "Manjka tip za ARR!");
 
@@ -187,6 +201,31 @@ public class IRCodeGenerator implements Visitor {
             else
                 imcCode.store(new MemExpr(address), binary);
 
+=======
+            if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
+                Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");
+
+            IRExpr lhs = (IRExpr) imcCode.valueFor(binary.left).get();
+            IRExpr rhs = (IRExpr) imcCode.valueFor(binary.right).get();
+
+            if (!(lhs instanceof MemExpr))
+                Report.error(binary.position, "Pričakovan MemExpr na levi strani assignmenta!");
+
+            assert lhs instanceof MemExpr;
+            MemExpr mem = (MemExpr) lhs;
+
+            if (types.valueFor(binary).isEmpty())
+                Report.error(binary.position, "Manjka definicija za binary!");
+
+            int odmikBajti = types.valueFor(binary).get().sizeInBytes();
+            IRExpr firstAddress = mem.expr; // Dereferenciramo, ker rabimo naslov!
+            BinopExpr odmik = new BinopExpr(rhs, new ConstantExpr(odmikBajti), BinopExpr.Operator.MUL);
+            BinopExpr address = new BinopExpr(firstAddress, odmik, BinopExpr.Operator.ADD);
+            MemExpr memExpr = new MemExpr(address);
+            imcCode.store(memExpr, binary);
+
+            // TODO: preveri, da ni čez velikost arraya
+>>>>>>> repo7/main
         } else {
             if (imcCode.valueFor(binary.left).isEmpty() || imcCode.valueFor(binary.right).isEmpty())
                 Report.error(binary.position, "Manjka IMC za binary.left ali binary.right!");
@@ -299,6 +338,7 @@ public class IRCodeGenerator implements Visitor {
         } else {
             body = new ExpStmt((IRExpr) bodyNode);
         }
+<<<<<<< HEAD
         IRExpr stepPlus = new BinopExpr(
                 (IRExpr) imcCode.valueFor(forLoop.counter).get(),
                 (IRExpr) imcCode.valueFor(forLoop.step).get(),
@@ -307,6 +347,13 @@ public class IRCodeGenerator implements Visitor {
                 (IRExpr) imcCode.valueFor(forLoop.counter).get(),
                 stepPlus
         );
+=======
+        ExpStmt step = new ExpStmt(new BinopExpr(
+                (IRExpr) imcCode.valueFor(forLoop.counter).get(),
+                (IRExpr) imcCode.valueFor(forLoop.step).get(),
+                BinopExpr.Operator.ADD
+        ));
+>>>>>>> repo7/main
         JumpStmt jump = new JumpStmt(condLabel.label);
         LabelStmt elseLabel = new LabelStmt(Frame.Label.nextAnonymous());
 
@@ -332,23 +379,33 @@ public class IRCodeGenerator implements Visitor {
 
         if (a instanceof Access.Global g) {
             MemExpr mem = new MemExpr(new NameExpr(g.label));
+<<<<<<< HEAD
             if (v instanceof VarDef varDef) {
                 Type type = types.valueFor(varDef).get();
                 if (type.isAtom())
                     mem = new MemExpr(mem);
             }
+=======
+>>>>>>> repo7/main
             imcCode.store(mem, name);
             // TODO
         } else if (a instanceof Access.Local l) {
             IRExpr fp = null;
+<<<<<<< HEAD
             Type t = types.valueFor(v).get();
 
             // Potuj po static linkih navzgor
+=======
+>>>>>>> repo7/main
             if (l.staticLevel == this.currentFrame.staticLevel) {
                 fp = NameExpr.FP();
             } else {
                 fp = NameExpr.FP();
+<<<<<<< HEAD
                 for (int i = 0; i < this.currentFrame.staticLevel - l.staticLevel; i++) {
+=======
+                for (int i = 0; i <= this.currentFrame.staticLevel - l.staticLevel; i++) {
+>>>>>>> repo7/main
                     fp = new MemExpr(fp);
                 }
             }
@@ -359,10 +416,14 @@ public class IRCodeGenerator implements Visitor {
                     BinopExpr.Operator.ADD
             );
             MemExpr mem = new MemExpr(add);
+<<<<<<< HEAD
             if (t.isArray()) // Lokalni array
                 imcCode.store(add, name);
             else
                 imcCode.store(mem, name);
+=======
+            imcCode.store(mem, name);
+>>>>>>> repo7/main
         } else if (a instanceof Access.Parameter p) {
             IRExpr fp = null;
 
@@ -370,7 +431,11 @@ public class IRCodeGenerator implements Visitor {
                 fp = NameExpr.FP();
             } else {
                 fp = NameExpr.FP();
+<<<<<<< HEAD
                 for (int i = 0; i < this.currentFrame.staticLevel - p.staticLevel; i++) {
+=======
+                for (int i = 0; i <= this.currentFrame.staticLevel - p.staticLevel; i++) {
+>>>>>>> repo7/main
                     fp = new MemExpr(fp);
                 }
             }
@@ -452,10 +517,15 @@ public class IRCodeGenerator implements Visitor {
         else if (literal.type.equals(Atom.Type.INT))
             constant = Integer.parseInt(literal.value);
         else {
+<<<<<<< HEAD
             Label l = Label.nextAnonymous();
             Chunk data = new Chunk.DataChunk(new Access.Global(Constants.WordSize, l), literal.value);
             chunks.add(data);
             imcCode.store(new NameExpr(l), literal);
+=======
+            Chunk data = new Chunk.DataChunk(new Access.Global(Constants.WordSize, Label.nextAnonymous()), literal.value);
+            chunks.add(data);
+>>>>>>> repo7/main
             return;
         }
 
@@ -603,8 +673,25 @@ public class IRCodeGenerator implements Visitor {
 
         // Globalne
         if (a instanceof Access.Global globalAccess) {
+<<<<<<< HEAD
             this.chunks.add(new Chunk.GlobalChunk(globalAccess));
         }
+=======
+            if (t.isStr())
+                g = new Chunk.DataChunk(globalAccess, "");
+            else
+                g = new Chunk.GlobalChunk(globalAccess);
+            this.chunks.add(g);
+        } else {
+            // Lokalni stringi
+            if (t.isStr()) {
+                Access.Global globalAccess = new Access.Global(Constants.WordSize, Label.nextAnonymous());
+                g = new Chunk.DataChunk(globalAccess, "");
+                this.chunks.add(g);
+            }
+        }
+
+>>>>>>> repo7/main
         varDef.type.accept(this);
     }
 

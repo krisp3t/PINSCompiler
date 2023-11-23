@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 typ list: arr[10] integer;
 var array: list;
 
@@ -13,3 +14,15 @@ fun fill_array2(a: list): integer = (
 ) { where
   var i: integer
 }
+=======
+fun brbr(a: integer, b: integer): integer = (
+    g(a, b)
+) {where
+    fun g(x: integer, y: integer):integer = (
+        a * b * c * d * x * y
+    ) {where
+        var c:integer;
+        var d:integer
+    }
+}
+>>>>>>> repo7/main

@@ -125,6 +125,7 @@ public abstract class Type {
         public int sizeInBytes() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             return this.kind.size;
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -132,12 +133,16 @@ public abstract class Type {
 =======
             return this.kind.size;
 >>>>>>> repo6/main
+=======
+            return this.kind.size;
+>>>>>>> repo7/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             return Constants.WordSize;
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -145,6 +150,9 @@ public abstract class Type {
 =======
             return Constants.WordSize;
 >>>>>>> repo6/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo7/main
         }
 
         @Override
@@ -204,6 +212,7 @@ public abstract class Type {
         public int sizeInBytes() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             return this.elementSizeInBytes() * this.size;
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -211,19 +220,26 @@ public abstract class Type {
 =======
             return this.elementSizeInBytes() * this.size;
 >>>>>>> repo6/main
+=======
+            return this.elementSizeInBytes() * this.size;
+>>>>>>> repo7/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
             return Constants.WordSize;
         }
 
         public int elementSizeInBytes() {
             return this.type.sizeInBytes();
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -234,6 +250,8 @@ public abstract class Type {
 >>>>>>> repo5/main
 =======
 >>>>>>> repo6/main
+=======
+>>>>>>> repo7/main
         }
 
         @Override
@@ -275,6 +293,7 @@ public abstract class Type {
         public int sizeInBytes() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             return Constants.WordSize;
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -282,12 +301,16 @@ public abstract class Type {
 =======
             return Constants.WordSize;
 >>>>>>> repo6/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo7/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             return Constants.WordSize;
 =======
             throw new RuntimeException("Implementiraj ...");
@@ -295,6 +318,9 @@ public abstract class Type {
 =======
             return Constants.WordSize;
 >>>>>>> repo6/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo7/main
         }
 
         @Override
