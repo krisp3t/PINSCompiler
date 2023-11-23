@@ -5,6 +5,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
 =======
     <mapping directory="" vcs="Git" />
@@ -18,5 +19,8 @@
 =======
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
 >>>>>>> repo4/main
+=======
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+>>>>>>> repo5/main
   </component>
 </project>

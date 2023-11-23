@@ -7,7 +7,10 @@ package compiler.seman.type;
 
 import static common.RequireNonNull.requireNonNull;
 
+<<<<<<< HEAD
 import common.Constants;
+=======
+>>>>>>> repo5/main
 import common.Report;
 import compiler.common.Visitor;
 import compiler.parser.ast.def.*;
@@ -18,7 +21,10 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.type.type.Type;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.Arrays;
+=======
+>>>>>>> repo5/main
 import java.util.HashSet;
 import java.util.List;
 
@@ -37,7 +43,10 @@ public class TypeChecker implements Visitor {
      * Seznam obiskanih definicij (da se ne zaciklamo).
      */
     private HashSet<Def> visited = new HashSet<>();
+<<<<<<< HEAD
     static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
+=======
+>>>>>>> repo5/main
 
     public TypeChecker(NodeDescription<Def> definitions, NodeDescription<Type> types) {
         requireNonNull(definitions, types);
@@ -47,6 +56,7 @@ public class TypeChecker implements Visitor {
 
     @Override
     public void visit(Call call) {
+<<<<<<< HEAD
         if (STD_KNJIZNICA.contains(call.name)) {
             for (Expr argument : call.arguments)
                 argument.accept(this);
@@ -101,6 +111,8 @@ public class TypeChecker implements Visitor {
         }
 
 
+=======
+>>>>>>> repo5/main
         for (Expr argument : call.arguments)
             argument.accept(this);
 
@@ -115,9 +127,13 @@ public class TypeChecker implements Visitor {
 
 
         if (types.valueFor(funDef).isEmpty()) // gre skozi v drugem obhodu
+<<<<<<< HEAD
             // če rekurzivna funkcija, posebej obravnavamo
             if (!call.name.equals(funDef.name))
                 return;
+=======
+            return;
+>>>>>>> repo5/main
 
         if (call.arguments.toArray().length != funDef.parameters.toArray().length)
             Report.error(call.position, "Število argumentov se ne ujema s številom parametrov funkcije");
@@ -234,7 +250,11 @@ public class TypeChecker implements Visitor {
         forLoop.step.accept(this);
         forLoop.body.accept(this);
 
+<<<<<<< HEAD
         Expr[] nodes = {forLoop.counter, forLoop.low, forLoop.high, forLoop.step};
+=======
+        Expr[] nodes = {forLoop.low, forLoop.high, forLoop.step};
+>>>>>>> repo5/main
         for (Expr node : nodes) {
             if (types.valueFor(node).isPresent()) {
                 Type t = types.valueFor(node).get();
@@ -259,6 +279,11 @@ public class TypeChecker implements Visitor {
             if (types.valueFor(d.type).isPresent()) {
                 Type t = types.valueFor(d.type).get();
                 types.store(t, name);
+<<<<<<< HEAD
+=======
+            } else {
+                Report.error(name.position, "Tipa " + name.name + " ni bilo mogoče določiti");
+>>>>>>> repo5/main
             }
         } else if (def instanceof Parameter d) {
             if (types.valueFor(d.type).isPresent()) {
@@ -406,6 +431,10 @@ public class TypeChecker implements Visitor {
     public void visit(TypeDef typeDef) {
         typeDef.type.accept(this);
 
+<<<<<<< HEAD
+=======
+        // TODO: preveri, če typ obstaja
+>>>>>>> repo5/main
         if (types.valueFor(typeDef.type).isEmpty())
             Report.error(typeDef.position, "Tip " + typeDef.type + "ne obstaja!");
 
@@ -418,6 +447,10 @@ public class TypeChecker implements Visitor {
     public void visit(VarDef varDef) {
         varDef.type.accept(this);
 
+<<<<<<< HEAD
+=======
+        // TODO: preveri, če typ obstaja
+>>>>>>> repo5/main
         if (types.valueFor(varDef.type).isEmpty())
             Report.error(varDef.position, "Tip " + varDef.type + "ne obstaja!");
 
@@ -430,6 +463,10 @@ public class TypeChecker implements Visitor {
     public void visit(Parameter parameter) {
         parameter.type.accept(this);
 
+<<<<<<< HEAD
+=======
+        // TODO: preveri, če typ obstaja
+>>>>>>> repo5/main
         if (types.valueFor(parameter.type).isEmpty())
             Report.error(parameter.position, "Tip " + parameter.type + "ne obstaja!");
 
@@ -441,6 +478,10 @@ public class TypeChecker implements Visitor {
     public void visit(Array array) {
         array.type.accept(this);
 
+<<<<<<< HEAD
+=======
+        // TODO: preveri, če typ obstaja
+>>>>>>> repo5/main
         if (types.valueFor(array.type).isEmpty())
             Report.error(array.position, "Tip " + array.type + "ne obstaja!");
 

@@ -8,12 +8,15 @@ import java.io.IOException;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
+=======
+>>>>>>> repo5/main
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,6 +24,7 @@ import java.util.Optional;
 
 import cli.PINS;
 import cli.PINS.Phase;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -37,6 +41,9 @@ import compiler.ir.IRPrettyPrint;
 import compiler.common.PrettyPrintVisitor1;
 import compiler.common.PrettyPrintVisitor2;
 >>>>>>> repo4/main
+=======
+import compiler.common.PrettyPrintVisitor3;
+>>>>>>> repo5/main
 import compiler.lexer.Lexer;
 import compiler.parser.Parser;
 import compiler.parser.ast.def.Def;
@@ -44,6 +51,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.name.NameChecker;
 import compiler.seman.name.env.FastSymbolTable;
 import compiler.seman.name.env.SymbolTable;
+<<<<<<< HEAD
 <<<<<<< HEAD
 import compiler.seman.type.TypeChecker;
 import compiler.seman.type.type.Type;
@@ -66,6 +74,10 @@ import compiler.parser.Parser;
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
+=======
+import compiler.seman.type.TypeChecker;
+import compiler.seman.type.type.Type;
+>>>>>>> repo5/main
 
 public class Main {
     /**
@@ -104,12 +116,15 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
+=======
+>>>>>>> repo5/main
         /**
          * Izvedi sintaksno analizo.
          */
@@ -120,10 +135,13 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
+=======
+>>>>>>> repo5/main
         var ast = parser.parse();
         if (cli.execPhase == Phase.SYN) {
             return;
@@ -133,6 +151,7 @@ public class Main {
          */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         var prettyPrint = new PrettyPrintVisitor4(2, System.out);
 =======
         var prettyPrint = new PrettyPrintVisitor1(2, System.out);
@@ -140,6 +159,9 @@ public class Main {
 =======
         var prettyPrint = new PrettyPrintVisitor2(2, System.out);
 >>>>>>> repo4/main
+=======
+        var prettyPrint = new PrettyPrintVisitor3(2, System.out);
+>>>>>>> repo5/main
         if (cli.dumpPhases.contains(Phase.AST)) {
             ast.accept(prettyPrint);
         }
@@ -148,8 +170,11 @@ public class Main {
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo4/main
+=======
+>>>>>>> repo5/main
         /**
          * Izvedi razreševanje imen.
          */
@@ -165,12 +190,19 @@ public class Main {
             return;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo5/main
         /**
          * Izvedi preverjanje tipov.
          */
         var types = new NodeDescription<Type>();
         var typeChecker = new TypeChecker(definitions, types);
         ast.accept(typeChecker);
+<<<<<<< HEAD
+=======
+        
+>>>>>>> repo5/main
         if (cli.dumpPhases.contains(Phase.TYP)) {
             prettyPrint.definitions = Optional.of(definitions);
             prettyPrint.types = Optional.of(types);
@@ -179,6 +211,7 @@ public class Main {
         if (cli.execPhase == Phase.TYP) {
             return;
         }
+<<<<<<< HEAD
         /**
          * Izvedi analizo klicnih zapisov in dostopov.
          */
@@ -235,5 +268,7 @@ public class Main {
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
+=======
+>>>>>>> repo5/main
     }
 }

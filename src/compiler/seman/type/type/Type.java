@@ -123,12 +123,20 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
+<<<<<<< HEAD
             return this.kind.size;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
+<<<<<<< HEAD
             return Constants.WordSize;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
         }
 
         @Override
@@ -186,16 +194,28 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
+<<<<<<< HEAD
             return this.elementSizeInBytes() * this.size;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
+<<<<<<< HEAD
             return Constants.WordSize;
         }
 
         public int elementSizeInBytes() {
             return this.type.sizeInBytes();
+=======
+            throw new RuntimeException("Implementiraj ...");
+        }
+
+        public int elementSizeInBytes() {
+            return type.sizeInBytes();
+>>>>>>> repo5/main
         }
 
         @Override
@@ -235,12 +255,20 @@ public abstract class Type {
 
         @Override
         public int sizeInBytes() {
+<<<<<<< HEAD
             return Constants.WordSize;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
+<<<<<<< HEAD
             return Constants.WordSize;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
         }
 
         @Override
