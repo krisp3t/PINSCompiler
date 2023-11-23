@@ -9,6 +9,7 @@ import java.io.IOException;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
@@ -17,6 +18,8 @@ import java.io.IOException;
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,10 +31,14 @@ import cli.PINS.Phase;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo6/main
 import compiler.common.PrettyPrintVisitor4;
 import compiler.frm.Access;
 import compiler.frm.Frame;
 import compiler.frm.FrameEvaluator;
+<<<<<<< HEAD
 import compiler.gen.LinCodeGenerator;
 import compiler.gen.Memory;
 import compiler.interpret.Interpreter;
@@ -44,6 +51,8 @@ import compiler.common.PrettyPrintVisitor2;
 =======
 import compiler.common.PrettyPrintVisitor3;
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
 import compiler.lexer.Lexer;
 import compiler.parser.Parser;
 import compiler.parser.ast.def.Def;
@@ -51,6 +60,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.name.NameChecker;
 import compiler.seman.name.env.FastSymbolTable;
 import compiler.seman.name.env.SymbolTable;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import compiler.seman.type.TypeChecker;
@@ -78,6 +88,10 @@ import compiler.parser.Parser;
 import compiler.seman.type.TypeChecker;
 import compiler.seman.type.type.Type;
 >>>>>>> repo5/main
+=======
+import compiler.seman.type.TypeChecker;
+import compiler.seman.type.type.Type;
+>>>>>>> repo6/main
 
 public class Main {
     /**
@@ -117,6 +131,7 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
@@ -125,6 +140,8 @@ public class Main {
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         /**
          * Izvedi sintaksno analizo.
          */
@@ -136,12 +153,15 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         var ast = parser.parse();
         if (cli.execPhase == Phase.SYN) {
             return;
@@ -149,6 +169,7 @@ public class Main {
         /**
          * Abstraktna sintaksa.
          */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -162,6 +183,9 @@ public class Main {
 =======
         var prettyPrint = new PrettyPrintVisitor3(2, System.out);
 >>>>>>> repo5/main
+=======
+        var prettyPrint = new PrettyPrintVisitor4(2, System.out);
+>>>>>>> repo6/main
         if (cli.dumpPhases.contains(Phase.AST)) {
             ast.accept(prettyPrint);
         }
@@ -171,10 +195,13 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         /**
          * Izvedi razreševanje imen.
          */
@@ -191,8 +218,11 @@ public class Main {
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         /**
          * Izvedi preverjanje tipov.
          */
@@ -200,9 +230,12 @@ public class Main {
         var typeChecker = new TypeChecker(definitions, types);
         ast.accept(typeChecker);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         if (cli.dumpPhases.contains(Phase.TYP)) {
             prettyPrint.definitions = Optional.of(definitions);
             prettyPrint.types = Optional.of(types);
@@ -212,6 +245,9 @@ public class Main {
             return;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo6/main
         /**
          * Izvedi analizo klicnih zapisov in dostopov.
          */
@@ -229,6 +265,7 @@ public class Main {
         if (cli.execPhase == Phase.FRM) {
             return;
         }
+<<<<<<< HEAD
         /**
          * Generiranje vmesne kode.
          */
@@ -270,5 +307,7 @@ public class Main {
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
     }
 }

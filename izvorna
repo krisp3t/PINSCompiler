@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 typ arr2dim: arr[2] arr[10] integer;
 var a: arr2dim;
 
@@ -127,3 +128,6 @@ fun sort(tab: arr[100] integer, low: integer, high: integer) : integer = (
     },0)
 )
 >>>>>>> repo5/main
+=======
+fun f(a: integer, b: string): integer = a + x {where var x : integer }
+>>>>>>> repo6/main

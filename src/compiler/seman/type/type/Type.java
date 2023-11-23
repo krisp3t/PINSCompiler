@@ -124,19 +124,27 @@ public abstract class Type {
         @Override
         public int sizeInBytes() {
 <<<<<<< HEAD
+<<<<<<< HEAD
             return this.kind.size;
 =======
             throw new RuntimeException("Implementiraj ...");
 >>>>>>> repo5/main
+=======
+            return this.kind.size;
+>>>>>>> repo6/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
 <<<<<<< HEAD
+<<<<<<< HEAD
             return Constants.WordSize;
 =======
             throw new RuntimeException("Implementiraj ...");
 >>>>>>> repo5/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo6/main
         }
 
         @Override
@@ -195,20 +203,28 @@ public abstract class Type {
         @Override
         public int sizeInBytes() {
 <<<<<<< HEAD
+<<<<<<< HEAD
             return this.elementSizeInBytes() * this.size;
 =======
             throw new RuntimeException("Implementiraj ...");
 >>>>>>> repo5/main
+=======
+            return this.elementSizeInBytes() * this.size;
+>>>>>>> repo6/main
         }
 
         @Override
         public int sizeInBytesAsParam() {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo6/main
             return Constants.WordSize;
         }
 
         public int elementSizeInBytes() {
             return this.type.sizeInBytes();
+<<<<<<< HEAD
 =======
             throw new RuntimeException("Implementiraj ...");
         }
@@ -216,6 +232,8 @@ public abstract class Type {
         public int elementSizeInBytes() {
             return type.sizeInBytes();
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
         }
 
         @Override
@@ -256,19 +274,27 @@ public abstract class Type {
         @Override
         public int sizeInBytes() {
 <<<<<<< HEAD
-            return Constants.WordSize;
-=======
-            throw new RuntimeException("Implementiraj ...");
->>>>>>> repo5/main
-        }
-
-        @Override
-        public int sizeInBytesAsParam() {
 <<<<<<< HEAD
             return Constants.WordSize;
 =======
             throw new RuntimeException("Implementiraj ...");
 >>>>>>> repo5/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo6/main
+        }
+
+        @Override
+        public int sizeInBytesAsParam() {
+<<<<<<< HEAD
+<<<<<<< HEAD
+            return Constants.WordSize;
+=======
+            throw new RuntimeException("Implementiraj ...");
+>>>>>>> repo5/main
+=======
+            return Constants.WordSize;
+>>>>>>> repo6/main
         }
 
         @Override

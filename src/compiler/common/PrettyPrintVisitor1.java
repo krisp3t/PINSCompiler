@@ -12,6 +12,7 @@ import java.io.PrintStream;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 >>>>>>> repo5/main
+=======
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+>>>>>>> repo6/main
 
 import common.VoidOperator;
 import compiler.parser.ast.*;
@@ -79,10 +85,13 @@ public class PrettyPrintVisitor1 implements Visitor {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
 
         var xs = new ArrayList<Integer>();
         xs.stream()
@@ -91,12 +100,15 @@ public class PrettyPrintVisitor1 implements Visitor {
             .collect(Collectors.toList());
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
 =======
 >>>>>>> repo4/main
 =======
 >>>>>>> repo5/main
+=======
+>>>>>>> repo6/main
     }
 
     /**
