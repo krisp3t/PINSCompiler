@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 typ arr2dim: arr[2] arr[10] integer;
 var a: arr2dim;
 
@@ -39,6 +40,8 @@ fun print_arr(a: arr2dim): integer = (
 			'danes je ''lep'' dan'
 >>>>>>> repo1/main
 =======
+=======
+>>>>>>> repo3/main
 typ prvic:string;
 typ drugic : integer;
 typ tretjic : besedilo;
@@ -77,5 +80,9 @@ nekaj <= blablabla | nekaj + nekaj < bla & nekaj - nekaj > nekajbla { where
             }
          }
     }
+<<<<<<< HEAD
 #lololololol
 >>>>>>> repo2/main
+=======
+#lololololol
+>>>>>>> repo3/main

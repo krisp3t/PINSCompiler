@@ -6,8 +6,11 @@
 import java.io.IOException;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
+=======
+>>>>>>> repo3/main
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,6 +18,7 @@ import java.util.Optional;
 
 import cli.PINS;
 import cli.PINS.Phase;
+<<<<<<< HEAD
 <<<<<<< HEAD
 import compiler.common.PrettyPrintVisitor4;
 import compiler.frm.Access;
@@ -46,6 +50,11 @@ import compiler.lexer.Lexer;
 import compiler.lexer.Lexer;
 import compiler.parser.Parser;
 >>>>>>> repo2/main
+=======
+import compiler.common.PrettyPrintVisitor1;
+import compiler.lexer.Lexer;
+import compiler.parser.Parser;
+>>>>>>> repo3/main
 
 public class Main {
     /**
@@ -82,8 +91,11 @@ public class Main {
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
+=======
+>>>>>>> repo3/main
         /**
          * Izvedi sintaksno analizo.
          */
@@ -92,6 +104,9 @@ public class Main {
                 : Optional.empty();
         var parser = new Parser(symbols, out);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo3/main
         var ast = parser.parse();
         if (cli.execPhase == Phase.SYN) {
             return;
@@ -99,13 +114,18 @@ public class Main {
         /**
          * Abstraktna sintaksa.
          */
+<<<<<<< HEAD
         var prettyPrint = new PrettyPrintVisitor4(2, System.out);
+=======
+        var prettyPrint = new PrettyPrintVisitor1(2, System.out);
+>>>>>>> repo3/main
         if (cli.dumpPhases.contains(Phase.AST)) {
             ast.accept(prettyPrint);
         }
         if (cli.execPhase == Phase.AST) {
             return;
         }
+<<<<<<< HEAD
         /**
          * Izvedi razreševanje imen.
          */
@@ -186,5 +206,7 @@ public class Main {
             return;
         }
 >>>>>>> repo2/main
+=======
+>>>>>>> repo3/main
     }
 }

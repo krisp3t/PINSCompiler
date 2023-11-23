@@ -16,6 +16,7 @@ public class Constants {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     // 'Registri'
     public static final String framePointer     = "{FP}";
     public static final String stackPointer     = "{SP}";
@@ -24,6 +25,8 @@ public class Constants {
 >>>>>>> repo1/main
 =======
 >>>>>>> repo2/main
+=======
+>>>>>>> repo3/main
     static {
         /**
          * Ciljna arhitektura je x86.
