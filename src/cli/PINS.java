@@ -33,9 +33,12 @@ public class PINS {
     @ParsableOption(name = "--exec")
     public Phase execPhase = Phase.LEX;
 
+<<<<<<< HEAD
     /**
      * Velikost pomnilnika v navideznem stroju.
      */
+=======
+>>>>>>> repo1/main
     @ParsableOption(name = "--memory")
     public int memory = 1024;
 

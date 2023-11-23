@@ -4,6 +4,7 @@
  */
 
 import java.io.IOException;
+<<<<<<< HEAD
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,6 +30,14 @@ import compiler.seman.name.env.FastSymbolTable;
 import compiler.seman.name.env.SymbolTable;
 import compiler.seman.type.TypeChecker;
 import compiler.seman.type.type.Type;
+=======
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import cli.PINS;
+import cli.PINS.Phase;
+import compiler.lexer.Lexer;
+>>>>>>> repo1/main
 
 public class Main {
     /**
@@ -63,6 +72,7 @@ public class Main {
         if (cli.execPhase == Phase.LEX) {
             return;
         }
+<<<<<<< HEAD
         /**
          * Izvedi sintaksno analizo.
          */
@@ -156,5 +166,7 @@ public class Main {
             var interpreter = new Interpreter(memory, outputStream);
             interpreter.interpret(mainCodeChunk.get());
         }
+=======
+>>>>>>> repo1/main
     }
 }

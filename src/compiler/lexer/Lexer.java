@@ -22,7 +22,11 @@ public class Lexer {
     private StringBuilder trenutniNiz = new StringBuilder();
     private int stNarekovajev = 0;
     private int vrstica = 1;
+<<<<<<< HEAD
     private int stolpec = 1;
+=======
+    private int stolpec = 0;
+>>>>>>> repo1/main
     private boolean zakljucenNiz = true;
 
 
@@ -118,7 +122,16 @@ public class Lexer {
     }
 
     private void handleStanje(char naslednjiZnak, ArrayList<Symbol> symbols) {
+<<<<<<< HEAD
         if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
+=======
+        if (naslednjiZnak == '\n') {
+            this.vrstica++;
+            this.stolpec = 0;
+        } else if (naslednjiZnak == 9) { // tabulator
+            this.stolpec += 3;
+        } else if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
+>>>>>>> repo1/main
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -194,6 +207,10 @@ public class Lexer {
                     this.trenutniNiz.append(naslednjiZnak);
                 break;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> repo1/main
     }
 
     private void preveriIme(ArrayList<Symbol> symbols) {
@@ -216,6 +233,7 @@ public class Lexer {
         var symbols = new ArrayList<Symbol>();
         for (int i = 0; i < this.source.length(); i++) {
             var naslednjiZnak = this.source.charAt(i);
+<<<<<<< HEAD
             handleStanje(naslednjiZnak, symbols);
 
             if (naslednjiZnak == '\n') {
@@ -232,13 +250,25 @@ public class Lexer {
 
         }
         if (this.source.length() > 0) {
+=======
+            this.stolpec++;
+            handleStanje(naslednjiZnak, symbols);
+
+        }
+        if (this.source.length() > 0) {
+            this.stolpec++;
+>>>>>>> repo1/main
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
         }
         if (!this.zakljucenNiz) {
             Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
         }
 
+<<<<<<< HEAD
         symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
+=======
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
+>>>>>>> repo1/main
 
         return symbols;
     }
