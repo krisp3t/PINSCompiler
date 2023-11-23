@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 typ arr2dim: arr[2] arr[10] integer;
 var a: arr2dim;
 
@@ -86,3 +87,8 @@ nekaj <= blablabla | nekaj + nekaj < bla & nekaj - nekaj > nekajbla { where
 =======
 #lololololol
 >>>>>>> repo3/main
+=======
+var x: integer;
+fun f(a: integer): t = x;
+typ t: a
+>>>>>>> repo4/main

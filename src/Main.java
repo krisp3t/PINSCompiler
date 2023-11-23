@@ -7,10 +7,13 @@ import java.io.IOException;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,6 +21,7 @@ import java.util.Optional;
 
 import cli.PINS;
 import cli.PINS.Phase;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import compiler.common.PrettyPrintVisitor4;
@@ -29,6 +33,10 @@ import compiler.gen.Memory;
 import compiler.interpret.Interpreter;
 import compiler.ir.IRCodeGenerator;
 import compiler.ir.IRPrettyPrint;
+=======
+import compiler.common.PrettyPrintVisitor1;
+import compiler.common.PrettyPrintVisitor2;
+>>>>>>> repo4/main
 import compiler.lexer.Lexer;
 import compiler.parser.Parser;
 import compiler.parser.ast.def.Def;
@@ -36,6 +44,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.name.NameChecker;
 import compiler.seman.name.env.FastSymbolTable;
 import compiler.seman.name.env.SymbolTable;
+<<<<<<< HEAD
 import compiler.seman.type.TypeChecker;
 import compiler.seman.type.type.Type;
 =======
@@ -55,6 +64,8 @@ import compiler.common.PrettyPrintVisitor1;
 import compiler.lexer.Lexer;
 import compiler.parser.Parser;
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
 public class Main {
     /**
@@ -92,10 +103,13 @@ public class Main {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         /**
          * Izvedi sintaksno analizo.
          */
@@ -105,8 +119,11 @@ public class Main {
         var parser = new Parser(symbols, out);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         var ast = parser.parse();
         if (cli.execPhase == Phase.SYN) {
             return;
@@ -115,10 +132,14 @@ public class Main {
          * Abstraktna sintaksa.
          */
 <<<<<<< HEAD
+<<<<<<< HEAD
         var prettyPrint = new PrettyPrintVisitor4(2, System.out);
 =======
         var prettyPrint = new PrettyPrintVisitor1(2, System.out);
 >>>>>>> repo3/main
+=======
+        var prettyPrint = new PrettyPrintVisitor2(2, System.out);
+>>>>>>> repo4/main
         if (cli.dumpPhases.contains(Phase.AST)) {
             ast.accept(prettyPrint);
         }
@@ -126,6 +147,9 @@ public class Main {
             return;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> repo4/main
         /**
          * Izvedi razreševanje imen.
          */
@@ -140,6 +164,7 @@ public class Main {
         if (cli.execPhase == Phase.NAME) {
             return;
         }
+<<<<<<< HEAD
         /**
          * Izvedi preverjanje tipov.
          */
@@ -208,5 +233,7 @@ public class Main {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
     }
 }

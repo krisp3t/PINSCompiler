@@ -7,8 +7,11 @@ package compiler.parser;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 import static compiler.lexer.TokenType.*;
 import static common.RequireNonNull.requireNonNull;
 
@@ -16,6 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 import static common.RequireNonNull.requireNonNull;
@@ -25,6 +29,8 @@ import java.util.*;
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
 import common.Report;
 import compiler.lexer.Position;
@@ -32,8 +38,11 @@ import compiler.lexer.Symbol;
 import compiler.lexer.TokenType;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 import compiler.parser.ast.Ast;
 import compiler.parser.ast.def.*;
 import compiler.parser.ast.expr.*;
@@ -42,10 +51,13 @@ import compiler.parser.ast.type.Type;
 import compiler.parser.ast.type.TypeName;
 import compiler.parser.ast.type.Array;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
 public class Parser {
     /**
@@ -54,11 +66,14 @@ public class Parser {
     private final List<Symbol> symbols;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     private Stack<Symbol> stack;
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
     private int pozicijaSimbola = 0;
 
     /**
@@ -91,8 +106,11 @@ public class Parser {
      */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
     public Ast parse() {
         var ast = parseSource();
         return ast;
@@ -142,6 +160,7 @@ public class Parser {
         Position.Location end;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     public void parse() {
         parseSource();
@@ -181,14 +200,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_SEMICOLON:
                 dump("defs2 -> ';' def defs2 .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var def = parseDef();
                 definitions.add(def);
                 start = def.position.start;
@@ -200,6 +224,7 @@ public class Parser {
             case EOF:
                 dump("defs2 -> .");
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // zadnja pozicija ni EOF, ampak simbol prej
                 start = this.symbols.get(this.symbols.size() - 2).position.start;
                 end = this.symbols.get(this.symbols.size() - 2).position.end;
@@ -208,10 +233,16 @@ public class Parser {
                 end = getSymbol().position.end;
                 end = new Position.Location(end.line, end.column - 1); // ne štejemo EOF
 >>>>>>> repo3/main
+=======
+                // zadnja pozicija ni EOF, ampak simbol prej
+                start = this.symbols.get(this.symbols.size() - 2).position.start;
+                end = this.symbols.get(this.symbols.size() - 2).position.end;
+>>>>>>> repo4/main
                 skip();
                 break;
             case OP_RBRACE:
                 dump("defs2 -> .");
+<<<<<<< HEAD
 <<<<<<< HEAD
                 // Defs se zaključi s simbolom prej, ne z '}'
                 start = this.symbols.get(this.pozicijaSimbola - 1).position.start;
@@ -220,6 +251,11 @@ public class Parser {
                 start = getSymbol().position.start;
                 end = getSymbol().position.end;
 >>>>>>> repo3/main
+=======
+                // Defs se zaključi s simbolom prej, ne z '}'
+                start = this.symbols.get(this.pozicijaSimbola - 1).position.start;
+                end = this.symbols.get(this.pozicijaSimbola - 1).position.end;
+>>>>>>> repo4/main
                 break;
             default:
                 Report.error(getSymbol().position, "Manjka ';' med ločnicami definicij ali '}' na koncu!");
@@ -243,6 +279,7 @@ public class Parser {
         } else {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji tipa!");
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parseDef();
@@ -268,6 +305,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
         if (check() == TokenType.OP_COLON)
             skip();
@@ -276,8 +315,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         var type = parseType();
         return new TypeDef(new Position(start, type.position.end), name, type);
     }
@@ -315,6 +357,7 @@ public class Parser {
                 skip();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         parseType();
     }
@@ -343,20 +386,26 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 if (check() == TokenType.OP_LBRACKET)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka '[' pri definiciji arraya!");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 if (check() == TokenType.C_INTEGER) {
                     size = Integer.parseInt(getSymbol().lexeme);
                     skip();
                 } else {
                     Report.error(getSymbol().position, "Manjka konstanta integer pri definiciji arraya!");
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 if (check() == TokenType.C_INTEGER)
@@ -366,6 +415,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 if (check() == TokenType.OP_RBRACKET)
                     skip();
                 else
@@ -373,8 +424,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var type = parseType();
                 assert type != null;
                 Position.Location end = type.position.end;
@@ -401,6 +455,7 @@ public class Parser {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji tipa!");
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 parseType();
                 break;
@@ -421,11 +476,14 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         if (check() == TokenType.OP_LPARENT)
             skip();
         else
             Report.error(getSymbol().position, "Manjka '(' pri definiciji funkcije za parametre!");
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         var params = parseParams();
@@ -435,6 +493,9 @@ public class Parser {
 =======
         var params = parseParams();
 >>>>>>> repo3/main
+=======
+        var params = parseParams();
+>>>>>>> repo4/main
 
         // RPARENT skippamo v params2
 
@@ -445,6 +506,7 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         var type = parseType();
 =======
         parseType();
@@ -452,6 +514,9 @@ public class Parser {
 =======
         var type = parseType();
 >>>>>>> repo3/main
+=======
+        var type = parseType();
+>>>>>>> repo4/main
 
         if (check() == TokenType.OP_ASSIGN)
             skip();
@@ -460,8 +525,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         var body = parseExpr();
 
         assert body != null;
@@ -493,6 +561,7 @@ public class Parser {
             Report.error(getSymbol().position, "Manjka identfier pri definiciji parametra!");
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         parseExpr();
     }
@@ -512,6 +581,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
         if (check() == TokenType.OP_COLON)
             skip();
@@ -520,8 +591,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         Type type = parseType();
 
         assert type != null;
@@ -531,6 +605,7 @@ public class Parser {
     private List<FunDef.Parameter> parseParams2() {
         List<FunDef.Parameter> parameters = new ArrayList<>();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         parseType();
     }
@@ -539,18 +614,24 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_COMMA:
                 dump("params2 -> ',' param params2 .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 FunDef.Parameter param = parseParam();
                 parameters.add(param);
                 List<FunDef.Parameter> params = parseParams2();
                 parameters.addAll(params);
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parseParam();
@@ -558,6 +639,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 break;
             case OP_RPARENT:
                 dump("params2 -> .");
@@ -568,8 +651,11 @@ public class Parser {
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         return parameters;
     }
 
@@ -587,6 +673,7 @@ public class Parser {
     private Where parseExpr2(Expr ior) {
         Position.Location end;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     }
 
@@ -600,6 +687,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_LBRACE:
                 dump("expr2 -> '{' WHERE defs '}' .");
@@ -611,8 +700,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var defs = parseDefs();
 
                 // RBRACE v defs2 (defs -> def defs2), ne skipamo v defs2, ampak tu
@@ -624,6 +716,7 @@ public class Parser {
                     Report.error(getSymbol().position, "Manjka '}' v expressionu!");
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 parseDefs();
 
@@ -631,6 +724,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 break;
             case OP_SEMICOLON:
             case OP_COLON:
@@ -645,8 +740,11 @@ public class Parser {
                 dump("expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return null;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v expressionu!");
@@ -661,6 +759,7 @@ public class Parser {
     }
 
     private Expr parseLogicalIorExpr2(Expr andExprLeft) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -679,10 +778,13 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_OR:
                 dump("logical_ior_expr2 -> '|' logical_and_expr logical_ior_expr2 .");
                 skip();
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 var andExprRight = parseLogicalAndExpr();
@@ -697,6 +799,11 @@ public class Parser {
                 var bin = new Binary(new Position(andExprLeft.position.start, andExprRight.position.end), andExprLeft, Binary.Operator.OR, andExprRight);
                 return parseLogicalIorExpr2(bin);
 >>>>>>> repo3/main
+=======
+                var andExprRight = parseLogicalAndExpr();
+                var bin = new Binary(new Position(andExprLeft.position.start, andExprRight.position.end), andExprLeft, Binary.Operator.OR, andExprRight);
+                return parseLogicalIorExpr2(bin);
+>>>>>>> repo4/main
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -708,6 +815,7 @@ public class Parser {
             case KW_THEN:
             case KW_ELSE:
 <<<<<<< HEAD
+<<<<<<< HEAD
             case EOF:
                 dump("logical_ior_expr2 -> .");
 <<<<<<< HEAD
@@ -718,6 +826,10 @@ public class Parser {
                 dump("logical_ior_expr2 -> .");
                 // Position.Location end =
 >>>>>>> repo3/main
+=======
+            case EOF:
+                dump("logical_ior_expr2 -> .");
+>>>>>>> repo4/main
                 return andExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical ior expressionu!");
@@ -732,6 +844,7 @@ public class Parser {
     }
 
     private Expr parseLogicalAndExpr2(Expr compareExprLeft) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -750,14 +863,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_AND:
                 dump("logical_and_expr2 -> '&' compare_expr logical_and_expr2 .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
                 // TODO: preveri pozicije
                 var compareExprRight = parseCompareExpr();
@@ -765,12 +883,15 @@ public class Parser {
                 return parseLogicalAndExpr2(bin);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 parseCompareExpr();
                 parseLogicalAndExpr2();
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -786,8 +907,11 @@ public class Parser {
                 dump("logical_and_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return compareExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v logical and expressionu!");
@@ -803,6 +927,7 @@ public class Parser {
 
     private Expr parseCompareExpr2(Expr addExprLeft) {
         Binary.Operator op = null;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -821,6 +946,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_EQ:
             case OP_NEQ:
@@ -831,8 +958,11 @@ public class Parser {
                 dump("compare_expr2 -> '" + getSymbol().lexeme + "' add_expr .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 switch (check()) {
                     case OP_EQ -> op = Binary.Operator.EQ;
                     case OP_NEQ -> op = Binary.Operator.NEQ;
@@ -847,6 +977,7 @@ public class Parser {
                 return new Binary(new Position(addExprLeft.position.start, addExprRight.position.end), addExprLeft, op, addExprRight);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 skip();
                 parseAddExpr();
@@ -854,6 +985,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -870,8 +1003,11 @@ public class Parser {
                 dump("compare_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return addExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v compare expressionu!");
@@ -887,6 +1023,7 @@ public class Parser {
 
     private Expr parseAddExpr2(Expr mulExprLeft) {
         Binary.Operator op = null;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -905,14 +1042,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_ADD:
             case OP_SUB:
                 dump("add_expr2 -> '" + getSymbol().lexeme + "' mul_expr add_expr2 .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 switch (check()) {
                     case OP_ADD -> op = Binary.Operator.ADD;
                     case OP_SUB -> op = Binary.Operator.SUB;
@@ -922,6 +1064,7 @@ public class Parser {
                 var bin = new Binary(new Position(mulExprLeft.position.start, mulExprRight.position.end), mulExprLeft, op, mulExprRight);
                 return parseAddExpr2(bin);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 skip();
                 parseMulExpr();
@@ -930,6 +1073,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -952,8 +1097,11 @@ public class Parser {
                 dump("add_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return mulExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v additive expressionu!");
@@ -969,6 +1117,7 @@ public class Parser {
 
     private Expr parseMulExpr2(Expr preExprLeft) {
         Binary.Operator op = null;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -987,6 +1136,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_MUL:
             case OP_DIV:
@@ -994,8 +1145,11 @@ public class Parser {
                 dump("mul_expr2 -> '" + getSymbol().lexeme + "' pre_expr mul_expr2 .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 switch (check()) {
                     case OP_MUL -> op = Binary.Operator.MUL;
                     case OP_DIV -> op = Binary.Operator.DIV;
@@ -1006,6 +1160,7 @@ public class Parser {
                 var bin = new Binary(new Position(preExprLeft.position.start, preExprRight.position.end), preExprLeft, op, preExprRight);
                 return parseMulExpr2(bin);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 skip();
                 parsePreExpr();
@@ -1014,6 +1169,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             case OP_SEMICOLON:
             case OP_COLON:
             case OP_RBRACKET:
@@ -1038,8 +1195,11 @@ public class Parser {
                 dump("mul_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return preExprLeft;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v multiplicative expressionu!");
@@ -1048,6 +1208,7 @@ public class Parser {
     }
 
     private Expr parsePreExpr() {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 break;
@@ -1060,6 +1221,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_ADD:
             case OP_SUB:
@@ -1067,8 +1230,11 @@ public class Parser {
                 dump("pre_expr -> '" + getSymbol().lexeme + "'pre_expr .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var start = getSymbol().position.start;
                 Unary.Operator op = null;
                 switch (check()) {
@@ -1081,6 +1247,7 @@ public class Parser {
                 assert expr != null;
                 return new Unary(new Position(start, expr.position.end), expr, op);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 skip();
                 parsePreExpr();
@@ -1088,6 +1255,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             case IDENTIFIER:
             case OP_LPARENT:
             case OP_LBRACE:
@@ -1097,8 +1266,11 @@ public class Parser {
                 dump("pre_expr -> post_expr .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return parsePostExpr();
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v prefix expressionu!");
@@ -1114,6 +1286,7 @@ public class Parser {
 
     private Expr parsePostExpr2(Expr atomExpr) {
         Position.Location end = null;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parsePostExpr();
@@ -1133,14 +1306,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_LBRACKET:
                 dump("post_expr2 -> '[' expr ']' post_expr2 .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var expr = parseExpr();
 
                 // TODO: preveri
@@ -1152,6 +1330,7 @@ public class Parser {
                 } else {
                     Report.error(getSymbol().position, "Manjka ']' v expressionu!");
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parseExpr();
@@ -1166,6 +1345,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 break;
             case OP_SEMICOLON:
             case OP_COLON:
@@ -1194,8 +1375,11 @@ public class Parser {
                 dump("post_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return atomExpr;
             default:
                 Report.error(getSymbol().position, "Nepričakovan znak v postfix expressionu!");
@@ -1264,6 +1448,7 @@ public class Parser {
     private Expr parseAtomExpr2(Name id) {
         Position.Location end = null;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 break;
             default:
@@ -1314,14 +1499,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_LPARENT:
                 dump("atom_expr2 -> '(' exprs ')' .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var exprs = parseExprs();
                 if (check() == TokenType.OP_RPARENT) {
                     end = getSymbol().position.end;
@@ -1330,6 +1520,7 @@ public class Parser {
                 } else {
                     Report.error(getSymbol().position, "Manjka ')' v atom expressionu!");
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parseExprs();
@@ -1340,6 +1531,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 // TODO: RPARENT pogledamo v parseExprs?
                 break;
             case OP_SEMICOLON:
@@ -1370,8 +1563,11 @@ public class Parser {
                 dump("atom_expr2 -> .");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 return id;
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
@@ -1408,6 +1604,7 @@ public class Parser {
 
                 condition = parseExpr();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 break;
             default:
@@ -1439,6 +1636,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 if (check() == TokenType.OP_COLON)
                     skip();
                 else
@@ -1446,8 +1645,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 body = parseExpr();
 
                 if (check() == TokenType.OP_RBRACE) {
@@ -1470,6 +1672,7 @@ public class Parser {
                     Report.error(getSymbol().position, "Manjka identifier v for stavku!");
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 parseExpr();
 
@@ -1489,6 +1692,8 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
                 if (check() == TokenType.OP_ASSIGN)
                     skip();
@@ -1497,6 +1702,7 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 var low = parseExpr();
 =======
                 parseExpr();
@@ -1504,12 +1710,16 @@ public class Parser {
 =======
                 var low = parseExpr();
 >>>>>>> repo3/main
+=======
+                var low = parseExpr();
+>>>>>>> repo4/main
 
                 if (check() == TokenType.OP_COMMA)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ',' v for stavku!");
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 var high = parseExpr();
@@ -1519,12 +1729,16 @@ public class Parser {
 =======
                 var high = parseExpr();
 >>>>>>> repo3/main
+=======
+                var high = parseExpr();
+>>>>>>> repo4/main
 
                 if (check() == TokenType.OP_COMMA)
                     skip();
                 else
                     Report.error(getSymbol().position, "Manjka ',' v for stavku!");
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 var step = parseExpr();
@@ -1534,6 +1748,9 @@ public class Parser {
 =======
                 var step = parseExpr();
 >>>>>>> repo3/main
+=======
+                var step = parseExpr();
+>>>>>>> repo4/main
 
                 if (check() == TokenType.OP_COLON)
                     skip();
@@ -1542,8 +1759,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 body = parseExpr();
 
                 if (check() == TokenType.OP_RBRACE) {
@@ -1556,6 +1776,7 @@ public class Parser {
                 return new For(new Position(start, end), counter, low, high, step, body);
 
             case IDENTIFIER:
+<<<<<<< HEAD
 <<<<<<< HEAD
             case OP_LPARENT:
 =======
@@ -1573,6 +1794,9 @@ public class Parser {
 =======
             case OP_LBRACKET:
 >>>>>>> repo3/main
+=======
+            case OP_LPARENT:
+>>>>>>> repo4/main
             case OP_LBRACE:
             case OP_ADD:
             case OP_SUB:
@@ -1584,6 +1808,7 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 var expr1 = parseExpr();
 =======
                 parseExpr();
@@ -1591,6 +1816,9 @@ public class Parser {
 =======
                 var expr1 = parseExpr();
 >>>>>>> repo3/main
+=======
+                var expr1 = parseExpr();
+>>>>>>> repo4/main
 
                 if (check() == TokenType.OP_ASSIGN)
                     skip();
@@ -1599,8 +1827,11 @@ public class Parser {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var expr2 = parseExpr();
 
                 if (check() == TokenType.OP_RBRACE) {
@@ -1610,6 +1841,7 @@ public class Parser {
                 } else {
                     Report.error(getSymbol().position, "Manjka '}' v atom expressionu!");
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
                 parseExpr();
@@ -1621,14 +1853,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa atom expressiona!");
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         return null;
     }
 
@@ -1653,6 +1890,7 @@ public class Parser {
                     Report.error(getSymbol().position, "Manjka '}' v if-then-else stavku!");
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     }
 
@@ -1673,14 +1911,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 break;
             default:
                 Report.error(getSymbol().position, "Nepravilno zaključen if stavek!");
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         return null;
     }
 
@@ -1703,6 +1946,7 @@ public class Parser {
         Position.Location start;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     }
 
@@ -1716,14 +1960,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         switch (check()) {
             case OP_COMMA:
                 dump("exprs2 -> ',' expr exprs2 .");
                 skip();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
                 var expr = parseExpr();
                 expressions.add(expr);
                 start = expr.position.start;
@@ -1735,6 +1984,7 @@ public class Parser {
                 dump("exprs2 -> .");
                 return new Block(getSymbol().position, expressions);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 parseExpr();
                 parseExprs2();
@@ -1745,14 +1995,19 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
             default:
                 Report.error(getSymbol().position, "Nepravilna sintaksa definicij!");
                 break;
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
         return null;
     }
 
@@ -1772,6 +2027,7 @@ public class Parser {
             Report.error(getSymbol().position, "Manjka identifier pri definiciji spremenljivke!");
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     }
 
@@ -1787,12 +2043,15 @@ public class Parser {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
         if (check() == TokenType.OP_COLON)
             skip();
         else
             Report.error(getSymbol().position, "Manjka ':' pri definiciji spremenljivke!");
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         var type = parseType();
@@ -1807,6 +2066,11 @@ public class Parser {
         assert type != null;
         return new VarDef(new Position(start, type.position.end), name, type);
 >>>>>>> repo3/main
+=======
+        var type = parseType();
+        assert type != null;
+        return new VarDef(new Position(start, type.position.end), name, type);
+>>>>>>> repo4/main
     }
 
     /**

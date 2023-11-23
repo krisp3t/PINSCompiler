@@ -36,6 +36,7 @@ public class PINS {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     /**
      * Velikost pomnilnika v navideznem stroju.
      */
@@ -45,6 +46,8 @@ public class PINS {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
     @ParsableOption(name = "--memory")
     public int memory = 1024;
 

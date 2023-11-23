@@ -50,10 +50,13 @@ public enum TokenType {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
     OP_ADD,       // +
     OP_SUB,       // -
     OP_MUL,       // *
@@ -83,6 +86,7 @@ public enum TokenType {
     OP_DOT,       // .
     OP_COMMA,     // ,
     OP_ASSIGN     // =
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -120,4 +124,6 @@ public enum TokenType {
 >>>>>>> repo2/main
 =======
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 }

@@ -13,6 +13,7 @@ public abstract class Ast {
      * Lokacija vozlišča v izvorni kodi.
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public final Position position;
 
 	/**
@@ -24,6 +25,8 @@ public abstract class Ast {
 		this.position = position;
 	}
 =======
+=======
+>>>>>>> repo4/main
     public final Position position;
 
     /**
@@ -34,14 +37,21 @@ public abstract class Ast {
     public Ast(Position position) {
         this.position = position;
     }
+<<<<<<< HEAD
 >>>>>>> repo3/main
+=======
+>>>>>>> repo4/main
 
     /**
      * 'Sprejmi' obiskovalca.
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public abstract void accept(Visitor visitor);
 =======
     public abstract void accept(Visitor visitor);
 >>>>>>> repo3/main
+=======
+    public abstract void accept(Visitor visitor);
+>>>>>>> repo4/main
 }

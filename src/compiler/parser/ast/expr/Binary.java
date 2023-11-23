@@ -37,12 +37,18 @@ public class Binary extends Expr {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	@Override public void accept(Visitor visitor) { 
         visitor.visit(this); 
     }
 =======
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 >>>>>>> repo3/main
+=======
+	@Override public void accept(Visitor visitor) { 
+        visitor.visit(this); 
+    }
+>>>>>>> repo4/main
 
     public static enum Operator {
         ADD,       // +
