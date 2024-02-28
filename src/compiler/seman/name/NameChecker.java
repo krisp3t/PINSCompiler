@@ -7,20 +7,7 @@ package compiler.seman.name;
 
 import static common.RequireNonNull.requireNonNull;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import common.Constants;
-=======
->>>>>>> repo4/main
-=======
->>>>>>> repo5/main
-=======
->>>>>>> repo6/main
-=======
-import common.Constants;
->>>>>>> repo7/main
 import common.Report;
 import compiler.common.Visitor;
 import compiler.lexer.Position;
@@ -33,23 +20,7 @@ import compiler.seman.common.NodeDescription;
 import compiler.seman.name.env.SymbolTable;
 import compiler.seman.name.env.SymbolTable.DefinitionAlreadyExistsException;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.util.*;
-=======
-import java.util.Optional;
->>>>>>> repo4/main
-=======
-import java.util.Optional;
->>>>>>> repo5/main
-=======
-import java.util.Optional;
->>>>>>> repo6/main
-=======
-import java.util.*;
->>>>>>> repo7/main
 
 public class NameChecker implements Visitor {
     /**
@@ -75,12 +46,6 @@ public class NameChecker implements Visitor {
         this.symbolTable = symbolTable;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> repo7/main
     static final HashSet<String> STD_KNJIZNICA = new HashSet<>(Arrays.asList(Constants.printStringLabel, Constants.printIntLabel, Constants.printLogLabel, Constants.randIntLabel, Constants.seedLabel));
     static final FunDef PRINT_INT_DEF = new FunDef(
             Position.zero(),
@@ -142,21 +107,6 @@ public class NameChecker implements Visitor {
             return;
         }
 
-<<<<<<< HEAD
-=======
-    @Override
-    public void visit(Call call) {
->>>>>>> repo4/main
-=======
-    @Override
-    public void visit(Call call) {
->>>>>>> repo5/main
-=======
-    @Override
-    public void visit(Call call) {
->>>>>>> repo6/main
-=======
->>>>>>> repo7/main
         // Preveri obstoj funkcije
         if (symbolTable.definitionFor(call.name).isEmpty())
             Report.error(call.position, "Funkcija " + call.name + " ni definirana!");
@@ -212,31 +162,9 @@ public class NameChecker implements Visitor {
             Def forNode = symbolTable.definitionFor(name.name).get();
             // Prepreči imenovanje funkcije (funkcija mora biti vedno klicana)
             if (forNode instanceof FunDef)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivke!");
             else if (forNode instanceof TypeDef)
                 Report.error(name.position, "Nedovoljena uporaba tipa " + name.name + " kot spremenljivke!");
-=======
-                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivka!");
->>>>>>> repo4/main
-=======
-                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivke!");
-            else if (forNode instanceof TypeDef)
-                Report.error(name.position, "Nedovoljena uporaba tipa " + name.name + " kot spremenljivke!");
->>>>>>> repo5/main
-=======
-                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivke!");
-            else if (forNode instanceof TypeDef)
-                Report.error(name.position, "Nedovoljena uporaba tipa " + name.name + " kot spremenljivke!");
->>>>>>> repo6/main
-=======
-                Report.error(name.position, "Nedovoljena uporaba funkcije " + name.name + " kot spremenljivke!");
-            else if (forNode instanceof TypeDef)
-                Report.error(name.position, "Nedovoljena uporaba tipa " + name.name + " kot spremenljivke!");
->>>>>>> repo7/main
             else
                 definitions.store(forNode, name);
         }

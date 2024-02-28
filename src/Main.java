@@ -1,4 +1,3 @@
-
 /**
  * @Author: turk
  * @Description: Vhodna točka prevajalnika.
@@ -42,7 +41,9 @@ public class Main {
         run(cli);
     }
 
+
     // -------------------------------------------------------------------
+
 
     private static void run(PINS cli) throws IOException {
         var sourceCode = Files.readString(Paths.get(cli.sourceFile));
@@ -65,7 +66,7 @@ public class Main {
         /**
          * Izvedi sintaksno analizo.
          */
-        Optional<PrintStream> out = cli.dumpPhases.contains(Phase.SYN)
+        Optional<PrintStream> out = cli.dumpPhases.contains(Phase.SYN) 
                 ? Optional.of(System.out)
                 : Optional.empty();
         var parser = new Parser(symbols, out);
@@ -151,8 +152,7 @@ public class Main {
          * Izvajanje vmesne kode.
          */
         if (mainCodeChunk.isPresent()) {
-            Optional<PrintStream> outputStream = cli.dumpPhases.contains(Phase.INT) ? Optional.of(System.out)
-                    : Optional.empty();
+            Optional<PrintStream> outputStream = cli.dumpPhases.contains(Phase.INT) ? Optional.of(System.out) : Optional.empty();
             var interpreter = new Interpreter(memory, outputStream);
             interpreter.interpret(mainCodeChunk.get());
         }

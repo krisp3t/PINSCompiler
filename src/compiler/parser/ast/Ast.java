@@ -12,21 +12,19 @@ public abstract class Ast {
     /**
      * Lokacija vozlišča v izvorni kodi.
      */
+	public final Position position;
 
-    public final Position position;
-
-    /**
-     * Ustvari novo vozlišče.
-     *
-     * @param position Lokacija.
-     */
-    public Ast(Position position) {
-        this.position = position;
-    }
+	/**
+	 * Ustvari novo vozlišče.
+	 * 
+	 * @param position Lokacija.
+	 */
+	public Ast(Position position) {
+		this.position = position;
+	}
 
     /**
      * 'Sprejmi' obiskovalca.
      */
-
-    public abstract void accept(Visitor visitor);
+	public abstract void accept(Visitor visitor);
 }

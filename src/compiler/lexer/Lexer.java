@@ -25,6 +25,7 @@ public class Lexer {
     private int stolpec = 1;
     private boolean zakljucenNiz = true;
 
+
     /**
      * Preslikava iz ključnih besed v vrste simbolov.
      */
@@ -54,8 +55,7 @@ public class Lexer {
      * Inicializiraj možne operatorje.
      */
     static final HashSet<Character> BELO_BESEDILO = new HashSet<>(Arrays.asList(' ', '\t', '\n', '\r'));
-    static final HashSet<Character> OPERATORJI = new HashSet<>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!',
-            '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
+    static final HashSet<Character> OPERATORJI = new HashSet<>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
     static final HashSet<String> LOGICNI = new HashSet<>(Arrays.asList("true", "false"));
     static final Map<String, TokenType> operatorMapping = Map.ofEntries(
             entry("+", TokenType.OP_ADD),
@@ -82,7 +82,9 @@ public class Lexer {
             entry(";", TokenType.OP_SEMICOLON),
             entry(".", TokenType.OP_DOT),
             entry(",", TokenType.OP_COMMA),
-            entry("=", TokenType.OP_ASSIGN));
+            entry("=", TokenType.OP_ASSIGN)
+    );
+
 
     /**
      * Ustvari nov analizator.
@@ -148,15 +150,13 @@ public class Lexer {
                 if (Character.isDigit(naslednjiZnak))
                     this.trenutniNiz.append(naslednjiZnak);
                 else {
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
-                            this.vrstica, this.stolpec), TokenType.C_INTEGER, trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_INTEGER, trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
                 break;
             case KONST_STR:
-                if (((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1))
-                        || (this.trenutniNiz.toString().equals("''"))) { // Ne gledamo na začetku niza, ko samo '
+                if (((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1)) || (this.trenutniNiz.toString().equals("''"))) { // Ne gledamo na začetku niza, ko samo '
                     if (naslednjiZnak == '\'') { // Dva narekovaja escape char
                         this.stNarekovajev++;
                     } else { // Konec string literala
@@ -165,8 +165,7 @@ public class Lexer {
                             leksem = "";
                         if (leksem.length() > 1) // Odstrani narekovaje
                             leksem = leksem.substring(1, leksem.length() - 1);
-                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
-                                this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
+                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
                         zakljucenNiz = true;
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
@@ -179,14 +178,10 @@ public class Lexer {
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
                 if (operatorMapping.containsKey(kandidat)) { // Če bi z naslednjim znakom dobili operator dolžine 2
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
-                            this.vrstica, this.stolpec + 1), operatorMapping.get(kandidat), kandidat));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec + 1), operatorMapping.get(kandidat), kandidat));
                     this.stanje = lexStanja.INITIAL;
                 } else { // npr. "+b"
-                    symbols.add(new Symbol(
-                            new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica,
-                                    this.stolpec),
-                            operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
@@ -195,8 +190,7 @@ public class Lexer {
                 this.pozicija = Position.fromLocation(new Position.Location(this.vrstica, this.stolpec));
                 this.trenutniNiz = new StringBuilder();
                 this.stanje = dolociZacetnoStanje(naslednjiZnak);
-                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT
-                        || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
+                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
                     this.trenutniNiz.append(naslednjiZnak);
                 break;
         }
@@ -206,14 +200,11 @@ public class Lexer {
         int startVrstica = this.pozicija.start.line;
         int startStolpec = this.pozicija.start.column;
         if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
-                    keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
         else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
-                    TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
         else
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
-                    TokenType.IDENTIFIER, trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.IDENTIFIER, trenutniNiz.toString()));
     }
 
     /**
@@ -238,14 +229,16 @@ public class Lexer {
                 this.stolpec++;
             }
 
+
         }
         if (this.source.length() > 0) {
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
         }
         if (!this.zakljucenNiz) {
-            Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec),
-                    "NAPAKA: Konstanta string ni zaključena!");
+            Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
         }
+
+        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
 
         return symbols;
     }

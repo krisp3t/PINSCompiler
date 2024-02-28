@@ -384,8 +384,7 @@ public class Parser {
                 dump("logical_ior_expr2 -> '|' logical_and_expr logical_ior_expr2 .");
                 skip();
                 var andExprRight = parseLogicalAndExpr();
-                var bin = new Binary(new Position(andExprLeft.position.start, andExprRight.position.end), andExprLeft,
-                        Binary.Operator.OR, andExprRight);
+                var bin = new Binary(new Position(andExprLeft.position.start, andExprRight.position.end), andExprLeft, Binary.Operator.OR, andExprRight);
                 return parseLogicalIorExpr2(bin);
             case OP_SEMICOLON:
             case OP_COLON:
@@ -420,8 +419,7 @@ public class Parser {
 
                 // TODO: preveri pozicije
                 var compareExprRight = parseCompareExpr();
-                var bin = new Binary(new Position(compareExprLeft.position.start, compareExprRight.position.end),
-                        compareExprLeft, Binary.Operator.AND, compareExprRight);
+                var bin = new Binary(new Position(compareExprLeft.position.start, compareExprRight.position.end), compareExprLeft, Binary.Operator.AND, compareExprRight);
                 return parseLogicalAndExpr2(bin);
 
             case OP_SEMICOLON:
@@ -471,8 +469,7 @@ public class Parser {
                 skip();
 
                 var addExprRight = parseAddExpr();
-                return new Binary(new Position(addExprLeft.position.start, addExprRight.position.end), addExprLeft, op,
-                        addExprRight);
+                return new Binary(new Position(addExprLeft.position.start, addExprRight.position.end), addExprLeft, op, addExprRight);
 
             case OP_SEMICOLON:
             case OP_COLON:
@@ -513,8 +510,7 @@ public class Parser {
                 }
                 skip();
                 var mulExprRight = parseMulExpr();
-                var bin = new Binary(new Position(mulExprLeft.position.start, mulExprRight.position.end), mulExprLeft,
-                        op, mulExprRight);
+                var bin = new Binary(new Position(mulExprLeft.position.start, mulExprRight.position.end), mulExprLeft, op, mulExprRight);
                 return parseAddExpr2(bin);
             case OP_SEMICOLON:
             case OP_COLON:
@@ -563,8 +559,7 @@ public class Parser {
                 }
                 skip();
                 var preExprRight = parsePreExpr();
-                var bin = new Binary(new Position(preExprLeft.position.start, preExprRight.position.end), preExprLeft,
-                        op, preExprRight);
+                var bin = new Binary(new Position(preExprLeft.position.start, preExprRight.position.end), preExprLeft, op, preExprRight);
                 return parseMulExpr2(bin);
             case OP_SEMICOLON:
             case OP_COLON:
@@ -644,8 +639,7 @@ public class Parser {
                 if (check() == TokenType.OP_RBRACKET) {
                     end = getSymbol().position.end;
                     skip();
-                    var bin = new Binary(new Position(atomExpr.position.start, end), atomExpr, Binary.Operator.ARR,
-                            expr);
+                    var bin = new Binary(new Position(atomExpr.position.start, end), atomExpr, Binary.Operator.ARR, expr);
                     return parsePostExpr2(bin);
                 } else {
                     Report.error(getSymbol().position, "Manjka ']' v expressionu!");
@@ -809,9 +803,9 @@ public class Parser {
                 }
 
                 thenExpression = parseExpr();
-                var ifExpr = new IfThenElse(new Position(start, thenExpression.position.end), condition,
-                        thenExpression);
+                var ifExpr = new IfThenElse(new Position(start, thenExpression.position.end), condition, thenExpression);
                 return parseAtomExpr4(ifExpr);
+
 
             case KW_WHILE:
                 dump("atom_expr3 -> while expr ':' expr '}' .");
@@ -923,8 +917,7 @@ public class Parser {
                 dump("atom_expr4 -> '}' .");
                 pos = getSymbol().position;
                 skip();
-                return new IfThenElse(new Position(atomExpr3.position.start, pos.end), atomExpr3.condition,
-                        atomExpr3.thenExpression);
+                return new IfThenElse(new Position(atomExpr3.position.start, pos.end), atomExpr3.condition, atomExpr3.thenExpression);
             case KW_ELSE:
                 dump("atom_expr4 -> else expr '}' .");
                 skip();
@@ -933,8 +926,7 @@ public class Parser {
                 if (check() == TokenType.OP_RBRACE) {
                     pos = getSymbol().position;
                     skip();
-                    return new IfThenElse(new Position(atomExpr3.position.start, pos.end), atomExpr3.condition,
-                            atomExpr3.thenExpression, elseExpr);
+                    return new IfThenElse(new Position(atomExpr3.position.start, pos.end), atomExpr3.condition, atomExpr3.thenExpression, elseExpr);
                 } else {
                     Report.error(getSymbol().position, "Manjka '}' v if-then-else stavku!");
                 }
@@ -984,6 +976,7 @@ public class Parser {
         return null;
     }
 
+
     private VarDef parseVarDef() {
         String name = null;
         dump("var_def -> var id ':' type .");
@@ -1018,3 +1011,4 @@ public class Parser {
         }
     }
 }
+

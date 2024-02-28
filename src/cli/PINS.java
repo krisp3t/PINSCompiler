@@ -36,7 +36,6 @@ public class PINS {
     /**
      * Velikost pomnilnika v navideznem stroju.
      */
-
     @ParsableOption(name = "--memory")
     public int memory = 1024;
 

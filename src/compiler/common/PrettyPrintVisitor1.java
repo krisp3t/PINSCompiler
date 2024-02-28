@@ -12,19 +12,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import common.VoidOperator;
 import compiler.parser.ast.*;
@@ -54,7 +41,7 @@ public class PrettyPrintVisitor1 implements Visitor {
      * Ustvari novo instanco.
      * 
      * @param increaseIndentBy za koliko naj se poveča indentacija pri gnezdenju.
-     * @param stream           izhodni tok.
+     * @param stream izhodni tok.
      */
     public PrettyPrintVisitor1(int increaseIndentBy, PrintStream stream) {
         requireNonNull(stream);
@@ -76,9 +63,9 @@ public class PrettyPrintVisitor1 implements Visitor {
 
         var xs = new ArrayList<Integer>();
         xs.stream()
-                .map(t -> t * 2)
-                .filter(t -> t % 2 != 0)
-                .collect(Collectors.toList());
+            .map(t -> t * 2)
+            .filter(t -> t % 2 != 0)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -242,7 +229,7 @@ public class PrettyPrintVisitor1 implements Visitor {
             node.accept(this);
         });
     }
-
+    
     // ----------------------------------
 
     /**
