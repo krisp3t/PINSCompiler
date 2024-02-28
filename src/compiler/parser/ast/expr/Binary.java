@@ -36,58 +36,31 @@ public class Binary extends Expr {
         this.right = right;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	@Override public void accept(Visitor visitor) { 
-        visitor.visit(this); 
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
-=======
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
->>>>>>> repo3/main
-=======
-	@Override public void accept(Visitor visitor) { 
-        visitor.visit(this); 
-    }
->>>>>>> repo4/main
-=======
-	@Override public void accept(Visitor visitor) { 
-        visitor.visit(this); 
-    }
->>>>>>> repo5/main
-=======
-	@Override public void accept(Visitor visitor) { 
-        visitor.visit(this); 
-    }
->>>>>>> repo6/main
-=======
-	@Override public void accept(Visitor visitor) { 
-        visitor.visit(this); 
-    }
->>>>>>> repo7/main
 
     public static enum Operator {
-        ADD,       // +
-        SUB,       // -
-        MUL,       // *
-        DIV,       // /
-        MOD,       // %
-    
-        AND,       // &
-        OR,        // |
-        
-        EQ,        // ==
-        NEQ,       // !=
-        LT,        // <
-        GT,        // >
-        LEQ,       // <=
-        GEQ,       // >=
-    
-        ASSIGN,     // =
+        ADD, // +
+        SUB, // -
+        MUL, // *
+        DIV, // /
+        MOD, // %
 
-        ARR;        // a[indeks]
+        AND, // &
+        OR, // |
+
+        EQ, // ==
+        NEQ, // !=
+        LT, // <
+        GT, // >
+        LEQ, // <=
+        GEQ, // >=
+
+        ASSIGN, // =
+
+        ARR; // a[indeks]
 
         public boolean isAndOr() {
             return this == AND || this == OR;

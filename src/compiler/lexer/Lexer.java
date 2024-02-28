@@ -22,37 +22,8 @@ public class Lexer {
     private StringBuilder trenutniNiz = new StringBuilder();
     private int stNarekovajev = 0;
     private int vrstica = 1;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     private int stolpec = 1;
-=======
-    private int stolpec = 0;
->>>>>>> repo1/main
-=======
-    private int stolpec = 0;
->>>>>>> repo2/main
-=======
-    private int stolpec = 0;
->>>>>>> repo3/main
-=======
-    private int stolpec = 1;
->>>>>>> repo4/main
-=======
-    private int stolpec = 1;
->>>>>>> repo5/main
-=======
-    private int stolpec = 1;
->>>>>>> repo6/main
-=======
-    private int stolpec = 1;
->>>>>>> repo7/main
     private boolean zakljucenNiz = true;
-
 
     /**
      * Preslikava iz ključnih besed v vrste simbolov.
@@ -83,7 +54,8 @@ public class Lexer {
      * Inicializiraj možne operatorje.
      */
     static final HashSet<Character> BELO_BESEDILO = new HashSet<>(Arrays.asList(' ', '\t', '\n', '\r'));
-    static final HashSet<Character> OPERATORJI = new HashSet<>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
+    static final HashSet<Character> OPERATORJI = new HashSet<>(Arrays.asList('+', '-', '*', '/', '%', '&', '|', '!',
+            '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', '.', ',', '='));
     static final HashSet<String> LOGICNI = new HashSet<>(Arrays.asList("true", "false"));
     static final Map<String, TokenType> operatorMapping = Map.ofEntries(
             entry("+", TokenType.OP_ADD),
@@ -110,9 +82,7 @@ public class Lexer {
             entry(";", TokenType.OP_SEMICOLON),
             entry(".", TokenType.OP_DOT),
             entry(",", TokenType.OP_COMMA),
-            entry("=", TokenType.OP_ASSIGN)
-    );
-
+            entry("=", TokenType.OP_ASSIGN));
 
     /**
      * Ustvari nov analizator.
@@ -146,44 +116,7 @@ public class Lexer {
     }
 
     private void handleStanje(char naslednjiZnak, ArrayList<Symbol> symbols) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
-=======
-=======
->>>>>>> repo2/main
-=======
->>>>>>> repo3/main
-        if (naslednjiZnak == '\n') {
-            this.vrstica++;
-            this.stolpec = 0;
-        } else if (naslednjiZnak == 9) { // tabulator
-            this.stolpec += 3;
-        } else if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> repo1/main
-=======
->>>>>>> repo2/main
-=======
->>>>>>> repo3/main
-=======
-        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
->>>>>>> repo4/main
-=======
-        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
->>>>>>> repo5/main
-=======
-        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
->>>>>>> repo6/main
-=======
-        if ((naslednjiZnak == '#') && (this.stanje != lexStanja.KONST_STR)) {
->>>>>>> repo7/main
             this.stanje = lexStanja.KOMENTAR;
             return;
         }
@@ -215,13 +148,15 @@ public class Lexer {
                 if (Character.isDigit(naslednjiZnak))
                     this.trenutniNiz.append(naslednjiZnak);
                 else {
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_INTEGER, trenutniNiz.toString()));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
+                            this.vrstica, this.stolpec), TokenType.C_INTEGER, trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
                 break;
             case KONST_STR:
-                if (((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1)) || (this.trenutniNiz.toString().equals("''"))) { // Ne gledamo na začetku niza, ko samo '
+                if (((this.stNarekovajev % 2 == 1) && (this.trenutniNiz.length() > 1))
+                        || (this.trenutniNiz.toString().equals("''"))) { // Ne gledamo na začetku niza, ko samo '
                     if (naslednjiZnak == '\'') { // Dva narekovaja escape char
                         this.stNarekovajev++;
                     } else { // Konec string literala
@@ -230,7 +165,8 @@ public class Lexer {
                             leksem = "";
                         if (leksem.length() > 1) // Odstrani narekovaje
                             leksem = leksem.substring(1, leksem.length() - 1);
-                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
+                        symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
+                                this.vrstica, this.stolpec), TokenType.C_STRING, leksem)); // leksem brez narekovajev
                         zakljucenNiz = true;
                         this.stanje = lexStanja.INITIAL;
                         handleStanje(naslednjiZnak, symbols);
@@ -243,10 +179,14 @@ public class Lexer {
             case OPERATOR:
                 String kandidat = trenutniNiz.toString() + naslednjiZnak;
                 if (operatorMapping.containsKey(kandidat)) { // Če bi z naslednjim znakom dobili operator dolžine 2
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec + 1), operatorMapping.get(kandidat), kandidat));
+                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column,
+                            this.vrstica, this.stolpec + 1), operatorMapping.get(kandidat), kandidat));
                     this.stanje = lexStanja.INITIAL;
                 } else { // npr. "+b"
-                    symbols.add(new Symbol(new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica, this.stolpec), operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
+                    symbols.add(new Symbol(
+                            new Position(this.pozicija.start.line, this.pozicija.start.column, this.vrstica,
+                                    this.stolpec),
+                            operatorMapping.get(trenutniNiz.toString()), trenutniNiz.toString()));
                     this.stanje = lexStanja.INITIAL;
                     handleStanje(naslednjiZnak, symbols);
                 }
@@ -255,45 +195,25 @@ public class Lexer {
                 this.pozicija = Position.fromLocation(new Position.Location(this.vrstica, this.stolpec));
                 this.trenutniNiz = new StringBuilder();
                 this.stanje = dolociZacetnoStanje(naslednjiZnak);
-                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
+                if (this.stanje == lexStanja.IME || this.stanje == lexStanja.KONST_INT
+                        || this.stanje == lexStanja.KONST_STR || this.stanje == lexStanja.OPERATOR)
                     this.trenutniNiz.append(naslednjiZnak);
                 break;
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> repo1/main
-=======
-
->>>>>>> repo2/main
-=======
-
->>>>>>> repo3/main
-=======
->>>>>>> repo4/main
-=======
->>>>>>> repo5/main
-=======
->>>>>>> repo6/main
-=======
->>>>>>> repo7/main
     }
 
     private void preveriIme(ArrayList<Symbol> symbols) {
         int startVrstica = this.pozicija.start.line;
         int startStolpec = this.pozicija.start.column;
         if (keywordMapping.containsKey(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
+                    keywordMapping.get(trenutniNiz.toString().toLowerCase()), trenutniNiz.toString()));
         else if (LOGICNI.contains(trenutniNiz.toString().toLowerCase()))
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
+                    TokenType.C_LOGICAL, trenutniNiz.toString().toLowerCase()));
         else
-            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec), TokenType.IDENTIFIER, trenutniNiz.toString()));
+            symbols.add(new Symbol(new Position(startVrstica, startStolpec, this.vrstica, this.stolpec),
+                    TokenType.IDENTIFIER, trenutniNiz.toString()));
     }
 
     /**
@@ -305,21 +225,6 @@ public class Lexer {
         var symbols = new ArrayList<Symbol>();
         for (int i = 0; i < this.source.length(); i++) {
             var naslednjiZnak = this.source.charAt(i);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> repo4/main
-=======
->>>>>>> repo5/main
-=======
->>>>>>> repo6/main
-=======
->>>>>>> repo7/main
             handleStanje(naslednjiZnak, symbols);
 
             if (naslednjiZnak == '\n') {
@@ -333,74 +238,14 @@ public class Lexer {
                 this.stolpec++;
             }
 
-
         }
         if (this.source.length() > 0) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> repo2/main
-=======
->>>>>>> repo3/main
-            this.stolpec++;
-            handleStanje(naslednjiZnak, symbols);
-
-        }
-        if (this.source.length() > 0) {
-            this.stolpec++;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> repo1/main
-=======
->>>>>>> repo2/main
-=======
->>>>>>> repo3/main
-=======
->>>>>>> repo4/main
-=======
->>>>>>> repo5/main
-=======
->>>>>>> repo6/main
-=======
->>>>>>> repo7/main
             handleStanje(' ', symbols); // Pohendlaj še zadnji char
         }
         if (!this.zakljucenNiz) {
-            Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec), "NAPAKA: Konstanta string ni zaključena!");
+            Report.error(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec),
+                    "NAPAKA: Konstanta string ni zaključena!");
         }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec + 1, this.vrstica, this.stolpec), TokenType.EOF, "$"));
->>>>>>> repo1/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo2/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo3/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo4/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo5/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo6/main
-=======
-        symbols.add(new Symbol(new Position(this.vrstica, this.stolpec, this.vrstica, this.stolpec + 1), TokenType.EOF, "$"));
->>>>>>> repo7/main
 
         return symbols;
     }
