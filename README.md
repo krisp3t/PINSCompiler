@@ -2,7 +2,9 @@
 A Java compiler made for PINS Language (a made up language) as part of undergraduate Compilers class.
 
 ## Usage
-"Izvorna" files in the root directory are examples of valid source codes in PINS Language.
+"example" files in the root directory are examples of valid source codes in PINS Language.
+To compile source file: `PINS example`.
+Use `--exec <phase>` to execute only phases up to selected phase. Options are: LEX, SYN, AST, NAME, TYP, FRM, IMC, INT.
 
 
 ## Compiler phases
