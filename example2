@@ -1,0 +1,15 @@
+typ list: arr[10] integer;
+var array: list;
+
+fun main(x: integer): integer = (
+  fill_array2(array)
+);
+
+fun fill_array2(a: list): integer = (
+  ({ for i = 0, 5, i + 1:
+      {a[i] = i + 69 }
+  },
+  print_int(a[i]))
+) { where
+  var i: integer
+}
